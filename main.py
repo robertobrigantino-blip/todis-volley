@@ -7,10 +7,11 @@ from io import StringIO
 from urllib.parse import urljoin, quote
 import re 
 from datetime import datetime, timedelta
+import os
 
 # ================= CONFIGURAZIONE =================
 NOME_SQUADRA_TARGET = "TODIS PASTENA VOLLEY"
-FILE_HTML_OUTPUT = "index.html"
+FILE_HTML_OUTPUT = "index.html" # IMPORTANTE: index.html per GitHub Pages
 
 # URL LOGO
 URL_LOGO = "https://scontent-mxp1-1.xx.fbcdn.net/v/t39.30808-1/308986386_105950712300213_330700112068611271_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=103&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=sD-LR_4pAk4Q7kNvwGJkZwH&_nc_oc=Adn-oUpWeJlx6rVp4v9j32pXFrHjw5yNKgzLjJucZ-MspsPW8VmpQDIB_QCYH-OO2yE&_nc_zt=24&_nc_ht=scontent-mxp1-1.xx&_nc_gid=YBTzxcgYknCs76CSoj5igg&oh=00_AflNoze-14zUteYVafo23P5iGxlzqN1ZGYru6Aa45t0cCQ&oe=6938C4E3"
@@ -28,14 +29,12 @@ CSS_STYLE = """
 <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 60px; }
     
-    /* Header */
     .app-header { background-color: #d32f2f; color: white; padding: 12px 15px; display: flex; align-items: center; justify-content: center; gap: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
     .app-header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header div { text-align: left; }
     .app-header h1 { margin: 0; font-size: 16px; text-transform: uppercase; line-height: 1.2; font-weight: 700; }
     .last-update { font-size: 11px; opacity: 0.9; }
 
-    /* Tabs */
     .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
     .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
@@ -47,7 +46,6 @@ CSS_STYLE = """
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 10px; margin-bottom: 12px; }
     h3 { font-size: 14px; background: #eee; padding: 5px 10px; border-radius: 4px; margin-top: 15px; margin-bottom: 10px; color: #555; }
 
-    /* Classifica */
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
@@ -56,29 +54,16 @@ CSS_STYLE = """
     td:nth-child(2) { text-align: left; min-width: 130px; font-weight: 500; position: sticky; left: 0; background-color: white; border-right: 1px solid #eee; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
 
-    /* Card Partita */
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; }
-    
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
 
-    /* Badge nell'angolo in alto a destra */
-    .result-badge { 
-        position: absolute; top: 0; right: 0; 
-        font-size: 10px; padding: 4px 8px; 
-        border-bottom-left-radius: 8px; 
-        font-weight: bold; color: white; z-index: 10;
-    }
+    .result-badge { position: absolute; top: 0; right: 0; font-size: 10px; padding: 4px 8px; border-bottom-left-radius: 8px; font-weight: bold; color: white; z-index: 10; }
     .badge-win { background-color: #2e7d32; }
     .badge-loss { background-color: #c62828; }
 
-    /* Header modificato per evitare sovrapposizioni */
-    .match-header { 
-        display: flex; align-items: center; justify-content: flex-start; gap: 10px;
-        font-size: 12px; color: #555; margin-bottom: 12px; border-bottom: 1px solid #f5f5f5; 
-        padding-bottom: 5px; padding-right: 50px; /* Spazio di sicurezza per il badge */
-    }
+    .match-header { display: flex; align-items: center; justify-content: flex-start; gap: 10px; font-size: 12px; color: #555; margin-bottom: 12px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; padding-right: 50px; }
     .date-badge { font-weight: bold; color: #d32f2f; display: flex; align-items: center; gap: 5px; }
     .separator { color: #ccc; }
 
@@ -91,13 +76,11 @@ CSS_STYLE = """
     .gym-name { font-size: 11px; color: #666; width: 100%; margin-bottom: 5px; display: block; }
     
     .action-buttons { display: flex; gap: 8px; width: 100%; justify-content: flex-end; }
-    
     .btn { text-decoration: none; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: flex; align-items: center; gap: 4px; flex-grow: 1; justify-content: center; max-width: 100px; }
     .btn-map { background-color: #E3F2FD; color: #1565C0; }
     .btn-cal { background-color: #F3E5F5; color: #7B1FA2; } 
     .btn-wa { background-color: #E8F5E9; color: #2E7D32; } 
 
-    /* Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .modal-content { background: white; width: 90%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 20px; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
     @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -208,9 +191,12 @@ def get_match_details_robust(driver, match_url):
         if imp: luogo = imp.get_text(strip=True)
         
         a_map = soup.find('a', href=lambda x: x and ('google.com/maps' in x or 'maps.google' in x))
-        if a_map: link_maps = a_map['href']
+        if a_map: 
+            link_maps = a_map['href']
         elif luogo != "Impianto non definito": 
-            link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(re.sub(r'\s+', ' ', luogo).strip())}"
+            # --- FIX SYNTAX ERROR GITHUB ---
+            clean_gym_name = re.sub(r'\s+', ' ', luogo).strip()
+            link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym_name)}"
     except: pass
     return data_ora_full, data_iso, luogo, link_maps
 
@@ -219,7 +205,9 @@ def scrape_data():
     chrome_options = Options()
     chrome_options.add_argument("--headless") 
     chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox") # Utile per Github Actions
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    
     driver = webdriver.Chrome(options=chrome_options)
     all_results, all_standings = [], []
 
@@ -269,7 +257,7 @@ def scrape_data():
 
 # ================= HTML GENERATION =================
 def genera_html(df_ris, df_class):
-    print("📱 Creazione HTML (Layout Fix)...")
+    print("📱 Creazione HTML...")
     
     html_content = f"""<!DOCTYPE html>
     <html lang="it">
