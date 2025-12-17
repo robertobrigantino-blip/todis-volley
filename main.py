@@ -13,8 +13,8 @@ import os
 NOME_SQUADRA_TARGET = "TODIS PASTENA VOLLEY"
 FILE_HTML_OUTPUT = "index.html" # IMPORTANTE: index.html per GitHub Pages
 
-# URL LOGO (Ora punta al file caricato su GitHub)
-URL_LOGO = "logo.jpg" 
+# URL LOGO (Link RAW diretto all'immagine)
+URL_LOGO = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg"
 
 # ELENCO CAMPIONATI
 CAMPIONATI = {
@@ -377,3 +377,4 @@ if __name__ == "__main__":
     df_ris, df_class = scrape_data()
 
     genera_html(df_ris, df_class)
+
