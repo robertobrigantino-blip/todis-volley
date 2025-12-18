@@ -25,7 +25,7 @@ CAMPIONATI = {
     "Under 14 Femminile Gir.C": "86860",
 }
 
-# ================= CSS COMUNE (Moderno) =================
+# ================= CSS COMUNE =================
 CSS_BASE = """
 <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 60px; }
@@ -69,7 +69,7 @@ CSS_BASE = """
     .result-badge { position: absolute; top: 0; right: 0; font-size: 9px; padding: 3px 6px; border-bottom-left-radius: 6px; font-weight: bold; color: white; z-index: 10; text-transform: uppercase; }
     .badge-win { background-color: #2e7d32; }
     .badge-loss { background-color: #c62828; }
-    .badge-played { background-color: #78909c; } /* Grigio per altre squadre */
+    .badge-played { background-color: #78909c; } 
 
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; padding-right: 50px; }
     .date-badge { font-weight: bold; color: #d32f2f; display: flex; align-items: center; gap: 4px; }
@@ -96,11 +96,6 @@ CSS_BASE = """
     .modal-title { font-size: 18px; font-weight: bold; color: #d32f2f; }
     .close-btn { background: #eee; border: none; font-size: 20px; padding: 5px 10px; border-radius: 50%; }
     .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
-    
-    /* Filtro Giornate (Solo per Generale) */
-    .filter-bar { overflow-x: auto; white-space: nowrap; padding: 10px 0; border-bottom: 1px solid #eee; margin-bottom: 10px; }
-    .filter-btn { background: #eee; border: none; padding: 5px 10px; border-radius: 15px; font-size: 11px; margin-right: 5px; cursor: pointer; }
-    .filter-btn.active { background: #2c3e50; color: white; }
 </style>
 <script>
     function openTab(tabIndex) {
@@ -114,14 +109,12 @@ CSS_BASE = """
     
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     
-    // Popup logic (solo se presente nella pagina)
     document.addEventListener("DOMContentLoaded", function() {
         const today = new Date();
         today.setHours(0,0,0,0);
         let nextMatches = {};
         const allMatches = document.querySelectorAll('.match-card.upcoming');
         
-        // Cerca solo partite della squadra target per il popup, anche nella vista generale
         allMatches.forEach(card => {
             if(card.getAttribute('data-my-team') === 'true') {
                 const dateStr = card.getAttribute('data-date-iso');
@@ -146,7 +139,6 @@ CSS_BASE = """
             count++;
         }
         
-        // Mostra popup solo se siamo nella index (controlla titolo o un flag)
         if (count > 0 && document.title.includes("Todis")) {
             const modalBody = document.getElementById('modal-body');
             if(modalBody) {
@@ -183,12 +175,12 @@ def create_whatsapp_link(row):
         text = f"📅 *Gara {row['Campionato']}*\n{row['Data']}\n📍 {row['Impianto']}\n{row['Squadra Casa']} vs {row['Squadra Ospite']}"
     return f"https://wa.me/?text={quote(text)}"
 
-# ================= SCRAPING (Scarica TUTTO) =================
+# ================= SCRAPING =================
 def get_match_details_robust(driver, match_url):
     data_ora_full, data_iso, luogo, link_maps = "Data da definire", "", "Impianto non definito", ""
     try:
         driver.get(match_url)
-        time.sleep(0.3) # Veloce
+        time.sleep(0.3)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
         
@@ -209,9 +201,13 @@ def get_match_details_robust(driver, match_url):
         if imp: luogo = imp.get_text(strip=True)
         
         a_map = soup.find('a', href=lambda x: x and ('google.com/maps' in x or 'maps.google' in x))
-        if a_map: link_maps = a_map['href']
+        if a_map: 
+            link_maps = a_map['href']
         elif luogo != "Impianto non definito": 
-            link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(re.sub(r'\s+', ' ', luogo).strip())}"
+            # --- CORREZIONE ERRORE SYNTAX ---
+            # La regex è fuori dalla f-string ora
+            clean_gym = re.sub(r'\s+', ' ', luogo).strip()
+            link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
     except: pass
     return data_ora_full, data_iso, luogo, link_maps
 
@@ -228,7 +224,7 @@ def scrape_data():
     for nome_camp, id_camp in CAMPIONATI.items():
         print(f"   Analisi: {nome_camp}...")
         base_url = "https://www.fipavsalerno.it/mobile/"
-        if "Serie C" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/" # Cambio dominio per Serie C se serve
+        if "Serie C" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/"
         
         driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}")
         time.sleep(1.5)
@@ -247,7 +243,6 @@ def scrape_data():
                     c = c.replace(pt_c, '').strip()
                     o = o.replace(pt_o, '').strip()
 
-                    # SCARICA TUTTO, SENZA FILTRI
                     full_url = urljoin(base_url, el.get('href', ''))
                     d_ora, d_iso, luogo, maps = get_match_details_robust(driver, full_url)
                     all_results.append({
@@ -276,7 +271,6 @@ def crea_card_html(r, camp, is_focus_mode=False):
     is_away = NOME_SQUADRA_TARGET.upper() in r['Squadra Ospite'].upper()
     is_my_match = is_home or is_away
     
-    # Stili
     cs = 'class="team-name my-team-text"' if is_home else 'class="team-name"'
     os = 'class="team-name my-team-text"' if is_away else 'class="team-name"'
     
@@ -287,7 +281,6 @@ def crea_card_html(r, camp, is_focus_mode=False):
         try:
             sc, so = int(r['Set Casa']), int(r['Set Ospite'])
             if is_my_match:
-                # Logica Vittoria/Sconfitta per la nostra squadra
                 if (is_home and sc > so) or (is_away and so > sc):
                     status_class = "win"
                     badge_html = '<span class="result-badge badge-win">VINTA</span>'
@@ -295,12 +288,10 @@ def crea_card_html(r, camp, is_focus_mode=False):
                     status_class = "loss"
                     badge_html = '<span class="result-badge badge-loss">PERSA</span>'
             else:
-                # Partita di altre squadre
                 status_class = "played"
                 badge_html = '<span class="result-badge badge-played">FINALE</span>'
         except: status_class = "played"
     
-    # Se non siamo in modalità focus e la partita non è nostra, semplifichiamo i bottoni
     lnk_wa = create_whatsapp_link(r)
     lnk_cal = create_google_calendar_link(r) if not r['Punteggio'] else ""
     lnk_map = r['Maps']
@@ -308,7 +299,6 @@ def crea_card_html(r, camp, is_focus_mode=False):
     btns_html = ""
     if lnk_map: btns_html += f'<a href="{lnk_map}" target="_blank" class="btn btn-map">📍 Mappa</a>'
     
-    # Bottoni extra solo se è la mia squadra o se sono nella vista generale ma voglio i dettagli
     if is_my_match or not is_focus_mode:
         if lnk_cal: btns_html += f'<a href="{lnk_cal}" target="_blank" class="btn btn-cal">📅</a>'
         if lnk_wa: btns_html += f'<a href="{lnk_wa}" target="_blank" class="btn btn-wa">💬</a>'
@@ -333,11 +323,9 @@ def crea_card_html(r, camp, is_focus_mode=False):
 # ================= GENERATORE PAGINE =================
 def genera_pagina(df_ris, df_class, filename, mode="APP"):
     print(f"📄 Generazione {filename} (Mode: {mode})...")
-    
     is_app = (mode == "APP")
     title = NOME_SQUADRA_TARGET if is_app else "Risultati Completi"
     
-    # Intestazione specifica
     if is_app:
         header_switch = f'<a href="{FILE_GEN}" class="btn-switch">🌍 Vedi Tutto</a>'
         modal_html = """
@@ -376,10 +364,7 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
         </div>
     """
 
-    # Identifica campionati
     campionati_disp = df_class['Campionato'].unique()
-    
-    # TABS
     html += '<div class="tab-bar">'
     for i, camp in enumerate(campionati_disp):
         p = camp.split()
@@ -388,25 +373,22 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
         html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{n}</button>'
     html += '</div>'
 
-    # CONTENT
     for i, camp in enumerate(campionati_disp):
         html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
         
-        # 1. CLASSIFICA
+        # CLASSIFICA
         html += f"<h2>🏆 Classifica</h2>"
         df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
         html += """<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>"""
         for _, r in df_c.iterrows():
-            # Evidenzia Todis sempre
             cls = 'class="my-team-row"' if NOME_SQUADRA_TARGET.upper() in str(r['Squadra']).upper() else ''
             html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
         html += '</tbody></table></div></div>'
 
-        # 2. PARTITE
+        # PARTITE
         html += f"<h2>📅 Calendario</h2>"
         df_r = df_ris[df_ris['Campionato'] == camp]
         
-        # FILTRO PRINCIPALE: Se siamo in modalità APP, mostriamo solo TODIS
         if is_app:
             df_r = df_r[
                 (df_r['Squadra Casa'].str.contains(NOME_SQUADRA_TARGET, case=False)) | 
@@ -416,7 +398,6 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
         if df_r.empty:
             html += "<p>Nessuna partita trovata.</p>"
         else:
-            # Raggruppa per giornata se siamo nella vista GENERALE per ordine
             if not is_app:
                 giornate = df_r['Giornata'].unique()
                 for g in giornate:
@@ -424,23 +405,16 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
                     for _, r in df_r[df_r['Giornata'] == g].iterrows():
                          html += crea_card_html(r, camp, is_app)
             else:
-                # Vista APP: Lista semplice
                 for _, r in df_r.iterrows():
                     html += crea_card_html(r, camp, is_app)
 
         html += '</div>'
 
     html += "</body></html>"
-    
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
     print(f"✅ Creato: {filename}")
 
 if __name__ == "__main__":
-    # 1. Scarica TUTTO
     df_ris, df_class = scrape_data()
-    
-    # 2. Genera Home Page (Focus Todis)
     genera_pagina(df_ris, df_class, FILE_APP, mode="APP")
-    
-    # 3. Genera Pagina Generale (Tutto il campionato)
     genera_pagina(df_ris, df_class, FILE_GEN, mode="GENERAL")
