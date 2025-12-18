@@ -36,5 +36,5 @@ jobs:
       - name: Salva e Pubblica
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Aggiornamento automatico classifica"
-          file_pattern: "index.html"
+          commit_message: "Aggiornamento dati completo"
+          file_pattern: "*.html"  # <--- Salva tutti i file HTML generati
