@@ -2,9 +2,9 @@ name: Aggiorna Classifica Volley
 
 on:
   schedule:
-    # Ore UTC: 7, 12, 18 (che sono 8, 13, 19 in Italia Inverno)
+    # Esegue alle 8:00, 13:00, 19:00 (Inverno UTC: 7, 12, 18)
     - cron: '0 7,12,18 * * *'
-  workflow_dispatch:
+  workflow_dispatch: # Permette avvio manuale
 
 permissions:
   contents: write
@@ -22,8 +22,7 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Installa Chrome Browser
-        uses: browser-actions/setup-chrome@v1
+      # RIMOSSO IL PASSAGGIO CHE DAVA ERRORE (Chrome è già incluso)
 
       - name: Installa Dipendenze
         run: |
@@ -37,4 +36,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Aggiornamento dati completo"
-          file_pattern: "*.html"  # <--- Salva tutti i file HTML generati
+          file_pattern: "*.html"
