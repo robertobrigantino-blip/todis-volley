@@ -19,7 +19,8 @@ URL_LOGO = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volle
 
 # URL CONTATORE (Basato sul tuo repository)
 # Usa il servizio gratuito hits.seeyoufarm.com
-URL_COUNTER = "https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Frobertobrigantino-blip.github.io%2Ftodis-volley&count_bg=%23D32F2F&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Visite&edge_flat=false"
+# NUOVO URL CONTATORE (Più affidabile)
+URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
 # ELENCO COMPLETO CAMPIONATI
 CAMPIONATI = {
@@ -448,3 +449,4 @@ if __name__ == "__main__":
     df_ris, df_class = scrape_data()
     genera_pagina(df_ris, df_class, FILE_APP, mode="APP")
     genera_pagina(df_ris, df_class, FILE_GEN, mode="GENERAL")
+
