@@ -17,6 +17,10 @@ FILE_GEN = "generale.html"   # Vista Completa Campionati
 # URL LOGO (RAW da GitHub)
 URL_LOGO = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg"
 
+# URL CONTATORE (Basato sul tuo repository)
+# Usa il servizio gratuito hits.seeyoufarm.com
+URL_COUNTER = "https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Frobertobrigantino-blip.github.io%2Ftodis-volley&count_bg=%23D32F2F&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Visite&edge_flat=false"
+
 # ELENCO COMPLETO CAMPIONATI
 CAMPIONATI = {
     "Serie C  Femminile Gir.A": "85471",
@@ -28,7 +32,7 @@ CAMPIONATI = {
 # ================= CSS COMUNE =================
 CSS_BASE = """
 <style>
-    body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 60px; }
+    body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
     
     /* Header */
     .app-header { background-color: #d32f2f; color: white; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; }
@@ -90,12 +94,16 @@ CSS_BASE = """
 
     /* Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-    .modal-content { background: white; width: 90%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 20px; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
+    .modal-content { background: white; width: 85%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 20px; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
     @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
     .modal-title { font-size: 18px; font-weight: bold; color: #d32f2f; }
-    .close-btn { background: #eee; border: none; font-size: 20px; padding: 5px 10px; border-radius: 50%; }
+    .close-btn { background: #eee; border: none; font-size: 24px; padding: 0 10px; border-radius: 5px; color: #555; cursor: pointer; }
     .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
+    
+    /* Footer Counter */
+    .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
+    .footer-counter img { height: 20px; vertical-align: middle; }
 </style>
 <script>
     function openTab(tabIndex) {
@@ -109,20 +117,33 @@ CSS_BASE = """
     
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     
-    document.addEventListener("DOMContentLoaded", function() {
+    // Logica POPUP Rinforzata
+    window.onload = function() {
+        // Controllo se dobbiamo mostrare il popup (solo in index.html)
+        if (!document.title.toUpperCase().includes("TODIS")) return;
+
         const today = new Date();
         today.setHours(0,0,0,0);
         let nextMatches = {};
+        
+        // Seleziona tutte le card "upcoming"
         const allMatches = document.querySelectorAll('.match-card.upcoming');
         
         allMatches.forEach(card => {
-            if(card.getAttribute('data-my-team') === 'true') {
+            // Controlla se è una partita della "mia squadra"
+            const isMyTeam = card.getAttribute('data-my-team');
+            
+            if(isMyTeam === 'true') {
                 const dateStr = card.getAttribute('data-date-iso');
                 const campName = card.getAttribute('data-camp');
+                
                 if (dateStr && campName) {
                     const parts = dateStr.split('-');
+                    // Forza data locale
                     const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
+                    
                     if (matchDate >= today) {
+                        // Se non ho ancora una partita per questo campionato o se questa è più vicina
                         if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
                             nextMatches[campName] = { date: matchDate, html: card.outerHTML };
                         }
@@ -139,14 +160,17 @@ CSS_BASE = """
             count++;
         }
         
-        if (count > 0 && document.title.includes("Todis")) {
+        // Inietta HTML e mostra
+        if (count > 0) {
             const modalBody = document.getElementById('modal-body');
             if(modalBody) {
                 modalBody.innerHTML = popupHTML;
-                document.getElementById('modal-overlay').style.display = 'flex';
+                setTimeout(function(){
+                    document.getElementById('modal-overlay').style.display = 'flex';
+                }, 500); // Ritardo di mezzo secondo per fluidità
             }
         }
-    });
+    };
 </script>
 """
 
@@ -204,8 +228,6 @@ def get_match_details_robust(driver, match_url):
         if a_map: 
             link_maps = a_map['href']
         elif luogo != "Impianto non definito": 
-            # --- CORREZIONE ERRORE SYNTAX ---
-            # La regex è fuori dalla f-string ora
             clean_gym = re.sub(r'\s+', ' ', luogo).strip()
             link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
     except: pass
@@ -336,9 +358,16 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
                 <div style="text-align:center; margin-top:15px;"><button onclick="closeModal()" style="background:#d32f2f; color:white; border:none; padding:8px 20px; border-radius:20px;">Chiudi</button></div>
             </div>
         </div>"""
+        # Aggiunta Contatore Visite nel Footer solo nell'App principale
+        footer_html = f"""
+        <div class="footer-counter">
+            <img src="{URL_COUNTER}" alt="Contatore Visite">
+        </div>
+        """
     else:
         header_switch = f'<a href="{FILE_APP}" class="btn-switch">🏠 Squadra</a>'
         modal_html = ""
+        footer_html = ""
 
     html = f"""<!DOCTYPE html>
     <html lang="it">
@@ -410,6 +439,7 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
 
         html += '</div>'
 
+    html += footer_html # Inserimento contatore visite
     html += "</body></html>"
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
     print(f"✅ Creato: {filename}")
