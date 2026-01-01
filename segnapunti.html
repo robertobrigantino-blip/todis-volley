@@ -101,7 +101,6 @@
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
         
-        // Se è iOS e non è installata, mostra il suggerimento
         if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
@@ -185,7 +184,6 @@
     .timer-val { font-size: 28px; font-family: monospace; font-weight: bold; color: #fbbf24; }
     .btn-timer { background: #444; border: none; color: white; padding: 5px 15px; border-radius: 5px; margin-top: 5px; cursor: pointer; }
     
-    /* FIX CONTROLS BOTTOM */
     .controls-bottom { display: flex; flex-direction: column; gap: 8px; width: 90%; margin-bottom: 10px; }
     
     .btn-ctrl { 
