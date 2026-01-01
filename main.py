@@ -10,10 +10,20 @@ from datetime import datetime, timedelta
 import os
 
 # ================= CONFIGURAZIONE =================
-NOME_SQUADRA_TARGET = "TODIS PASTENA VOLLEY"
-FILE_APP = "index.html"        # Home Squadra
-FILE_GEN = "generale.html"     # Campionati Completi
-FILE_SCORE = "segnapunti.html" # Nuovo Segnapunti
+# Nome visualizzato nel Titolo dell'App
+NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
+
+# LISTA DI TUTTI I NOMI CON CUI LA SQUADRA È REGISTRATA
+# Aggiungi qui eventuali altre varianti se ne trovi in futuro
+TARGET_TEAM_ALIASES = [
+    "TODIS PASTENA VOLLEY",
+    "TODIS CS PASTENA VOLLEY",
+    "TODIS C.S. PASTENA VOLLEY" # Variante col punto, per sicurezza
+]
+
+FILE_APP = "index.html"      # Vista Focus Squadra
+FILE_GEN = "generale.html"   # Vista Completa Campionati
+FILE_SCORE = "segnapunti.html" # Segnapunti
 
 # URL LOGO (RAW da GitHub)
 URL_LOGO = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg"
@@ -23,12 +33,30 @@ URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg
 
 # ELENCO COMPLETO CAMPIONATI
 CAMPIONATI = {
-    "Serie D  Maschile  Gir.C": "85622",
     "Serie C  Femminile Gir.A": "85471",
+    "Serie D  Maschile Gir.C": "85622",
     "Under 18 Femminile Gir.B": "86850",
     "Under 16 Femminile Gir.A": "86853",
     "Under 14 Femminile Gir.C": "86860",
 }
+
+# ================= FUNZIONE DI CONTROLLO SQUADRA =================
+def is_target_team(team_name):
+    """
+    Controlla se il nome della squadra passato corrisponde a uno degli alias della nostra squadra.
+    Restituisce True se è la nostra squadra, False altrimenti.
+    """
+    if pd.isna(team_name) or not str(team_name).strip():
+        return False
+    
+    name_clean = str(team_name).upper().strip()
+    
+    for alias in TARGET_TEAM_ALIASES:
+        # Controllo se l'alias è contenuto nel nome (es. "ASD TODIS..." contiene "TODIS")
+        if alias.upper() in name_clean:
+            return True
+            
+    return False
 
 # ================= CSS COMUNE =================
 CSS_BASE = """
@@ -168,37 +196,25 @@ CSS_BASE = """
 # ================= CSS/JS SEGNAPUNTI =================
 SCOREBOARD_CODE = """
 <style>
-    /* Stili specifici per il segnapunti */
     .sb-container { max-width: 600px; margin: 0 auto; padding: 10px; }
-    
-    /* Timer */
     .timer-card { background: #333; color: #fff; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
     .timer-display { font-size: 36px; font-weight: bold; font-family: monospace; letter-spacing: 2px; }
     .timer-controls { margin-top: 10px; display: flex; justify-content: center; gap: 10px; }
     .btn-timer { background: #555; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
     .btn-timer.active { background: #d32f2f; }
-
-    /* Score Area */
     .score-area { display: flex; gap: 10px; margin-bottom: 20px; }
     .team-col { flex: 1; background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-top: 5px solid #ddd; }
     .team-col.serving { border-top-color: #2e7d32; background: #e8f5e9; }
-    
     .team-name-input { width: 100%; border: none; text-align: center; font-size: 16px; font-weight: bold; color: #333; background: transparent; margin-bottom: 10px; padding: 5px; border-bottom: 1px dashed #ccc; }
     .score-big { font-size: 70px; font-weight: 800; color: #333; line-height: 1; margin: 10px 0; user-select: none; }
-    
     .score-controls { display: flex; justify-content: center; gap: 10px; }
     .btn-score { width: 40px; height: 40px; border-radius: 50%; border: none; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     .btn-plus { background: #d32f2f; color: white; }
     .btn-minus { background: #eee; color: #555; }
-
     .ball-icon { font-size: 14px; cursor: pointer; opacity: 0.2; }
     .serving .ball-icon { opacity: 1; }
-
-    /* Sets */
     .sets-display { display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 20px; font-size: 18px; font-weight: bold; background: white; padding: 10px; border-radius: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     .set-score { font-size: 24px; color: #d32f2f; }
-
-    /* Footer Controls */
     .game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
     .btn-ctrl { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
     .btn-new-set { background: #1976D2; color: white; }
@@ -206,7 +222,6 @@ SCOREBOARD_CODE = """
 </style>
 
 <div class="sb-container">
-    <!-- Timer -->
     <div class="timer-card">
         <div class="timer-display" id="timer">00:00</div>
         <div class="timer-controls">
@@ -214,18 +229,13 @@ SCOREBOARD_CODE = """
             <button class="btn-timer" onclick="resetTimer()">↺ Reset</button>
         </div>
     </div>
-
-    <!-- Set Counter -->
     <div class="sets-display">
         <span>SET:</span>
         <span id="setsHome" class="set-score">0</span>
         <span>-</span>
         <span id="setsGuest" class="set-score">0</span>
     </div>
-
-    <!-- Scoreboard -->
     <div class="score-area">
-        <!-- Home -->
         <div class="team-col" id="colHome" onclick="setService('Home')">
             <div class="ball-icon">🏐 Servizio</div>
             <input type="text" class="team-name-input" value="CASA">
@@ -235,8 +245,6 @@ SCOREBOARD_CODE = """
                 <button class="btn-score btn-plus" onclick="updateScore('Home', 1); event.stopPropagation()">+</button>
             </div>
         </div>
-
-        <!-- Guest -->
         <div class="team-col" id="colGuest" onclick="setService('Guest')">
             <div class="ball-icon">🏐 Servizio</div>
             <input type="text" class="team-name-input" value="OSPITI">
@@ -247,16 +255,12 @@ SCOREBOARD_CODE = """
             </div>
         </div>
     </div>
-
-    <!-- Controls -->
     <div class="game-controls">
         <button class="btn-ctrl btn-new-set" onclick="endSet()">Fine Set 🏁</button>
         <button class="btn-ctrl btn-reset" onclick="resetMatch()">Nuova Partita 🔄</button>
     </div>
-    
     <div style="text-align:center; margin-top:20px; font-size:11px; color:#777;">
-        💡 Tocca il box squadra per assegnare la battuta.<br>
-        Lo schermo resterà attivo.
+        💡 Tocca il box squadra per assegnare la battuta.<br>Lo schermo resterà attivo.
     </div>
 </div>
 
@@ -268,11 +272,8 @@ SCOREBOARD_CODE = """
     let isRunning = false;
     let wakeLock = null;
 
-    // Wake Lock (Tiene schermo acceso)
     async function requestWakeLock() {
-        try {
-            wakeLock = await navigator.wakeLock.request('screen');
-        } catch (err) {}
+        try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
     }
     document.addEventListener('click', requestWakeLock, {once:true});
 
@@ -294,22 +295,15 @@ SCOREBOARD_CODE = """
 
     function endSet() {
         if (!confirm("Chiudere il set corrente e aggiornare il conteggio set?")) return;
-        
-        if (scoreH > scoreG) setsH++;
-        else if (scoreG > scoreH) setsG++;
-        
+        if (scoreH > scoreG) setsH++; else if (scoreG > scoreH) setsG++;
         scoreH = 0; scoreG = 0;
         updateUI();
     }
 
     function resetMatch() {
         if (!confirm("Azzerare tutto e iniziare nuova partita?")) return;
-        scoreH = 0; scoreG = 0;
-        setsH = 0; setsG = 0;
-        seconds = 0;
-        stopTimer();
-        updateTimerDisplay();
-        updateUI();
+        scoreH = 0; scoreG = 0; setsH = 0; setsG = 0; seconds = 0;
+        stopTimer(); updateTimerDisplay(); updateUI();
     }
 
     function updateUI() {
@@ -319,40 +313,11 @@ SCOREBOARD_CODE = """
         document.getElementById('setsGuest').innerText = setsG;
     }
 
-    // Timer Logic
-    function toggleTimer() {
-        if (isRunning) stopTimer();
-        else startTimer();
-    }
-
-    function startTimer() {
-        isRunning = true;
-        document.getElementById('btnStartStop').innerText = "⏸ Stop";
-        document.getElementById('btnStartStop').classList.remove('active');
-        timerInterval = setInterval(() => {
-            seconds++;
-            updateTimerDisplay();
-        }, 1000);
-    }
-
-    function stopTimer() {
-        isRunning = false;
-        document.getElementById('btnStartStop').innerText = "▶ Start";
-        document.getElementById('btnStartStop').classList.add('active');
-        clearInterval(timerInterval);
-    }
-
-    function resetTimer() {
-        stopTimer();
-        seconds = 0;
-        updateTimerDisplay();
-    }
-
-    function updateTimerDisplay() {
-        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-        const s = (seconds % 60).toString().padStart(2, '0');
-        document.getElementById('timer').innerText = `${m}:${s}`;
-    }
+    function toggleTimer() { if (isRunning) stopTimer(); else startTimer(); }
+    function startTimer() { isRunning = true; document.getElementById('btnStartStop').innerText = "⏸ Stop"; document.getElementById('btnStartStop').classList.remove('active'); timerInterval = setInterval(() => { seconds++; updateTimerDisplay(); }, 1000); }
+    function stopTimer() { isRunning = false; document.getElementById('btnStartStop').innerText = "▶ Start"; document.getElementById('btnStartStop').classList.add('active'); clearInterval(timerInterval); }
+    function resetTimer() { stopTimer(); seconds = 0; updateTimerDisplay(); }
+    function updateTimerDisplay() { const m = Math.floor(seconds / 60).toString().padStart(2, '0'); const s = (seconds % 60).toString().padStart(2, '0'); document.getElementById('timer').innerText = `${m}:${s}`; }
 </script>
 """
 
@@ -471,8 +436,8 @@ def scrape_data():
 
 # ================= GENERATORE HTML CARD =================
 def crea_card_html(r, camp, is_focus_mode=False):
-    is_home = NOME_SQUADRA_TARGET.upper() in r['Squadra Casa'].upper()
-    is_away = NOME_SQUADRA_TARGET.upper() in r['Squadra Ospite'].upper()
+    is_home = is_target_team(r['Squadra Casa'])
+    is_away = is_target_team(r['Squadra Ospite'])
     is_my_match = is_home or is_away
     
     cs = 'class="team-name my-team-text"' if is_home else 'class="team-name"'
@@ -530,7 +495,7 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
     is_app = (mode == "APP")
     is_score = (mode == "SCORE")
     
-    title = NOME_SQUADRA_TARGET
+    title = NOME_VISUALIZZATO
     if is_score: title = "Segnapunti"
     elif not is_app: title = "Risultati Completi"
     
@@ -539,11 +504,9 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
     if is_score:
         nav_links = f'<a href="{FILE_APP}" class="btn-nav">🏠</a>'
     else:
-        # Se siamo in APP, link a Generale e Segnapunti
         if is_app:
             nav_links = f'<a href="{FILE_GEN}" class="btn-nav" title="Tutti i risultati">🌍</a> <a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
         else:
-            # Se siamo in Generale, link a Home e Segnapunti
             nav_links = f'<a href="{FILE_APP}" class="btn-nav" title="Home">🏠</a> <a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
 
     modal_html = ""
@@ -587,9 +550,8 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
     """
 
     if is_score:
-        html += SCOREBOARD_CODE # Inserisce il codice del segnapunti
+        html += SCOREBOARD_CODE
     else:
-        # Codice Standard per Classifiche e Partite
         campionati_disp = df_class['Campionato'].unique()
         html += '<div class="tab-bar">'
         for i, camp in enumerate(campionati_disp):
@@ -606,7 +568,8 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
             df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
             html += """<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>"""
             for _, r in df_c.iterrows():
-                cls = 'class="my-team-row"' if NOME_SQUADRA_TARGET.upper() in str(r['Squadra']).upper() else ''
+                # Evidenzia usando la funzione intelligente
+                cls = 'class="my-team-row"' if is_target_team(r['Squadra']) else ''
                 html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
             html += '</tbody></table></div></div>'
 
@@ -614,10 +577,9 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
             df_r = df_ris[df_ris['Campionato'] == camp]
             
             if is_app:
-                df_r = df_r[
-                    (df_r['Squadra Casa'].str.contains(NOME_SQUADRA_TARGET, case=False)) | 
-                    (df_r['Squadra Ospite'].str.contains(NOME_SQUADRA_TARGET, case=False))
-                ]
+                # Filtra usando la funzione intelligente
+                mask = df_r['Squadra Casa'].apply(is_target_team) | df_r['Squadra Ospite'].apply(is_target_team)
+                df_r = df_r[mask]
             
             if df_r.empty:
                 html += "<p>Nessuna partita trovata.</p>"
