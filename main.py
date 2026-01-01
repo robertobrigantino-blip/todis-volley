@@ -24,6 +24,7 @@ URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg
 
 # ELENCO COMPLETO CAMPIONATI
 CAMPIONATI = {
+    "Serie D  Maschile  Gir.C": "85622",
     "Serie C  Femminile Gir.A": "85471",
     "Under 18 Femminile Gir.B": "86850",
     "Under 16 Femminile Gir.A": "86853",
@@ -449,4 +450,5 @@ if __name__ == "__main__":
     df_ris, df_class = scrape_data()
     genera_pagina(df_ris, df_class, FILE_APP, mode="APP")
     genera_pagina(df_ris, df_class, FILE_GEN, mode="GENERAL")
+
 
