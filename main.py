@@ -97,6 +97,11 @@ CSS_BASE = """
     .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
+    
+    /* IOS INSTALL TIP */
+    .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
+    .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
+    @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
 </style>
 <script>
     if ('serviceWorker' in navigator) {
@@ -115,8 +120,18 @@ CSS_BASE = """
     }
     
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
-    
+    function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
+
     window.onload = function() {
+        // iOS Detection e Popup Installazione
+        const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
+        const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+        
+        // Se è iOS e non è installata, mostra il suggerimento
+        if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
+            setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
+        }
+
         if (!document.title.toUpperCase().includes("TODIS") || document.title.includes("Segnapunti")) return;
 
         const today = new Date();
@@ -205,8 +220,8 @@ SCOREBOARD_CODE = """
         font-size: 12px; 
         text-decoration: none; 
         text-align: center; 
-        display: block; /* FIX ALLINEAMENTO */
-        box-sizing: border-box; /* FIX DIMENSIONI */
+        display: block; 
+        box-sizing: border-box; 
         font-family: inherit;
     }
     
@@ -472,6 +487,7 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
             nav_links = f'<a href="{FILE_APP}" class="btn-nav" title="Home">🏠</a> <a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
 
     modal_html = ""
+    ios_tip_html = ""
     if is_app:
         modal_html = """
         <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
@@ -481,6 +497,17 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
                 <div style="text-align:center; margin-top:15px;"><button onclick="closeModal()" style="background:#d32f2f; color:white; border:none; padding:8px 20px; border-radius:20px;">Chiudi</button></div>
             </div>
         </div>"""
+        
+        # POPUP ISTRUZIONI IOS
+        ios_tip_html = """
+        <div id="ios-popup" class="ios-install-popup">
+            <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
+            <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
+            <div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div>
+            <div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div>
+            <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
+        </div>
+        """
     
     footer_html = f'<div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"></div>' if is_app else ""
 
@@ -490,10 +517,16 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <meta name="theme-color" content="#d32f2f">
+        
+        <!-- APPLE IOS META TAGS SPECIFICI -->
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="Todis Volley">
+        
         <title>{title}</title>
         <link rel="icon" type="image/png" href="{URL_LOGO}">
         <link rel="apple-touch-icon" href="{URL_LOGO}">
-        <meta name="apple-mobile-web-app-capable" content="yes">
+        
         <!-- PWA Manifest -->
         <link rel="manifest" href="manifest.json">
         {CSS_BASE}
@@ -502,6 +535,7 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
     </head>
     <body>
         {modal_html}
+        {ios_tip_html}
     """
     
     if not is_score:
