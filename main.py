@@ -27,7 +27,7 @@ URL_LOGO = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volle
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
 CAMPIONATI = {
-    "Serie D  Maschile Gir.C": "85622",
+    "Serie D  Maschile  Gir.C": "85622",
     "Serie C  Femminile Gir.A": "85471",
     "Under 18 Femminile Gir.B": "86850",
     "Under 16 Femminile Gir.A": "86853",
@@ -99,6 +99,17 @@ CSS_BASE = """
     .footer-counter img { height: 20px; vertical-align: middle; }
 </style>
 <script>
+    // --- PWA SERVICE WORKER REGISTRATION (Nuovo) ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').then(registration => {
+                console.log('ServiceWorker registration successful');
+            }, err => {
+                console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+    }
+
     function openTab(tabIndex) {
         var contents = document.getElementsByClassName("tab-content");
         for (var i = 0; i < contents.length; i++) contents[i].classList.remove("active");
@@ -107,13 +118,20 @@ CSS_BASE = """
         document.getElementById("content-" + tabIndex).classList.add("active");
         document.getElementById("btn-" + tabIndex).classList.add("active");
     }
+    
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+    
     window.onload = function() {
         if (!document.title.toUpperCase().includes("TODIS") || document.title.includes("Segnapunti")) return;
-        const today = new Date(); today.setHours(0,0,0,0);
+
+        const today = new Date();
+        today.setHours(0,0,0,0);
         let nextMatches = {};
-        document.querySelectorAll('.match-card.upcoming').forEach(card => {
-            if(card.getAttribute('data-my-team') === 'true') {
+        const allMatches = document.querySelectorAll('.match-card.upcoming');
+        
+        allMatches.forEach(card => {
+            const isMyTeam = card.getAttribute('data-my-team');
+            if(isMyTeam === 'true') {
                 const dateStr = card.getAttribute('data-date-iso');
                 const campName = card.getAttribute('data-camp');
                 if (dateStr && campName) {
@@ -127,11 +145,23 @@ CSS_BASE = """
                 }
             }
         });
-        let popupHTML = ""; let count = 0;
-        for (const [camp, data] of Object.entries(nextMatches)) { popupHTML += `<h3>🏆 ${camp}</h3>` + data.html; count++; }
+        
+        let popupHTML = "";
+        let count = 0;
+        for (const [camp, data] of Object.entries(nextMatches)) {
+            popupHTML += `<h3>🏆 ${camp}</h3>`;
+            popupHTML += data.html;
+            count++;
+        }
+        
         if (count > 0) {
-            const mb = document.getElementById('modal-body');
-            if(mb) { mb.innerHTML = popupHTML; setTimeout(() => document.getElementById('modal-overlay').style.display = 'flex', 500); }
+            const modalBody = document.getElementById('modal-body');
+            if(modalBody) {
+                modalBody.innerHTML = popupHTML;
+                setTimeout(function(){
+                    document.getElementById('modal-overlay').style.display = 'flex';
+                }, 500);
+            }
         }
     };
 </script>
@@ -259,21 +289,18 @@ def create_whatsapp_link(row):
         text = f"📅 *Gara {row['Campionato']}*\n{row['Data']}\n📍 {row['Impianto']}\n{row['Squadra Casa']} vs {row['Squadra Ospite']}"
     return f"https://wa.me/?text={quote(text)}"
 
-# ================= GENERATORE HTML CARD (FUNZIONE MANCANTE REINSERITA) =================
+# ================= GENERATORE HTML CARD =================
 def crea_card_html(r, camp, is_focus_mode=False):
-    # Determina se è una partita della "mia" squadra usando gli alias
     is_home = is_target_team(r['Squadra Casa'])
     is_away = is_target_team(r['Squadra Ospite'])
     is_my_match = is_home or is_away
     
-    # Stili testo
     cs = 'class="team-name my-team-text"' if is_home else 'class="team-name"'
     os = 'class="team-name my-team-text"' if is_away else 'class="team-name"'
     
     status_class = "upcoming"
     badge_html = ""
     
-    # Logica Punteggio e Vittoria
     if r['Punteggio']:
         try:
             sc, so = int(r['Set Casa']), int(r['Set Ospite'])
@@ -289,7 +316,6 @@ def crea_card_html(r, camp, is_focus_mode=False):
                 badge_html = '<span class="result-badge badge-played">FINALE</span>'
         except: status_class = "played"
     
-    # Link azioni
     lnk_wa = create_whatsapp_link(r)
     lnk_cal = create_google_calendar_link(r) if not r['Punteggio'] else ""
     lnk_map = r['Maps']
@@ -297,7 +323,6 @@ def crea_card_html(r, camp, is_focus_mode=False):
     btns_html = ""
     if lnk_map: btns_html += f'<a href="{lnk_map}" target="_blank" class="btn btn-map">📍 Mappa</a>'
     
-    # Bottoni extra se è la mia squadra o se sono in modalità generale (per avere dettagli)
     if is_my_match or not is_focus_mode:
         if lnk_cal: btns_html += f'<a href="{lnk_cal}" target="_blank" class="btn btn-cal">📅</a>'
         if lnk_wa: btns_html += f'<a href="{lnk_wa}" target="_blank" class="btn btn-wa">💬</a>'
@@ -318,94 +343,6 @@ def crea_card_html(r, camp, is_focus_mode=False):
         </div>
     </div>
     """
-
-# ================= SCRAPING =================
-def get_match_details_robust(driver, match_url):
-    data_ora_full, data_iso, luogo, link_maps = "Data da definire", "", "Impianto non definito", ""
-    try:
-        driver.get(match_url)
-        time.sleep(0.3)
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-        clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
-        
-        date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:\.]\d{2})', clean_text)
-        if date_pattern:
-            d, o = date_pattern.group(1), date_pattern.group(2)
-            data_ora_full = f"{d} ⏰ {o}"
-            try: data_iso = datetime.strptime(d, "%d/%m/%Y").strftime("%Y-%m-%d")
-            except: pass
-        else:
-            sd = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4})', clean_text)
-            if sd: 
-                data_ora_full = sd.group(1)
-                try: data_iso = datetime.strptime(data_ora_full, "%d/%m/%Y").strftime("%Y-%m-%d")
-                except: pass
-
-        imp = soup.find('div', class_='divImpianto')
-        if imp: luogo = imp.get_text(strip=True)
-        
-        a_map = soup.find('a', href=lambda x: x and ('google.com/maps' in x or 'maps.google' in x))
-        if a_map: 
-            link_maps = a_map['href']
-        elif luogo != "Impianto non definito": 
-            clean_gym = re.sub(r'\s+', ' ', luogo).strip()
-            link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
-    except: pass
-    return data_ora_full, data_iso, luogo, link_maps
-
-def scrape_data():
-    print("🚀 Avvio scraping TOTALE...")
-    chrome_options = Options()
-    chrome_options.add_argument("--headless") 
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
-    driver = webdriver.Chrome(options=chrome_options)
-    all_results, all_standings = [], []
-
-    for nome_camp, id_camp in CAMPIONATI.items():
-        print(f"   Analisi: {nome_camp}...")
-        base_url = "https://www.fipavsalerno.it/mobile/"
-        if "Serie C" in nome_camp or "Serie D" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/"
-        
-        driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}")
-        time.sleep(1.5)
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-        
-        div_giornata = soup.find('div', style="margin-top:7.5em;; text-align:center;")
-        curr_giornata = "N/D"
-        if div_giornata:
-            for el in div_giornata.children:
-                if el.name == 'div' and 'divGiornata' in el.get('class', []): curr_giornata = el.get_text(strip=True)
-                elif el.name == 'a' and 'gara' in el.get('class', []):
-                    c = el.find('div', class_='squadraCasa').get_text(strip=True)
-                    o = el.find('div', class_='squadraOspite').get_text(strip=True)
-                    pt_c = el.find('div', class_='setCasa').get_text(strip=True) if el.find('div', class_='setCasa') else ''
-                    pt_o = el.find('div', class_='setOspite').get_text(strip=True) if el.find('div', class_='setOspite') else ''
-                    c = c.replace(pt_c, '').strip()
-                    o = o.replace(pt_o, '').strip()
-
-                    full_url = urljoin(base_url, el.get('href', ''))
-                    d_ora, d_iso, luogo, maps = get_match_details_robust(driver, full_url)
-                    all_results.append({
-                        'Campionato': nome_camp, 'Giornata': curr_giornata,
-                        'Squadra Casa': c, 'Squadra Ospite': o,
-                        'Punteggio': f"{pt_c}-{pt_o}" if pt_c else "", 
-                        'Data': d_ora, 'DataISO': d_iso, 'Impianto': luogo, 'Maps': maps,
-                        'Set Casa': pt_c, 'Set Ospite': pt_o
-                    })
-        try:
-            driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
-            time.sleep(1)
-            tabs = pd.read_html(StringIO(driver.page_source))
-            if tabs:
-                df_s = tabs[0]
-                df_s['Campionato'] = nome_camp
-                all_standings.append(df_s)
-        except: pass
-
-    driver.quit()
-    return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
 
 # ================= GENERATORE PAGINE =================
 def genera_pagina(df_ris, df_class, filename, mode="APP"):
@@ -519,4 +456,3 @@ if __name__ == "__main__":
     genera_pagina(df_ris, df_class, FILE_APP, mode="APP")
     genera_pagina(df_ris, df_class, FILE_GEN, mode="GENERAL")
     genera_pagina(pd.DataFrame(), pd.DataFrame(), FILE_SCORE, mode="SCORE")
-
