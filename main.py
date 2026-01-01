@@ -127,7 +127,6 @@ CSS_BASE = """
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
         
-        // Se è iOS e non è installata, mostra il suggerimento
         if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
@@ -206,7 +205,6 @@ SCOREBOARD_CODE = """
     .timer-val { font-size: 28px; font-family: monospace; font-weight: bold; color: #fbbf24; }
     .btn-timer { background: #444; border: none; color: white; padding: 5px 15px; border-radius: 5px; margin-top: 5px; cursor: pointer; }
     
-    /* FIX CONTROLS BOTTOM */
     .controls-bottom { display: flex; flex-direction: column; gap: 8px; width: 90%; margin-bottom: 10px; }
     
     .btn-ctrl { 
@@ -487,7 +485,6 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
             nav_links = f'<a href="{FILE_APP}" class="btn-nav" title="Home">🏠</a> <a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
 
     modal_html = ""
-    ios_tip_html = ""
     if is_app:
         modal_html = """
         <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
@@ -508,6 +505,8 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
             <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
         </div>
         """
+    else:
+        ios_tip_html = "" # Niente popup iOS in generale/score
     
     footer_html = f'<div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"></div>' if is_app else ""
 
@@ -554,9 +553,17 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
         campionati_disp = df_class['Campionato'].unique()
         html += '<div class="tab-bar">'
         for i, camp in enumerate(campionati_disp):
-            p = camp.split()
-            n = f"{p[0]} {p[1]}" if len(p) > 1 else camp
-            if "Gir." in camp: n += " " + camp.split("Gir.")[1].strip()
+            # --- MODIFICA NOME TAB LEGGIBILE ---
+            if "Gir." in camp:
+                parts = camp.split("Gir.")
+                base = parts[0].strip().split()
+                # Prende le prime 2 parole (es. "Serie C" o "Under 18")
+                nome_base = f"{base[0]} {base[1]}" if len(base) >= 2 else parts[0]
+                lettera_girone = parts[1].strip()
+                n = f"{nome_base} Gir.{lettera_girone}"
+            else:
+                n = camp
+            
             html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{n}</button>'
         html += '</div>'
 
