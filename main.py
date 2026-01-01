@@ -12,7 +12,6 @@ import os
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
 
-# NOMI SQUADRA (Alias)
 TARGET_TEAM_ALIASES = [
     "TODIS PASTENA VOLLEY",
     "TODIS CS PASTENA VOLLEY",
@@ -28,8 +27,8 @@ URL_LOGO = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volle
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
 CAMPIONATI = {
-    "Serie D  Maschile  Gir.C": "85622",
     "Serie C  Femminile Gir.A": "85471",
+    "Serie D  Maschile Gir.C": "85622",
     "Under 18 Femminile Gir.B": "86850",
     "Under 16 Femminile Gir.A": "86853",
     "Under 14 Femminile Gir.C": "86860",
@@ -108,9 +107,7 @@ CSS_BASE = """
         document.getElementById("content-" + tabIndex).classList.add("active");
         document.getElementById("btn-" + tabIndex).classList.add("active");
     }
-    
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
-    
     window.onload = function() {
         if (!document.title.toUpperCase().includes("TODIS") || document.title.includes("Segnapunti")) return;
         const today = new Date(); today.setHours(0,0,0,0);
@@ -189,26 +186,26 @@ SCOREBOARD_CODE = """
     /* Colonna Centrale */
     .center-panel { 
         background-color: #222; display: flex; flex-direction: column; 
-        justify-content: space-between; align-items: center; padding: 20px 5px; 
+        justify-content: space-between; align-items: center; padding: 10px 5px; 
     }
 
     /* Sets */
-    .sets-box { text-align: center; margin-top: 10px; }
-    .sets-label { font-size: 12px; color: #888; letter-spacing: 2px; }
-    .sets-score { font-size: 40px; font-weight: bold; color: #fff; }
+    .sets-box { text-align: center; margin-top: 5px; }
+    .sets-label { font-size: 10px; color: #888; letter-spacing: 2px; }
+    .sets-score { font-size: 35px; font-weight: bold; color: #fff; }
     .current-set-badge { background: #d32f2f; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-top: 5px; }
 
     /* Timer */
     .timer-box { text-align: center; }
-    .timer-val { font-size: 32px; font-family: monospace; font-weight: bold; color: #fbbf24; }
+    .timer-val { font-size: 28px; font-family: monospace; font-weight: bold; color: #fbbf24; }
     .btn-timer { background: #444; border: none; color: white; padding: 5px 15px; border-radius: 5px; margin-top: 5px; cursor: pointer; }
 
     /* Controls Bottom */
-    .controls-bottom { display: flex; flex-direction: column; gap: 10px; width: 90%; }
-    .btn-ctrl { padding: 10px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; color: white; font-size: 12px; }
-    .btn-adj { background: rgba(255,255,255,0.1); margin-top: 5px; }
+    .controls-bottom { display: flex; flex-direction: column; gap: 8px; width: 90%; margin-bottom: 10px; }
+    .btn-ctrl { padding: 8px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; color: white; font-size: 12px; text-decoration: none; text-align: center; }
     .btn-reset { background: #546e7a; }
     .btn-exit { background: #333; border: 1px solid #555; }
+    .btn-fs { background: #000; border: 1px solid #444; } /* Tasto Fullscreen */
 
     /* Piccoli bottoni +/- sotto il punteggio */
     .fine-tune { display: flex; gap: 20px; margin-top: 10px; }
@@ -255,9 +252,10 @@ SCOREBOARD_CODE = """
         </div>
 
         <div class="controls-bottom">
-            <button class="btn-ctrl" style="background:#2e7d32;" onclick="setServiceManual()">Cambia Battuta</button>
-            <button class="btn-ctrl btn-reset" onclick="resetMatch()">Reset Match</button>
-            <a href="index.html" class="btn-ctrl btn-exit" style="display:block; text-align:center; text-decoration:none;">Esci</a>
+            <button class="btn-ctrl" style="background:#2e7d32;" onclick="setServiceManual()">Battuta</button>
+            <button class="btn-ctrl btn-fs" onclick="toggleFullScreen()">⛶ Full</button>
+            <button class="btn-ctrl btn-reset" onclick="resetMatch()">Reset</button>
+            <a href="index.html" class="btn-ctrl btn-exit">Esci</a>
         </div>
     </div>
 
@@ -282,16 +280,25 @@ SCOREBOARD_CODE = """
     let currentSet = 1;
     let timerInt = null;
     let seconds = 0;
-    let serving = null; // 'Home' or 'Guest'
+    let serving = null; 
 
     // Wake Lock
     async function lockScreen() { try { await navigator.wakeLock.request('screen'); } catch(e){} }
     document.addEventListener('click', lockScreen, {once:true});
 
+    // FULL SCREEN TOGGLE
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(e => { console.log(e); });
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+        }
+    }
+
     // LOGICA PUNTEGGIO
     function addPoint(team) {
         if(team === 'Home') scoreH++; else scoreG++;
-        serving = team; // Chi fa punto va in battuta
+        serving = team; 
         updateUI();
         checkSetWin();
     }
@@ -311,22 +318,15 @@ SCOREBOARD_CODE = """
     // REGOLAMENTO PALLAVOLO
     function checkSetWin() {
         let limit = (currentSet === 5) ? 15 : 25;
-        
-        // Regola vantaggio di 2
         if ((scoreH >= limit && scoreH >= scoreG + 2) || (scoreG >= limit && scoreG >= scoreH + 2)) {
             let winner = (scoreH > scoreG) ? "CASA" : "OSPITI";
-            
             setTimeout(() => {
                 if (confirm(`SET TERMINATO!\\nVince: ${winner}\\n\\nIniziare il prossimo set?`)) {
                     if (scoreH > scoreG) setsH++; else setsG++;
-                    
                     if (setsH === 3 || setsG === 3) {
                         alert(`PARTITA FINITA!\\nVince: ${winner}`);
-                        // Non resetto automatico, lascio vedere il risultato
                     } else {
-                        // Nuovo Set
-                        currentSet++;
-                        scoreH = 0; scoreG = 0;
+                        currentSet++; scoreH = 0; scoreG = 0;
                         stopTimer(); seconds = 0; updateTimer();
                         updateUI();
                     }
@@ -348,14 +348,11 @@ SCOREBOARD_CODE = """
         document.getElementById('setsHome').innerText = setsH;
         document.getElementById('setsGuest').innerText = setsG;
         document.getElementById('setNum').innerText = "SET " + currentSet;
-
-        // Battuta
         document.getElementById('colHome').classList.remove('serving');
         document.getElementById('colGuest').classList.remove('serving');
         if(serving) document.getElementById('col' + serving).classList.add('serving');
     }
 
-    // TIMER
     function toggleTimer() { if(timerInt) stopTimer(); else startTimer(); }
     function startTimer() { 
         document.getElementById('btnTimer').innerText = "STOP"; 
@@ -653,4 +650,3 @@ if __name__ == "__main__":
     genera_pagina(df_ris, df_class, FILE_APP, mode="APP")
     genera_pagina(df_ris, df_class, FILE_GEN, mode="GENERAL")
     genera_pagina(pd.DataFrame(), pd.DataFrame(), FILE_SCORE, mode="SCORE")
-
