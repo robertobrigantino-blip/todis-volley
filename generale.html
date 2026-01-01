@@ -13,17 +13,19 @@
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
     
     /* Header */
-    .app-header { background-color: #d32f2f; color: white; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; }
+    .app-header { background-color: #d32f2f; color: white; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; }
     .header-left { display: flex; align-items: center; gap: 10px; }
-    .app-header img { height: 38px; width: 38px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
-    .app-header h1 { margin: 0; font-size: 15px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
-    .last-update { font-size: 10px; opacity: 0.9; font-weight: normal; }
+    .app-header img { height: 35px; width: 35px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
+    .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
+    .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
     
-    /* Switch Button Header */
-    .btn-switch { background: white; color: #d32f2f; text-decoration: none; font-size: 11px; font-weight: bold; padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    /* Navigazione Header */
+    .nav-buttons { display: flex; gap: 8px; }
+    .btn-nav { background: rgba(255,255,255,0.2); color: white; text-decoration: none; font-size: 18px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); }
+    .btn-nav.active { background: white; color: #d32f2f; }
 
     /* Tabs */
-    .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 62px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
+    .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 54px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
     .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
 
@@ -79,7 +81,6 @@
     .close-btn { background: #eee; border: none; font-size: 24px; padding: 0 10px; border-radius: 5px; color: #555; cursor: pointer; }
     .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
     
-    /* Footer Counter */
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
 </style>
@@ -95,33 +96,23 @@
     
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     
-    // Logica POPUP Rinforzata
     window.onload = function() {
-        // Controllo se dobbiamo mostrare il popup (solo in index.html)
-        if (!document.title.toUpperCase().includes("TODIS")) return;
+        if (!document.title.toUpperCase().includes("TODIS") || document.title.includes("Segnapunti")) return;
 
         const today = new Date();
         today.setHours(0,0,0,0);
         let nextMatches = {};
-        
-        // Seleziona tutte le card "upcoming"
         const allMatches = document.querySelectorAll('.match-card.upcoming');
         
         allMatches.forEach(card => {
-            // Controlla se è una partita della "mia squadra"
             const isMyTeam = card.getAttribute('data-my-team');
-            
             if(isMyTeam === 'true') {
                 const dateStr = card.getAttribute('data-date-iso');
                 const campName = card.getAttribute('data-camp');
-                
                 if (dateStr && campName) {
                     const parts = dateStr.split('-');
-                    // Forza data locale
                     const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
-                    
                     if (matchDate >= today) {
-                        // Se non ho ancora una partita per questo campionato o se questa è più vicina
                         if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
                             nextMatches[campName] = { date: matchDate, html: card.outerHTML };
                         }
@@ -138,29 +129,31 @@
             count++;
         }
         
-        // Inietta HTML e mostra
         if (count > 0) {
             const modalBody = document.getElementById('modal-body');
             if(modalBody) {
                 modalBody.innerHTML = popupHTML;
                 setTimeout(function(){
                     document.getElementById('modal-overlay').style.display = 'flex';
-                }, 500); // Ritardo di mezzo secondo per fluidità
+                }, 500);
             }
         }
     };
 </script>
 
         <style>.app-header { background-color: #1976D2; }</style> 
+         
     </head>
     <body>
         
         <div class="app-header">
             <div class="header-left">
                 <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" alt="Logo">
-                <div><h1>Risultati Completi</h1><div class="last-update">01/01 10:43</div></div>
+                <div><h1>Risultati Completi</h1><div class="last-update">01/01 10:58</div></div>
             </div>
-            <a href="index.html" class="btn-switch">🏠 Squadra</a>
+            <div class="nav-buttons">
+                <a href="index.html" class="btn-nav" title="Home">🏠</a> <a href="segnapunti.html" class="btn-nav" title="Segnapunti">🔢</a>
+            </div>
         </div>
     <div class="tab-bar"><button id="btn-0" class="tab-btn active" onclick="openTab(0)">Serie D C</button><button id="btn-1" class="tab-btn " onclick="openTab(1)">Serie C A</button><button id="btn-2" class="tab-btn " onclick="openTab(2)">Under 18 B</button><button id="btn-3" class="tab-btn " onclick="openTab(3)">Under 16 A</button><button id="btn-4" class="tab-btn " onclick="openTab(4)">Under 14 C</button></div><div id="content-0" class="tab-content active"><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>POLISPORTIVA SPORT FOR LIFE</td><td><b>25</b></td><td>9</td><td>9</td><td>0</td><td>27</td><td>6</td></tr><tr ><td>2</td><td>U.S. SALERNO OFFICIAL-MINERVA</td><td><b>20</b></td><td>9</td><td>7</td><td>2</td><td>24</td><td>12</td></tr><tr ><td>3</td><td>NOCERA VOLLEY</td><td><b>20</b></td><td>9</td><td>7</td><td>2</td><td>23</td><td>14</td></tr><tr ><td>4</td><td>NUOVA GS OLIMPICA</td><td><b>14</b></td><td>9</td><td>5</td><td>4</td><td>17</td><td>18</td></tr><tr ><td>5</td><td>TODIS CS PASTENA VOLLEY</td><td><b>12</b></td><td>9</td><td>4</td><td>5</td><td>17</td><td>20</td></tr><tr ><td>6</td><td>PALL BATTIPAGLIA</td><td><b>12</b></td><td>9</td><td>3</td><td>6</td><td>20</td><td>22</td></tr><tr ><td>7</td><td>ZETA VOLLEY STRIANO</td><td><b>11</b></td><td>9</td><td>4</td><td>5</td><td>17</td><td>22</td></tr><tr ><td>8</td><td>ISV PRIMA COLTA</td><td><b>10</b></td><td>9</td><td>3</td><td>6</td><td>17</td><td>22</td></tr><tr ><td>9</td><td>ASD ACCA VOLLEY EBOLI</td><td><b>7</b></td><td>9</td><td>2</td><td>7</td><td>14</td><td>24</td></tr><tr ><td>10</td><td>MURATE VOLLEY</td><td><b>4</b></td><td>9</td><td>1</td><td>8</td><td>10</td><td>26</td></tr></tbody></table></div></div><h2>📅 Calendario</h2><h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 1</h3>
     <div class="match-card played" data-date-iso="2025-10-26" data-camp="Serie D  Maschile  Gir.C" data-my-team="false">
