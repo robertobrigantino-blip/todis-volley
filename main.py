@@ -11,15 +11,14 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_SQUADRA_TARGET = "TODIS PASTENA VOLLEY"
-FILE_APP = "index.html"      # Vista Focus Squadra
-FILE_GEN = "generale.html"   # Vista Completa Campionati
+FILE_APP = "index.html"        # Home Squadra
+FILE_GEN = "generale.html"     # Campionati Completi
+FILE_SCORE = "segnapunti.html" # Nuovo Segnapunti
 
 # URL LOGO (RAW da GitHub)
 URL_LOGO = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg"
 
-# URL CONTATORE (Basato sul tuo repository)
-# Usa il servizio gratuito hits.seeyoufarm.com
-# NUOVO URL CONTATORE (Più affidabile)
+# URL CONTATORE
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
 # ELENCO COMPLETO CAMPIONATI
@@ -37,17 +36,19 @@ CSS_BASE = """
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
     
     /* Header */
-    .app-header { background-color: #d32f2f; color: white; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; }
+    .app-header { background-color: #d32f2f; color: white; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; }
     .header-left { display: flex; align-items: center; gap: 10px; }
-    .app-header img { height: 38px; width: 38px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
-    .app-header h1 { margin: 0; font-size: 15px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
-    .last-update { font-size: 10px; opacity: 0.9; font-weight: normal; }
+    .app-header img { height: 35px; width: 35px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
+    .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
+    .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
     
-    /* Switch Button Header */
-    .btn-switch { background: white; color: #d32f2f; text-decoration: none; font-size: 11px; font-weight: bold; padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    /* Navigazione Header */
+    .nav-buttons { display: flex; gap: 8px; }
+    .btn-nav { background: rgba(255,255,255,0.2); color: white; text-decoration: none; font-size: 18px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); }
+    .btn-nav.active { background: white; color: #d32f2f; }
 
     /* Tabs */
-    .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 62px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
+    .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 54px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
     .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
 
@@ -103,7 +104,6 @@ CSS_BASE = """
     .close-btn { background: #eee; border: none; font-size: 24px; padding: 0 10px; border-radius: 5px; color: #555; cursor: pointer; }
     .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
     
-    /* Footer Counter */
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
 </style>
@@ -119,33 +119,23 @@ CSS_BASE = """
     
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     
-    // Logica POPUP Rinforzata
     window.onload = function() {
-        // Controllo se dobbiamo mostrare il popup (solo in index.html)
-        if (!document.title.toUpperCase().includes("TODIS")) return;
+        if (!document.title.toUpperCase().includes("TODIS") || document.title.includes("Segnapunti")) return;
 
         const today = new Date();
         today.setHours(0,0,0,0);
         let nextMatches = {};
-        
-        // Seleziona tutte le card "upcoming"
         const allMatches = document.querySelectorAll('.match-card.upcoming');
         
         allMatches.forEach(card => {
-            // Controlla se è una partita della "mia squadra"
             const isMyTeam = card.getAttribute('data-my-team');
-            
             if(isMyTeam === 'true') {
                 const dateStr = card.getAttribute('data-date-iso');
                 const campName = card.getAttribute('data-camp');
-                
                 if (dateStr && campName) {
                     const parts = dateStr.split('-');
-                    // Forza data locale
                     const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
-                    
                     if (matchDate >= today) {
-                        // Se non ho ancora una partita per questo campionato o se questa è più vicina
                         if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
                             nextMatches[campName] = { date: matchDate, html: card.outerHTML };
                         }
@@ -162,17 +152,207 @@ CSS_BASE = """
             count++;
         }
         
-        // Inietta HTML e mostra
         if (count > 0) {
             const modalBody = document.getElementById('modal-body');
             if(modalBody) {
                 modalBody.innerHTML = popupHTML;
                 setTimeout(function(){
                     document.getElementById('modal-overlay').style.display = 'flex';
-                }, 500); // Ritardo di mezzo secondo per fluidità
+                }, 500);
             }
         }
     };
+</script>
+"""
+
+# ================= CSS/JS SEGNAPUNTI =================
+SCOREBOARD_CODE = """
+<style>
+    /* Stili specifici per il segnapunti */
+    .sb-container { max-width: 600px; margin: 0 auto; padding: 10px; }
+    
+    /* Timer */
+    .timer-card { background: #333; color: #fff; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    .timer-display { font-size: 36px; font-weight: bold; font-family: monospace; letter-spacing: 2px; }
+    .timer-controls { margin-top: 10px; display: flex; justify-content: center; gap: 10px; }
+    .btn-timer { background: #555; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+    .btn-timer.active { background: #d32f2f; }
+
+    /* Score Area */
+    .score-area { display: flex; gap: 10px; margin-bottom: 20px; }
+    .team-col { flex: 1; background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-top: 5px solid #ddd; }
+    .team-col.serving { border-top-color: #2e7d32; background: #e8f5e9; }
+    
+    .team-name-input { width: 100%; border: none; text-align: center; font-size: 16px; font-weight: bold; color: #333; background: transparent; margin-bottom: 10px; padding: 5px; border-bottom: 1px dashed #ccc; }
+    .score-big { font-size: 70px; font-weight: 800; color: #333; line-height: 1; margin: 10px 0; user-select: none; }
+    
+    .score-controls { display: flex; justify-content: center; gap: 10px; }
+    .btn-score { width: 40px; height: 40px; border-radius: 50%; border: none; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .btn-plus { background: #d32f2f; color: white; }
+    .btn-minus { background: #eee; color: #555; }
+
+    .ball-icon { font-size: 14px; cursor: pointer; opacity: 0.2; }
+    .serving .ball-icon { opacity: 1; }
+
+    /* Sets */
+    .sets-display { display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 20px; font-size: 18px; font-weight: bold; background: white; padding: 10px; border-radius: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .set-score { font-size: 24px; color: #d32f2f; }
+
+    /* Footer Controls */
+    .game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+    .btn-ctrl { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+    .btn-new-set { background: #1976D2; color: white; }
+    .btn-reset { background: #607D8B; color: white; }
+</style>
+
+<div class="sb-container">
+    <!-- Timer -->
+    <div class="timer-card">
+        <div class="timer-display" id="timer">00:00</div>
+        <div class="timer-controls">
+            <button class="btn-timer active" onclick="toggleTimer()" id="btnStartStop">▶ Start</button>
+            <button class="btn-timer" onclick="resetTimer()">↺ Reset</button>
+        </div>
+    </div>
+
+    <!-- Set Counter -->
+    <div class="sets-display">
+        <span>SET:</span>
+        <span id="setsHome" class="set-score">0</span>
+        <span>-</span>
+        <span id="setsGuest" class="set-score">0</span>
+    </div>
+
+    <!-- Scoreboard -->
+    <div class="score-area">
+        <!-- Home -->
+        <div class="team-col" id="colHome" onclick="setService('Home')">
+            <div class="ball-icon">🏐 Servizio</div>
+            <input type="text" class="team-name-input" value="CASA">
+            <div class="score-big" id="scoreHome">0</div>
+            <div class="score-controls">
+                <button class="btn-score btn-minus" onclick="updateScore('Home', -1); event.stopPropagation()">-</button>
+                <button class="btn-score btn-plus" onclick="updateScore('Home', 1); event.stopPropagation()">+</button>
+            </div>
+        </div>
+
+        <!-- Guest -->
+        <div class="team-col" id="colGuest" onclick="setService('Guest')">
+            <div class="ball-icon">🏐 Servizio</div>
+            <input type="text" class="team-name-input" value="OSPITI">
+            <div class="score-big" id="scoreGuest">0</div>
+            <div class="score-controls">
+                <button class="btn-score btn-minus" onclick="updateScore('Guest', -1); event.stopPropagation()">-</button>
+                <button class="btn-score btn-plus" onclick="updateScore('Guest', 1); event.stopPropagation()">+</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="game-controls">
+        <button class="btn-ctrl btn-new-set" onclick="endSet()">Fine Set 🏁</button>
+        <button class="btn-ctrl btn-reset" onclick="resetMatch()">Nuova Partita 🔄</button>
+    </div>
+    
+    <div style="text-align:center; margin-top:20px; font-size:11px; color:#777;">
+        💡 Tocca il box squadra per assegnare la battuta.<br>
+        Lo schermo resterà attivo.
+    </div>
+</div>
+
+<script>
+    let scoreH = 0, scoreG = 0;
+    let setsH = 0, setsG = 0;
+    let timerInterval;
+    let seconds = 0;
+    let isRunning = false;
+    let wakeLock = null;
+
+    // Wake Lock (Tiene schermo acceso)
+    async function requestWakeLock() {
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+        } catch (err) {}
+    }
+    document.addEventListener('click', requestWakeLock, {once:true});
+
+    function updateScore(team, delta) {
+        if (team === 'Home') {
+            scoreH = Math.max(0, scoreH + delta);
+            document.getElementById('scoreHome').innerText = scoreH;
+        } else {
+            scoreG = Math.max(0, scoreG + delta);
+            document.getElementById('scoreGuest').innerText = scoreG;
+        }
+    }
+
+    function setService(team) {
+        document.getElementById('colHome').classList.remove('serving');
+        document.getElementById('colGuest').classList.remove('serving');
+        document.getElementById('col' + team).classList.add('serving');
+    }
+
+    function endSet() {
+        if (!confirm("Chiudere il set corrente e aggiornare il conteggio set?")) return;
+        
+        if (scoreH > scoreG) setsH++;
+        else if (scoreG > scoreH) setsG++;
+        
+        scoreH = 0; scoreG = 0;
+        updateUI();
+    }
+
+    function resetMatch() {
+        if (!confirm("Azzerare tutto e iniziare nuova partita?")) return;
+        scoreH = 0; scoreG = 0;
+        setsH = 0; setsG = 0;
+        seconds = 0;
+        stopTimer();
+        updateTimerDisplay();
+        updateUI();
+    }
+
+    function updateUI() {
+        document.getElementById('scoreHome').innerText = scoreH;
+        document.getElementById('scoreGuest').innerText = scoreG;
+        document.getElementById('setsHome').innerText = setsH;
+        document.getElementById('setsGuest').innerText = setsG;
+    }
+
+    // Timer Logic
+    function toggleTimer() {
+        if (isRunning) stopTimer();
+        else startTimer();
+    }
+
+    function startTimer() {
+        isRunning = true;
+        document.getElementById('btnStartStop').innerText = "⏸ Stop";
+        document.getElementById('btnStartStop').classList.remove('active');
+        timerInterval = setInterval(() => {
+            seconds++;
+            updateTimerDisplay();
+        }, 1000);
+    }
+
+    function stopTimer() {
+        isRunning = false;
+        document.getElementById('btnStartStop').innerText = "▶ Start";
+        document.getElementById('btnStartStop').classList.add('active');
+        clearInterval(timerInterval);
+    }
+
+    function resetTimer() {
+        stopTimer();
+        seconds = 0;
+        updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        document.getElementById('timer').innerText = `${m}:${s}`;
+    }
 </script>
 """
 
@@ -248,7 +428,7 @@ def scrape_data():
     for nome_camp, id_camp in CAMPIONATI.items():
         print(f"   Analisi: {nome_camp}...")
         base_url = "https://www.fipavsalerno.it/mobile/"
-        if "Serie C" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/"
+        if "Serie C" in nome_camp or "Serie D" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/"
         
         driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}")
         time.sleep(1.5)
@@ -348,10 +528,26 @@ def crea_card_html(r, camp, is_focus_mode=False):
 def genera_pagina(df_ris, df_class, filename, mode="APP"):
     print(f"📄 Generazione {filename} (Mode: {mode})...")
     is_app = (mode == "APP")
-    title = NOME_SQUADRA_TARGET if is_app else "Risultati Completi"
+    is_score = (mode == "SCORE")
     
+    title = NOME_SQUADRA_TARGET
+    if is_score: title = "Segnapunti"
+    elif not is_app: title = "Risultati Completi"
+    
+    # Header Icons Logic
+    nav_links = ""
+    if is_score:
+        nav_links = f'<a href="{FILE_APP}" class="btn-nav">🏠</a>'
+    else:
+        # Se siamo in APP, link a Generale e Segnapunti
+        if is_app:
+            nav_links = f'<a href="{FILE_GEN}" class="btn-nav" title="Tutti i risultati">🌍</a> <a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
+        else:
+            # Se siamo in Generale, link a Home e Segnapunti
+            nav_links = f'<a href="{FILE_APP}" class="btn-nav" title="Home">🏠</a> <a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
+
+    modal_html = ""
     if is_app:
-        header_switch = f'<a href="{FILE_GEN}" class="btn-switch">🌍 Vedi Tutto</a>'
         modal_html = """
         <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
             <div class="modal-content" onclick="event.stopPropagation()">
@@ -360,16 +556,8 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
                 <div style="text-align:center; margin-top:15px;"><button onclick="closeModal()" style="background:#d32f2f; color:white; border:none; padding:8px 20px; border-radius:20px;">Chiudi</button></div>
             </div>
         </div>"""
-        # Aggiunta Contatore Visite nel Footer solo nell'App principale
-        footer_html = f"""
-        <div class="footer-counter">
-            <img src="{URL_COUNTER}" alt="Contatore Visite">
-        </div>
-        """
-    else:
-        header_switch = f'<a href="{FILE_APP}" class="btn-switch">🏠 Squadra</a>'
-        modal_html = ""
-        footer_html = ""
+    
+    footer_html = f'<div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"></div>' if is_app else ""
 
     html = f"""<!DOCTYPE html>
     <html lang="it">
@@ -382,7 +570,8 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
         <link rel="apple-touch-icon" href="{URL_LOGO}">
         <meta name="apple-mobile-web-app-capable" content="yes">
         {CSS_BASE}
-        {'<style>.app-header { background-color: #1976D2; }</style>' if not is_app else ''} 
+        {'<style>.app-header { background-color: #1976D2; }</style>' if mode == "GENERAL" else ''} 
+        {'<style>.app-header { background-color: #333; }</style>' if is_score else ''} 
     </head>
     <body>
         {modal_html}
@@ -391,64 +580,69 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
                 <img src="{URL_LOGO}" alt="Logo">
                 <div><h1>{title}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
             </div>
-            {header_switch}
+            <div class="nav-buttons">
+                {nav_links}
+            </div>
         </div>
     """
 
-    campionati_disp = df_class['Campionato'].unique()
-    html += '<div class="tab-bar">'
-    for i, camp in enumerate(campionati_disp):
-        p = camp.split()
-        n = f"{p[0]} {p[1]}" if len(p) > 1 else camp
-        if "Gir." in camp: n += " " + camp.split("Gir.")[1].strip()
-        html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{n}</button>'
-    html += '</div>'
-
-    for i, camp in enumerate(campionati_disp):
-        html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
-        
-        # CLASSIFICA
-        html += f"<h2>🏆 Classifica</h2>"
-        df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
-        html += """<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>"""
-        for _, r in df_c.iterrows():
-            cls = 'class="my-team-row"' if NOME_SQUADRA_TARGET.upper() in str(r['Squadra']).upper() else ''
-            html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
-        html += '</tbody></table></div></div>'
-
-        # PARTITE
-        html += f"<h2>📅 Calendario</h2>"
-        df_r = df_ris[df_ris['Campionato'] == camp]
-        
-        if is_app:
-            df_r = df_r[
-                (df_r['Squadra Casa'].str.contains(NOME_SQUADRA_TARGET, case=False)) | 
-                (df_r['Squadra Ospite'].str.contains(NOME_SQUADRA_TARGET, case=False))
-            ]
-        
-        if df_r.empty:
-            html += "<p>Nessuna partita trovata.</p>"
-        else:
-            if not is_app:
-                giornate = df_r['Giornata'].unique()
-                for g in giornate:
-                    html += f'<h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">{g}</h3>'
-                    for _, r in df_r[df_r['Giornata'] == g].iterrows():
-                         html += crea_card_html(r, camp, is_app)
-            else:
-                for _, r in df_r.iterrows():
-                    html += crea_card_html(r, camp, is_app)
-
+    if is_score:
+        html += SCOREBOARD_CODE # Inserisce il codice del segnapunti
+    else:
+        # Codice Standard per Classifiche e Partite
+        campionati_disp = df_class['Campionato'].unique()
+        html += '<div class="tab-bar">'
+        for i, camp in enumerate(campionati_disp):
+            p = camp.split()
+            n = f"{p[0]} {p[1]}" if len(p) > 1 else camp
+            if "Gir." in camp: n += " " + camp.split("Gir.")[1].strip()
+            html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{n}</button>'
         html += '</div>'
 
-    html += footer_html # Inserimento contatore visite
+        for i, camp in enumerate(campionati_disp):
+            html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
+            
+            html += f"<h2>🏆 Classifica</h2>"
+            df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
+            html += """<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>"""
+            for _, r in df_c.iterrows():
+                cls = 'class="my-team-row"' if NOME_SQUADRA_TARGET.upper() in str(r['Squadra']).upper() else ''
+                html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
+            html += '</tbody></table></div></div>'
+
+            html += f"<h2>📅 Calendario</h2>"
+            df_r = df_ris[df_ris['Campionato'] == camp]
+            
+            if is_app:
+                df_r = df_r[
+                    (df_r['Squadra Casa'].str.contains(NOME_SQUADRA_TARGET, case=False)) | 
+                    (df_r['Squadra Ospite'].str.contains(NOME_SQUADRA_TARGET, case=False))
+                ]
+            
+            if df_r.empty:
+                html += "<p>Nessuna partita trovata.</p>"
+            else:
+                if not is_app:
+                    giornate = df_r['Giornata'].unique()
+                    for g in giornate:
+                        html += f'<h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">{g}</h3>'
+                        for _, r in df_r[df_r['Giornata'] == g].iterrows():
+                             html += crea_card_html(r, camp, is_app)
+                else:
+                    for _, r in df_r.iterrows():
+                        html += crea_card_html(r, camp, is_app)
+            html += '</div>'
+
+    html += footer_html
     html += "</body></html>"
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
     print(f"✅ Creato: {filename}")
 
 if __name__ == "__main__":
     df_ris, df_class = scrape_data()
+    # 1. Genera App Squadra
     genera_pagina(df_ris, df_class, FILE_APP, mode="APP")
+    # 2. Genera Vista Generale
     genera_pagina(df_ris, df_class, FILE_GEN, mode="GENERAL")
-
-
+    # 3. Genera Segnapunti
+    genera_pagina(pd.DataFrame(), pd.DataFrame(), FILE_SCORE, mode="SCORE")
