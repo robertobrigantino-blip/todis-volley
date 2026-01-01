@@ -4,10 +4,16 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <meta name="theme-color" content="#d32f2f">
+        
+        <!-- APPLE IOS META TAGS SPECIFICI -->
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="Todis Volley">
+        
         <title>Segnapunti</title>
         <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
         <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
-        <meta name="apple-mobile-web-app-capable" content="yes">
+        
         <!-- PWA Manifest -->
         <link rel="manifest" href="manifest.json">
         
@@ -65,6 +71,11 @@
     .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
+    
+    /* IOS INSTALL TIP */
+    .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
+    .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
+    @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
 </style>
 <script>
     if ('serviceWorker' in navigator) {
@@ -83,8 +94,18 @@
     }
     
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
-    
+    function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
+
     window.onload = function() {
+        // iOS Detection e Popup Installazione
+        const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
+        const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+        
+        // Se è iOS e non è installata, mostra il suggerimento
+        if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
+            setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
+        }
+
         if (!document.title.toUpperCase().includes("TODIS") || document.title.includes("Segnapunti")) return;
 
         const today = new Date();
@@ -134,6 +155,7 @@
     </head>
     <body>
         
+        
     
 <style>
     body { background-color: #121212; color: white; overflow: hidden; margin: 0; padding: 0; }
@@ -177,8 +199,8 @@
         font-size: 12px; 
         text-decoration: none; 
         text-align: center; 
-        display: block; /* FIX ALLINEAMENTO */
-        box-sizing: border-box; /* FIX DIMENSIONI */
+        display: block; 
+        box-sizing: border-box; 
         font-family: inherit;
     }
     
