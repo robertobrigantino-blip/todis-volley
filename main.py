@@ -27,8 +27,8 @@ URL_LOGO = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volle
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
 CAMPIONATI = {
-    "Serie C  Femminile Gir.A": "85471",
     "Serie D  Maschile Gir.C": "85622",
+    "Serie C  Femminile Gir.A": "85471",
     "Under 18 Femminile Gir.B": "86850",
     "Under 16 Femminile Gir.A": "86853",
     "Under 14 Femminile Gir.C": "86860",
@@ -519,3 +519,4 @@ if __name__ == "__main__":
     genera_pagina(df_ris, df_class, FILE_APP, mode="APP")
     genera_pagina(df_ris, df_class, FILE_GEN, mode="GENERAL")
     genera_pagina(pd.DataFrame(), pd.DataFrame(), FILE_SCORE, mode="SCORE")
+
