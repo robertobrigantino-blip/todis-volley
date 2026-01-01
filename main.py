@@ -27,7 +27,7 @@ URL_LOGO = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volle
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
 CAMPIONATI = {
-    "Serie D  Maschile  Gir.C": "85622",
+    "Serie D  Maschile Gir.C": "85622",
     "Serie C  Femminile Gir.A": "85471",
     "Under 18 Femminile Gir.B": "86850",
     "Under 16 Femminile Gir.A": "86853",
@@ -99,14 +99,9 @@ CSS_BASE = """
     .footer-counter img { height: 20px; vertical-align: middle; }
 </style>
 <script>
-    // --- PWA SERVICE WORKER REGISTRATION (Nuovo) ---
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').then(registration => {
-                console.log('ServiceWorker registration successful');
-            }, err => {
-                console.log('ServiceWorker registration failed: ', err);
-            });
+            navigator.serviceWorker.register('sw.js');
         });
     }
 
@@ -172,28 +167,53 @@ SCOREBOARD_CODE = """
     body { background-color: #121212; color: white; overflow: hidden; margin: 0; padding: 0; }
     .rotate-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; }
     @media (orientation: portrait) { .rotate-overlay { display: flex; } .sb-container { display: none; } }
+    
     .sb-container { display: grid; grid-template-columns: 1fr 180px 1fr; height: 100vh; width: 100vw; }
+    
     .team-panel { display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; cursor: pointer; transition: background 0.2s; }
     .team-home { background-color: #1e3a8a; border-right: 2px solid #333; }
     .team-guest { background-color: #b91c1c; border-left: 2px solid #333; }
     .team-home:active, .team-guest:active { opacity: 0.9; }
+    
     .team-name-input { background: transparent; border: none; color: rgba(255,255,255,0.8); font-size: 24px; font-weight: bold; text-align: center; width: 80%; margin-bottom: 10px; text-transform: uppercase; }
     .score-display { font-size: 180px; font-weight: 800; line-height: 1; user-select: none; }
+    
     .service-ball { font-size: 30px; position: absolute; top: 20px; opacity: 0.1; transition: opacity 0.3s; }
     .serving .service-ball { opacity: 1; }
+    
     .center-panel { background-color: #222; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 10px 5px; }
     .sets-box { text-align: center; margin-top: 5px; }
     .sets-label { font-size: 10px; color: #888; letter-spacing: 2px; }
     .sets-score { font-size: 35px; font-weight: bold; color: #fff; }
     .current-set-badge { background: #d32f2f; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-top: 5px; }
+    
     .timer-box { text-align: center; }
     .timer-val { font-size: 28px; font-family: monospace; font-weight: bold; color: #fbbf24; }
     .btn-timer { background: #444; border: none; color: white; padding: 5px 15px; border-radius: 5px; margin-top: 5px; cursor: pointer; }
+    
+    /* FIX CONTROLS BOTTOM */
     .controls-bottom { display: flex; flex-direction: column; gap: 8px; width: 90%; margin-bottom: 10px; }
-    .btn-ctrl { padding: 8px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; color: white; font-size: 12px; text-decoration: none; text-align: center; }
+    
+    .btn-ctrl { 
+        padding: 10px; 
+        border: none; 
+        border-radius: 5px; 
+        font-weight: bold; 
+        cursor: pointer; 
+        width: 100%; 
+        color: white; 
+        font-size: 12px; 
+        text-decoration: none; 
+        text-align: center; 
+        display: block; /* FIX ALLINEAMENTO */
+        box-sizing: border-box; /* FIX DIMENSIONI */
+        font-family: inherit;
+    }
+    
     .btn-reset { background: #546e7a; }
     .btn-exit { background: #333; border: 1px solid #555; }
     .btn-fs { background: #000; border: 1px solid #444; }
+    
     .fine-tune { display: flex; gap: 20px; margin-top: 10px; }
     .btn-tune { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); background: transparent; color: white; font-size: 20px; cursor: pointer; }
 </style>
@@ -343,6 +363,94 @@ def crea_card_html(r, camp, is_focus_mode=False):
         </div>
     </div>
     """
+
+# ================= SCRAPING =================
+def get_match_details_robust(driver, match_url):
+    data_ora_full, data_iso, luogo, link_maps = "Data da definire", "", "Impianto non definito", ""
+    try:
+        driver.get(match_url)
+        time.sleep(0.3)
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
+        
+        date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:\.]\d{2})', clean_text)
+        if date_pattern:
+            d, o = date_pattern.group(1), date_pattern.group(2)
+            data_ora_full = f"{d} ⏰ {o}"
+            try: data_iso = datetime.strptime(d, "%d/%m/%Y").strftime("%Y-%m-%d")
+            except: pass
+        else:
+            sd = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4})', clean_text)
+            if sd: 
+                data_ora_full = sd.group(1)
+                try: data_iso = datetime.strptime(data_ora_full, "%d/%m/%Y").strftime("%Y-%m-%d")
+                except: pass
+
+        imp = soup.find('div', class_='divImpianto')
+        if imp: luogo = imp.get_text(strip=True)
+        
+        a_map = soup.find('a', href=lambda x: x and ('google.com/maps' in x or 'maps.google' in x))
+        if a_map: 
+            link_maps = a_map['href']
+        elif luogo != "Impianto non definito": 
+            clean_gym = re.sub(r'\s+', ' ', luogo).strip()
+            link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
+    except: pass
+    return data_ora_full, data_iso, luogo, link_maps
+
+def scrape_data():
+    print("🚀 Avvio scraping TOTALE...")
+    chrome_options = Options()
+    chrome_options.add_argument("--headless") 
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+    driver = webdriver.Chrome(options=chrome_options)
+    all_results, all_standings = [], []
+
+    for nome_camp, id_camp in CAMPIONATI.items():
+        print(f"   Analisi: {nome_camp}...")
+        base_url = "https://www.fipavsalerno.it/mobile/"
+        if "Serie C" in nome_camp or "Serie D" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/"
+        
+        driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}")
+        time.sleep(1.5)
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        
+        div_giornata = soup.find('div', style="margin-top:7.5em;; text-align:center;")
+        curr_giornata = "N/D"
+        if div_giornata:
+            for el in div_giornata.children:
+                if el.name == 'div' and 'divGiornata' in el.get('class', []): curr_giornata = el.get_text(strip=True)
+                elif el.name == 'a' and 'gara' in el.get('class', []):
+                    c = el.find('div', class_='squadraCasa').get_text(strip=True)
+                    o = el.find('div', class_='squadraOspite').get_text(strip=True)
+                    pt_c = el.find('div', class_='setCasa').get_text(strip=True) if el.find('div', class_='setCasa') else ''
+                    pt_o = el.find('div', class_='setOspite').get_text(strip=True) if el.find('div', class_='setOspite') else ''
+                    c = c.replace(pt_c, '').strip()
+                    o = o.replace(pt_o, '').strip()
+
+                    full_url = urljoin(base_url, el.get('href', ''))
+                    d_ora, d_iso, luogo, maps = get_match_details_robust(driver, full_url)
+                    all_results.append({
+                        'Campionato': nome_camp, 'Giornata': curr_giornata,
+                        'Squadra Casa': c, 'Squadra Ospite': o,
+                        'Punteggio': f"{pt_c}-{pt_o}" if pt_c else "", 
+                        'Data': d_ora, 'DataISO': d_iso, 'Impianto': luogo, 'Maps': maps,
+                        'Set Casa': pt_c, 'Set Ospite': pt_o
+                    })
+        try:
+            driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
+            time.sleep(1)
+            tabs = pd.read_html(StringIO(driver.page_source))
+            if tabs:
+                df_s = tabs[0]
+                df_s['Campionato'] = nome_camp
+                all_standings.append(df_s)
+        except: pass
+
+    driver.quit()
+    return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
 
 # ================= GENERATORE PAGINE =================
 def genera_pagina(df_ris, df_class, filename, mode="APP"):
