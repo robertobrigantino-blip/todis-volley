@@ -27,8 +27,8 @@ URL_LOGO = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volle
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
 CAMPIONATI = {
-    "Serie D  Maschile  Gir.C": "85622",
     "Serie C  Femminile Gir.A": "85471",
+    "Serie D  Maschile Gir.C": "85622",
     "Under 18 Femminile Gir.B": "86850",
     "Under 16 Femminile Gir.A": "86853",
     "Under 14 Femminile Gir.C": "86860",
@@ -259,6 +259,66 @@ def create_whatsapp_link(row):
         text = f"📅 *Gara {row['Campionato']}*\n{row['Data']}\n📍 {row['Impianto']}\n{row['Squadra Casa']} vs {row['Squadra Ospite']}"
     return f"https://wa.me/?text={quote(text)}"
 
+# ================= GENERATORE HTML CARD (FUNZIONE MANCANTE REINSERITA) =================
+def crea_card_html(r, camp, is_focus_mode=False):
+    # Determina se è una partita della "mia" squadra usando gli alias
+    is_home = is_target_team(r['Squadra Casa'])
+    is_away = is_target_team(r['Squadra Ospite'])
+    is_my_match = is_home or is_away
+    
+    # Stili testo
+    cs = 'class="team-name my-team-text"' if is_home else 'class="team-name"'
+    os = 'class="team-name my-team-text"' if is_away else 'class="team-name"'
+    
+    status_class = "upcoming"
+    badge_html = ""
+    
+    # Logica Punteggio e Vittoria
+    if r['Punteggio']:
+        try:
+            sc, so = int(r['Set Casa']), int(r['Set Ospite'])
+            if is_my_match:
+                if (is_home and sc > so) or (is_away and so > sc):
+                    status_class = "win"
+                    badge_html = '<span class="result-badge badge-win">VINTA</span>'
+                else:
+                    status_class = "loss"
+                    badge_html = '<span class="result-badge badge-loss">PERSA</span>'
+            else:
+                status_class = "played"
+                badge_html = '<span class="result-badge badge-played">FINALE</span>'
+        except: status_class = "played"
+    
+    # Link azioni
+    lnk_wa = create_whatsapp_link(r)
+    lnk_cal = create_google_calendar_link(r) if not r['Punteggio'] else ""
+    lnk_map = r['Maps']
+    
+    btns_html = ""
+    if lnk_map: btns_html += f'<a href="{lnk_map}" target="_blank" class="btn btn-map">📍 Mappa</a>'
+    
+    # Bottoni extra se è la mia squadra o se sono in modalità generale (per avere dettagli)
+    if is_my_match or not is_focus_mode:
+        if lnk_cal: btns_html += f'<a href="{lnk_cal}" target="_blank" class="btn btn-cal">📅</a>'
+        if lnk_wa: btns_html += f'<a href="{lnk_wa}" target="_blank" class="btn btn-wa">💬</a>'
+
+    return f"""
+    <div class="match-card {status_class}" data-date-iso="{r['DataISO']}" data-camp="{camp}" data-my-team="{str(is_my_match).lower()}">
+        {badge_html}
+        <div class="match-header">
+            <span class="date-badge">📅 {r['Data']}</span> <span>|</span> <span>{r['Giornata']}</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span {cs}>{r['Squadra Casa']}</span><span class="team-score">{r['Set Casa']}</span></div>
+            <div class="team-row"><span {os}>{r['Squadra Ospite']}</span><span class="team-score">{r['Set Ospite']}</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ {r['Impianto']}</span>
+            <div class="action-buttons">{btns_html}</div>
+        </div>
+    </div>
+    """
+
 # ================= SCRAPING =================
 def get_match_details_robust(driver, match_url):
     data_ora_full, data_iso, luogo, link_maps = "Data da definire", "", "Impianto non definito", ""
@@ -352,6 +412,7 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
     print(f"📄 Generazione {filename} (Mode: {mode})...")
     is_app = (mode == "APP")
     is_score = (mode == "SCORE")
+    
     title = NOME_VISUALIZZATO
     if is_score: title = "Segnapunti"
     elif not is_app: title = "Risultati Completi"
@@ -458,4 +519,3 @@ if __name__ == "__main__":
     genera_pagina(df_ris, df_class, FILE_APP, mode="APP")
     genera_pagina(df_ris, df_class, FILE_GEN, mode="GENERAL")
     genera_pagina(pd.DataFrame(), pd.DataFrame(), FILE_SCORE, mode="SCORE")
-
