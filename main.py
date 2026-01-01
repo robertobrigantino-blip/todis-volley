@@ -27,8 +27,8 @@ URL_LOGO = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volle
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
 CAMPIONATI = {
-    "Serie D  Maschile  Gir.C": "85622",
     "Serie C  Femminile Gir.A": "85471",
+    "Serie D  Maschile Gir.C": "85622",
     "Under 18 Femminile Gir.B": "86850",
     "Under 16 Femminile Gir.A": "86853",
     "Under 14 Femminile Gir.C": "86860",
@@ -137,120 +137,50 @@ CSS_BASE = """
 </script>
 """
 
-# ================= CSS/JS SEGNAPUNTI PRO =================
 SCOREBOARD_CODE = """
 <style>
     body { background-color: #121212; color: white; overflow: hidden; margin: 0; padding: 0; }
-    
-    /* Ruota Dispositivo Overlay */
-    .rotate-overlay { 
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-        background: #111; z-index: 9999; flex-direction: column; 
-        justify-content: center; align-items: center; text-align: center; color: white;
-    }
+    .rotate-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; }
     @media (orientation: portrait) { .rotate-overlay { display: flex; } .sb-container { display: none; } }
-
-    /* Layout Griglia Orizzontale */
-    .sb-container { 
-        display: grid; 
-        grid-template-columns: 1fr 180px 1fr; /* Sx, Centro, Dx */
-        height: 100vh; width: 100vw; 
-    }
-
-    /* Colonna Squadra */
-    .team-panel { 
-        display: flex; flex-direction: column; justify-content: center; align-items: center; 
-        position: relative; cursor: pointer; transition: background 0.2s;
-    }
-    .team-home { background-color: #1e3a8a; border-right: 2px solid #333; } /* Blu scuro */
-    .team-guest { background-color: #b91c1c; border-left: 2px solid #333; } /* Rosso scuro */
-    
+    .sb-container { display: grid; grid-template-columns: 1fr 180px 1fr; height: 100vh; width: 100vw; }
+    .team-panel { display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; cursor: pointer; transition: background 0.2s; }
+    .team-home { background-color: #1e3a8a; border-right: 2px solid #333; }
+    .team-guest { background-color: #b91c1c; border-left: 2px solid #333; }
     .team-home:active, .team-guest:active { opacity: 0.9; }
-
-    .team-name-input { 
-        background: transparent; border: none; color: rgba(255,255,255,0.8); 
-        font-size: 24px; font-weight: bold; text-align: center; width: 80%; 
-        margin-bottom: 10px; text-transform: uppercase;
-    }
-    .score-display { 
-        font-size: 180px; font-weight: 800; line-height: 1; user-select: none; 
-    }
-    
-    /* Indicatore Battuta */
-    .service-ball { 
-        font-size: 30px; position: absolute; top: 20px; 
-        opacity: 0.1; transition: opacity 0.3s; 
-    }
+    .team-name-input { background: transparent; border: none; color: rgba(255,255,255,0.8); font-size: 24px; font-weight: bold; text-align: center; width: 80%; margin-bottom: 10px; text-transform: uppercase; }
+    .score-display { font-size: 180px; font-weight: 800; line-height: 1; user-select: none; }
+    .service-ball { font-size: 30px; position: absolute; top: 20px; opacity: 0.1; transition: opacity 0.3s; }
     .serving .service-ball { opacity: 1; }
-
-    /* Colonna Centrale */
-    .center-panel { 
-        background-color: #222; display: flex; flex-direction: column; 
-        justify-content: space-between; align-items: center; padding: 10px 5px; 
-    }
-
-    /* Sets */
+    .center-panel { background-color: #222; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 10px 5px; }
     .sets-box { text-align: center; margin-top: 5px; }
     .sets-label { font-size: 10px; color: #888; letter-spacing: 2px; }
     .sets-score { font-size: 35px; font-weight: bold; color: #fff; }
     .current-set-badge { background: #d32f2f; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-top: 5px; }
-
-    /* Timer */
     .timer-box { text-align: center; }
     .timer-val { font-size: 28px; font-family: monospace; font-weight: bold; color: #fbbf24; }
     .btn-timer { background: #444; border: none; color: white; padding: 5px 15px; border-radius: 5px; margin-top: 5px; cursor: pointer; }
-
-    /* Controls Bottom */
     .controls-bottom { display: flex; flex-direction: column; gap: 8px; width: 90%; margin-bottom: 10px; }
     .btn-ctrl { padding: 8px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; color: white; font-size: 12px; text-decoration: none; text-align: center; }
     .btn-reset { background: #546e7a; }
     .btn-exit { background: #333; border: 1px solid #555; }
-    .btn-fs { background: #000; border: 1px solid #444; } /* Tasto Fullscreen */
-
-    /* Piccoli bottoni +/- sotto il punteggio */
+    .btn-fs { background: #000; border: 1px solid #444; }
     .fine-tune { display: flex; gap: 20px; margin-top: 10px; }
     .btn-tune { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); background: transparent; color: white; font-size: 20px; cursor: pointer; }
 </style>
-
-<!-- Messaggio Rotazione -->
-<div class="rotate-overlay">
-    <div style="font-size: 50px;">🔄</div>
-    <h2>Ruota il dispositivo</h2>
-    <p>Il segnapunti funziona in orizzontale</p>
-</div>
-
-<!-- Interfaccia -->
+<div class="rotate-overlay"><div style="font-size: 50px;">🔄</div><h2>Ruota il dispositivo</h2><p>Il segnapunti funziona in orizzontale</p></div>
 <div class="sb-container">
-    
-    <!-- HOME TEAM -->
     <div class="team-panel team-home" id="colHome" onclick="addPoint('Home')">
         <div class="service-ball">🏐</div>
         <input type="text" class="team-name-input" value="CASA">
         <div class="score-display" id="scoreHome">0</div>
-        
-        <!-- Tasti correzione (- / +) non attivano il click principale -->
         <div class="fine-tune">
             <button class="btn-tune" onclick="adjScore('Home', -1); event.stopPropagation()">-</button>
             <button class="btn-tune" onclick="adjScore('Home', 1); event.stopPropagation()">+</button>
         </div>
     </div>
-
-    <!-- CENTER INFO -->
     <div class="center-panel">
-        
-        <div class="sets-box">
-            <div class="sets-label">SETS</div>
-            <div class="sets-score">
-                <span id="setsHome">0</span> - <span id="setsGuest">0</span>
-            </div>
-            <div class="current-set-badge" id="setNum">SET 1</div>
-        </div>
-
-        <div class="timer-box">
-            <div class="timer-val" id="timer">00:00</div>
-            <button class="btn-timer" onclick="toggleTimer()" id="btnTimer">START</button>
-        </div>
-
+        <div class="sets-box"><div class="sets-label">SETS</div><div class="sets-score"><span id="setsHome">0</span> - <span id="setsGuest">0</span></div><div class="current-set-badge" id="setNum">SET 1</div></div>
+        <div class="timer-box"><div class="timer-val" id="timer">00:00</div><button class="btn-timer" onclick="toggleTimer()" id="btnTimer">START</button></div>
         <div class="controls-bottom">
             <button class="btn-ctrl" style="background:#2e7d32;" onclick="setServiceManual()">Battuta</button>
             <button class="btn-ctrl btn-fs" onclick="toggleFullScreen()">⛶ Full</button>
@@ -258,64 +188,24 @@ SCOREBOARD_CODE = """
             <a href="index.html" class="btn-ctrl btn-exit">Esci</a>
         </div>
     </div>
-
-    <!-- GUEST TEAM -->
     <div class="team-panel team-guest" id="colGuest" onclick="addPoint('Guest')">
         <div class="service-ball">🏐</div>
         <input type="text" class="team-name-input" value="OSPITI">
         <div class="score-display" id="scoreGuest">0</div>
-        
         <div class="fine-tune">
             <button class="btn-tune" onclick="adjScore('Guest', -1); event.stopPropagation()">-</button>
             <button class="btn-tune" onclick="adjScore('Guest', 1); event.stopPropagation()">+</button>
         </div>
     </div>
-
 </div>
-
 <script>
-    // STATO
-    let scoreH = 0, scoreG = 0;
-    let setsH = 0, setsG = 0;
-    let currentSet = 1;
-    let timerInt = null;
-    let seconds = 0;
-    let serving = null; 
-
-    // Wake Lock
+    let scoreH = 0, scoreG = 0; let setsH = 0, setsG = 0; let currentSet = 1; let timerInt = null; let seconds = 0; let serving = null; 
     async function lockScreen() { try { await navigator.wakeLock.request('screen'); } catch(e){} }
     document.addEventListener('click', lockScreen, {once:true});
-
-    // FULL SCREEN TOGGLE
-    function toggleFullScreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(e => { console.log(e); });
-        } else {
-            if (document.exitFullscreen) document.exitFullscreen();
-        }
-    }
-
-    // LOGICA PUNTEGGIO
-    function addPoint(team) {
-        if(team === 'Home') scoreH++; else scoreG++;
-        serving = team; 
-        updateUI();
-        checkSetWin();
-    }
-
-    function adjScore(team, delta) {
-        if(team === 'Home') scoreH = Math.max(0, scoreH + delta);
-        else scoreG = Math.max(0, scoreG + delta);
-        updateUI();
-    }
-
-    function setServiceManual() {
-        if (serving === 'Home') serving = 'Guest';
-        else serving = 'Home';
-        updateUI();
-    }
-
-    // REGOLAMENTO PALLAVOLO
+    function toggleFullScreen() { if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(e => { console.log(e); }); } else { if (document.exitFullscreen) document.exitFullscreen(); } }
+    function addPoint(team) { if(team === 'Home') scoreH++; else scoreG++; serving = team; updateUI(); checkSetWin(); }
+    function adjScore(team, delta) { if(team === 'Home') scoreH = Math.max(0, scoreH + delta); else scoreG = Math.max(0, scoreG + delta); updateUI(); }
+    function setServiceManual() { if (serving === 'Home') serving = 'Guest'; else serving = 'Home'; updateUI(); }
     function checkSetWin() {
         let limit = (currentSet === 5) ? 15 : 25;
         if ((scoreH >= limit && scoreH >= scoreG + 2) || (scoreG >= limit && scoreG >= scoreH + 2)) {
@@ -323,52 +213,24 @@ SCOREBOARD_CODE = """
             setTimeout(() => {
                 if (confirm(`SET TERMINATO!\\nVince: ${winner}\\n\\nIniziare il prossimo set?`)) {
                     if (scoreH > scoreG) setsH++; else setsG++;
-                    if (setsH === 3 || setsG === 3) {
-                        alert(`PARTITA FINITA!\\nVince: ${winner}`);
-                    } else {
-                        currentSet++; scoreH = 0; scoreG = 0;
-                        stopTimer(); seconds = 0; updateTimer();
-                        updateUI();
-                    }
+                    if (setsH === 3 || setsG === 3) { alert(`PARTITA FINITA!\\nVince: ${winner}`); } 
+                    else { currentSet++; scoreH = 0; scoreG = 0; stopTimer(); seconds = 0; updateTimer(); updateUI(); }
                 }
             }, 100);
         }
     }
-
-    function resetMatch() {
-        if(!confirm("Sicuro di voler azzerare tutto?")) return;
-        scoreH = 0; scoreG = 0; setsH = 0; setsG = 0; currentSet = 1;
-        seconds = 0; stopTimer(); updateTimer();
-        updateUI();
-    }
-
+    function resetMatch() { if(!confirm("Sicuro di voler azzerare tutto?")) return; scoreH = 0; scoreG = 0; setsH = 0; setsG = 0; currentSet = 1; seconds = 0; stopTimer(); updateTimer(); updateUI(); }
     function updateUI() {
-        document.getElementById('scoreHome').innerText = scoreH;
-        document.getElementById('scoreGuest').innerText = scoreG;
-        document.getElementById('setsHome').innerText = setsH;
-        document.getElementById('setsGuest').innerText = setsG;
+        document.getElementById('scoreHome').innerText = scoreH; document.getElementById('scoreGuest').innerText = scoreG;
+        document.getElementById('setsHome').innerText = setsH; document.getElementById('setsGuest').innerText = setsG;
         document.getElementById('setNum').innerText = "SET " + currentSet;
-        document.getElementById('colHome').classList.remove('serving');
-        document.getElementById('colGuest').classList.remove('serving');
+        document.getElementById('colHome').classList.remove('serving'); document.getElementById('colGuest').classList.remove('serving');
         if(serving) document.getElementById('col' + serving).classList.add('serving');
     }
-
     function toggleTimer() { if(timerInt) stopTimer(); else startTimer(); }
-    function startTimer() { 
-        document.getElementById('btnTimer').innerText = "STOP"; 
-        document.getElementById('btnTimer').style.background = "#d32f2f";
-        timerInt = setInterval(() => { seconds++; updateTimer(); }, 1000); 
-    }
-    function stopTimer() { 
-        clearInterval(timerInt); timerInt = null; 
-        document.getElementById('btnTimer').innerText = "START"; 
-        document.getElementById('btnTimer').style.background = "#444";
-    }
-    function updateTimer() {
-        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-        const s = (seconds % 60).toString().padStart(2, '0');
-        document.getElementById('timer').innerText = `${m}:${s}`;
-    }
+    function startTimer() { document.getElementById('btnTimer').innerText = "STOP"; document.getElementById('btnTimer').style.background = "#d32f2f"; timerInt = setInterval(() => { seconds++; updateTimer(); }, 1000); }
+    function stopTimer() { clearInterval(timerInt); timerInt = null; document.getElementById('btnTimer').innerText = "START"; document.getElementById('btnTimer').style.background = "#444"; }
+    function updateTimer() { const m = Math.floor(seconds / 60).toString().padStart(2, '0'); const s = (seconds % 60).toString().padStart(2, '0'); document.getElementById('timer').innerText = `${m}:${s}`; }
 </script>
 """
 
@@ -485,67 +347,11 @@ def scrape_data():
     driver.quit()
     return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
 
-# ================= GENERATORE HTML CARD =================
-def crea_card_html(r, camp, is_focus_mode=False):
-    is_home = is_target_team(r['Squadra Casa'])
-    is_away = is_target_team(r['Squadra Ospite'])
-    is_my_match = is_home or is_away
-    
-    cs = 'class="team-name my-team-text"' if is_home else 'class="team-name"'
-    os = 'class="team-name my-team-text"' if is_away else 'class="team-name"'
-    
-    status_class = "upcoming"
-    badge_html = ""
-    
-    if r['Punteggio']:
-        try:
-            sc, so = int(r['Set Casa']), int(r['Set Ospite'])
-            if is_my_match:
-                if (is_home and sc > so) or (is_away and so > sc):
-                    status_class = "win"
-                    badge_html = '<span class="result-badge badge-win">VINTA</span>'
-                else:
-                    status_class = "loss"
-                    badge_html = '<span class="result-badge badge-loss">PERSA</span>'
-            else:
-                status_class = "played"
-                badge_html = '<span class="result-badge badge-played">FINALE</span>'
-        except: status_class = "played"
-    
-    lnk_wa = create_whatsapp_link(r)
-    lnk_cal = create_google_calendar_link(r) if not r['Punteggio'] else ""
-    lnk_map = r['Maps']
-    
-    btns_html = ""
-    if lnk_map: btns_html += f'<a href="{lnk_map}" target="_blank" class="btn btn-map">📍 Mappa</a>'
-    
-    if is_my_match or not is_focus_mode:
-        if lnk_cal: btns_html += f'<a href="{lnk_cal}" target="_blank" class="btn btn-cal">📅</a>'
-        if lnk_wa: btns_html += f'<a href="{lnk_wa}" target="_blank" class="btn btn-wa">💬</a>'
-
-    return f"""
-    <div class="match-card {status_class}" data-date-iso="{r['DataISO']}" data-camp="{camp}" data-my-team="{str(is_my_match).lower()}">
-        {badge_html}
-        <div class="match-header">
-            <span class="date-badge">📅 {r['Data']}</span> <span>|</span> <span>{r['Giornata']}</span>
-        </div>
-        <div class="teams">
-            <div class="team-row"><span {cs}>{r['Squadra Casa']}</span><span class="team-score">{r['Set Casa']}</span></div>
-            <div class="team-row"><span {os}>{r['Squadra Ospite']}</span><span class="team-score">{r['Set Ospite']}</span></div>
-        </div>
-        <div class="match-footer">
-            <span class="gym-name">🏟️ {r['Impianto']}</span>
-            <div class="action-buttons">{btns_html}</div>
-        </div>
-    </div>
-    """
-
 # ================= GENERATORE PAGINE =================
 def genera_pagina(df_ris, df_class, filename, mode="APP"):
     print(f"📄 Generazione {filename} (Mode: {mode})...")
     is_app = (mode == "APP")
     is_score = (mode == "SCORE")
-    
     title = NOME_VISUALIZZATO
     if is_score: title = "Segnapunti"
     elif not is_app: title = "Risultati Completi"
@@ -582,6 +388,8 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
         <link rel="icon" type="image/png" href="{URL_LOGO}">
         <link rel="apple-touch-icon" href="{URL_LOGO}">
         <meta name="apple-mobile-web-app-capable" content="yes">
+        <!-- PWA Manifest -->
+        <link rel="manifest" href="manifest.json">
         {CSS_BASE}
         {'<style>.app-header { background-color: #1976D2; }</style>' if mode == "GENERAL" else ''} 
         {'<style>.app-header { display:none; } </style>' if is_score else ''} 
@@ -650,4 +458,3 @@ if __name__ == "__main__":
     genera_pagina(df_ris, df_class, FILE_APP, mode="APP")
     genera_pagina(df_ris, df_class, FILE_GEN, mode="GENERAL")
     genera_pagina(pd.DataFrame(), pd.DataFrame(), FILE_SCORE, mode="SCORE")
-
