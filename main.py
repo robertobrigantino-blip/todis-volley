@@ -10,28 +10,23 @@ from datetime import datetime, timedelta
 import os
 
 # ================= CONFIGURAZIONE =================
-# Nome visualizzato nel Titolo dell'App
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
 
-# LISTA DI TUTTI I NOMI CON CUI LA SQUADRA È REGISTRATA
-# Aggiungi qui eventuali altre varianti se ne trovi in futuro
+# NOMI SQUADRA (Alias)
 TARGET_TEAM_ALIASES = [
     "TODIS PASTENA VOLLEY",
     "TODIS CS PASTENA VOLLEY",
-    "TODIS C.S. PASTENA VOLLEY" # Variante col punto, per sicurezza
+    "TODIS C.S. PASTENA VOLLEY"
 ]
 
-FILE_APP = "index.html"      # Vista Focus Squadra
-FILE_GEN = "generale.html"   # Vista Completa Campionati
-FILE_SCORE = "segnapunti.html" # Segnapunti
+FILE_APP = "index.html"
+FILE_GEN = "generale.html"
+FILE_SCORE = "segnapunti.html"
 
-# URL LOGO (RAW da GitHub)
+# URL LOGO
 URL_LOGO = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg"
-
-# URL CONTATORE
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
-# ELENCO COMPLETO CAMPIONATI
 CAMPIONATI = {
     "Serie C  Femminile Gir.A": "85471",
     "Serie D  Maschile Gir.C": "85622",
@@ -40,53 +35,32 @@ CAMPIONATI = {
     "Under 14 Femminile Gir.C": "86860",
 }
 
-# ================= FUNZIONE DI CONTROLLO SQUADRA =================
 def is_target_team(team_name):
-    """
-    Controlla se il nome della squadra passato corrisponde a uno degli alias della nostra squadra.
-    Restituisce True se è la nostra squadra, False altrimenti.
-    """
-    if pd.isna(team_name) or not str(team_name).strip():
-        return False
-    
+    if pd.isna(team_name) or not str(team_name).strip(): return False
     name_clean = str(team_name).upper().strip()
-    
     for alias in TARGET_TEAM_ALIASES:
-        # Controllo se l'alias è contenuto nel nome (es. "ASD TODIS..." contiene "TODIS")
-        if alias.upper() in name_clean:
-            return True
-            
+        if alias.upper() in name_clean: return True
     return False
 
 # ================= CSS COMUNE =================
 CSS_BASE = """
 <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
-    
-    /* Header */
     .app-header { background-color: #d32f2f; color: white; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; }
     .header-left { display: flex; align-items: center; gap: 10px; }
     .app-header img { height: 35px; width: 35px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
     .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
-    
-    /* Navigazione Header */
     .nav-buttons { display: flex; gap: 8px; }
     .btn-nav { background: rgba(255,255,255,0.2); color: white; text-decoration: none; font-size: 18px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); }
     .btn-nav.active { background: white; color: #d32f2f; }
-
-    /* Tabs */
     .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 54px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
     .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
-
     .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
-
-    /* Classifica */
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
@@ -94,36 +68,27 @@ CSS_BASE = """
     td { padding: 10px 6px; text-align: center; border-bottom: 1px solid #f0f0f0; }
     td:nth-child(2) { text-align: left; min-width: 140px; font-weight: 500; position: sticky; left: 0; background-color: white; border-right: 1px solid #eee; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
-
-    /* Card Partita */
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; }
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
-
     .result-badge { position: absolute; top: 0; right: 0; font-size: 9px; padding: 3px 6px; border-bottom-left-radius: 6px; font-weight: bold; color: white; z-index: 10; text-transform: uppercase; }
     .badge-win { background-color: #2e7d32; }
     .badge-loss { background-color: #c62828; }
     .badge-played { background-color: #78909c; } 
-
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; padding-right: 50px; }
     .date-badge { font-weight: bold; color: #d32f2f; display: flex; align-items: center; gap: 4px; }
-    
     .teams { display: flex; flex-direction: column; gap: 6px; font-size: 14px; margin-bottom: 8px; }
     .team-row { display: flex; justify-content: space-between; align-items: center; }
     .my-team-text { color: #d32f2f; font-weight: 700; }
     .team-score { font-weight: bold; background: #eee; padding: 2px 8px; border-radius: 4px; min-width: 25px; text-align: center; }
-    
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
     .gym-name { font-size: 11px; color: #666; width: 100%; display: block; margin-bottom: 5px; }
-    
     .action-buttons { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
     .btn { text-decoration: none; padding: 5px 10px; border-radius: 15px; font-size: 10px; font-weight: bold; display: flex; align-items: center; gap: 3px; border: 1px solid transparent; }
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
-
-    /* Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .modal-content { background: white; width: 85%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 20px; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
     @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -131,7 +96,6 @@ CSS_BASE = """
     .modal-title { font-size: 18px; font-weight: bold; color: #d32f2f; }
     .close-btn { background: #eee; border: none; font-size: 24px; padding: 0 10px; border-radius: 5px; color: #555; cursor: pointer; }
     .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
-    
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
 </style>
@@ -149,15 +113,10 @@ CSS_BASE = """
     
     window.onload = function() {
         if (!document.title.toUpperCase().includes("TODIS") || document.title.includes("Segnapunti")) return;
-
-        const today = new Date();
-        today.setHours(0,0,0,0);
+        const today = new Date(); today.setHours(0,0,0,0);
         let nextMatches = {};
-        const allMatches = document.querySelectorAll('.match-card.upcoming');
-        
-        allMatches.forEach(card => {
-            const isMyTeam = card.getAttribute('data-my-team');
-            if(isMyTeam === 'true') {
+        document.querySelectorAll('.match-card.upcoming').forEach(card => {
+            if(card.getAttribute('data-my-team') === 'true') {
                 const dateStr = card.getAttribute('data-date-iso');
                 const campName = card.getAttribute('data-camp');
                 if (dateStr && campName) {
@@ -171,139 +130,216 @@ CSS_BASE = """
                 }
             }
         });
-        
-        let popupHTML = "";
-        let count = 0;
-        for (const [camp, data] of Object.entries(nextMatches)) {
-            popupHTML += `<h3>🏆 ${camp}</h3>`;
-            popupHTML += data.html;
-            count++;
-        }
-        
+        let popupHTML = ""; let count = 0;
+        for (const [camp, data] of Object.entries(nextMatches)) { popupHTML += `<h3>🏆 ${camp}</h3>` + data.html; count++; }
         if (count > 0) {
-            const modalBody = document.getElementById('modal-body');
-            if(modalBody) {
-                modalBody.innerHTML = popupHTML;
-                setTimeout(function(){
-                    document.getElementById('modal-overlay').style.display = 'flex';
-                }, 500);
-            }
+            const mb = document.getElementById('modal-body');
+            if(mb) { mb.innerHTML = popupHTML; setTimeout(() => document.getElementById('modal-overlay').style.display = 'flex', 500); }
         }
     };
 </script>
 """
 
-# ================= CSS/JS SEGNAPUNTI =================
+# ================= CSS/JS SEGNAPUNTI PRO =================
 SCOREBOARD_CODE = """
 <style>
-    .sb-container { max-width: 600px; margin: 0 auto; padding: 10px; }
-    .timer-card { background: #333; color: #fff; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-    .timer-display { font-size: 36px; font-weight: bold; font-family: monospace; letter-spacing: 2px; }
-    .timer-controls { margin-top: 10px; display: flex; justify-content: center; gap: 10px; }
-    .btn-timer { background: #555; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-    .btn-timer.active { background: #d32f2f; }
-    .score-area { display: flex; gap: 10px; margin-bottom: 20px; }
-    .team-col { flex: 1; background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-top: 5px solid #ddd; }
-    .team-col.serving { border-top-color: #2e7d32; background: #e8f5e9; }
-    .team-name-input { width: 100%; border: none; text-align: center; font-size: 16px; font-weight: bold; color: #333; background: transparent; margin-bottom: 10px; padding: 5px; border-bottom: 1px dashed #ccc; }
-    .score-big { font-size: 70px; font-weight: 800; color: #333; line-height: 1; margin: 10px 0; user-select: none; }
-    .score-controls { display: flex; justify-content: center; gap: 10px; }
-    .btn-score { width: 40px; height: 40px; border-radius: 50%; border: none; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .btn-plus { background: #d32f2f; color: white; }
-    .btn-minus { background: #eee; color: #555; }
-    .ball-icon { font-size: 14px; cursor: pointer; opacity: 0.2; }
-    .serving .ball-icon { opacity: 1; }
-    .sets-display { display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 20px; font-size: 18px; font-weight: bold; background: white; padding: 10px; border-radius: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    .set-score { font-size: 24px; color: #d32f2f; }
-    .game-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-    .btn-ctrl { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
-    .btn-new-set { background: #1976D2; color: white; }
-    .btn-reset { background: #607D8B; color: white; }
+    body { background-color: #121212; color: white; overflow: hidden; margin: 0; padding: 0; }
+    
+    /* Ruota Dispositivo Overlay */
+    .rotate-overlay { 
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        background: #111; z-index: 9999; flex-direction: column; 
+        justify-content: center; align-items: center; text-align: center; color: white;
+    }
+    @media (orientation: portrait) { .rotate-overlay { display: flex; } .sb-container { display: none; } }
+
+    /* Layout Griglia Orizzontale */
+    .sb-container { 
+        display: grid; 
+        grid-template-columns: 1fr 180px 1fr; /* Sx, Centro, Dx */
+        height: 100vh; width: 100vw; 
+    }
+
+    /* Colonna Squadra */
+    .team-panel { 
+        display: flex; flex-direction: column; justify-content: center; align-items: center; 
+        position: relative; cursor: pointer; transition: background 0.2s;
+    }
+    .team-home { background-color: #1e3a8a; border-right: 2px solid #333; } /* Blu scuro */
+    .team-guest { background-color: #b91c1c; border-left: 2px solid #333; } /* Rosso scuro */
+    
+    .team-home:active, .team-guest:active { opacity: 0.9; }
+
+    .team-name-input { 
+        background: transparent; border: none; color: rgba(255,255,255,0.8); 
+        font-size: 24px; font-weight: bold; text-align: center; width: 80%; 
+        margin-bottom: 10px; text-transform: uppercase;
+    }
+    .score-display { 
+        font-size: 180px; font-weight: 800; line-height: 1; user-select: none; 
+    }
+    
+    /* Indicatore Battuta */
+    .service-ball { 
+        font-size: 30px; position: absolute; top: 20px; 
+        opacity: 0.1; transition: opacity 0.3s; 
+    }
+    .serving .service-ball { opacity: 1; }
+
+    /* Colonna Centrale */
+    .center-panel { 
+        background-color: #222; display: flex; flex-direction: column; 
+        justify-content: space-between; align-items: center; padding: 20px 5px; 
+    }
+
+    /* Sets */
+    .sets-box { text-align: center; margin-top: 10px; }
+    .sets-label { font-size: 12px; color: #888; letter-spacing: 2px; }
+    .sets-score { font-size: 40px; font-weight: bold; color: #fff; }
+    .current-set-badge { background: #d32f2f; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-top: 5px; }
+
+    /* Timer */
+    .timer-box { text-align: center; }
+    .timer-val { font-size: 32px; font-family: monospace; font-weight: bold; color: #fbbf24; }
+    .btn-timer { background: #444; border: none; color: white; padding: 5px 15px; border-radius: 5px; margin-top: 5px; cursor: pointer; }
+
+    /* Controls Bottom */
+    .controls-bottom { display: flex; flex-direction: column; gap: 10px; width: 90%; }
+    .btn-ctrl { padding: 10px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; color: white; font-size: 12px; }
+    .btn-adj { background: rgba(255,255,255,0.1); margin-top: 5px; }
+    .btn-reset { background: #546e7a; }
+    .btn-exit { background: #333; border: 1px solid #555; }
+
+    /* Piccoli bottoni +/- sotto il punteggio */
+    .fine-tune { display: flex; gap: 20px; margin-top: 10px; }
+    .btn-tune { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); background: transparent; color: white; font-size: 20px; cursor: pointer; }
 </style>
 
+<!-- Messaggio Rotazione -->
+<div class="rotate-overlay">
+    <div style="font-size: 50px;">🔄</div>
+    <h2>Ruota il dispositivo</h2>
+    <p>Il segnapunti funziona in orizzontale</p>
+</div>
+
+<!-- Interfaccia -->
 <div class="sb-container">
-    <div class="timer-card">
-        <div class="timer-display" id="timer">00:00</div>
-        <div class="timer-controls">
-            <button class="btn-timer active" onclick="toggleTimer()" id="btnStartStop">▶ Start</button>
-            <button class="btn-timer" onclick="resetTimer()">↺ Reset</button>
+    
+    <!-- HOME TEAM -->
+    <div class="team-panel team-home" id="colHome" onclick="addPoint('Home')">
+        <div class="service-ball">🏐</div>
+        <input type="text" class="team-name-input" value="CASA">
+        <div class="score-display" id="scoreHome">0</div>
+        
+        <!-- Tasti correzione (- / +) non attivano il click principale -->
+        <div class="fine-tune">
+            <button class="btn-tune" onclick="adjScore('Home', -1); event.stopPropagation()">-</button>
+            <button class="btn-tune" onclick="adjScore('Home', 1); event.stopPropagation()">+</button>
         </div>
     </div>
-    <div class="sets-display">
-        <span>SET:</span>
-        <span id="setsHome" class="set-score">0</span>
-        <span>-</span>
-        <span id="setsGuest" class="set-score">0</span>
-    </div>
-    <div class="score-area">
-        <div class="team-col" id="colHome" onclick="setService('Home')">
-            <div class="ball-icon">🏐 Servizio</div>
-            <input type="text" class="team-name-input" value="CASA">
-            <div class="score-big" id="scoreHome">0</div>
-            <div class="score-controls">
-                <button class="btn-score btn-minus" onclick="updateScore('Home', -1); event.stopPropagation()">-</button>
-                <button class="btn-score btn-plus" onclick="updateScore('Home', 1); event.stopPropagation()">+</button>
+
+    <!-- CENTER INFO -->
+    <div class="center-panel">
+        
+        <div class="sets-box">
+            <div class="sets-label">SETS</div>
+            <div class="sets-score">
+                <span id="setsHome">0</span> - <span id="setsGuest">0</span>
             </div>
+            <div class="current-set-badge" id="setNum">SET 1</div>
         </div>
-        <div class="team-col" id="colGuest" onclick="setService('Guest')">
-            <div class="ball-icon">🏐 Servizio</div>
-            <input type="text" class="team-name-input" value="OSPITI">
-            <div class="score-big" id="scoreGuest">0</div>
-            <div class="score-controls">
-                <button class="btn-score btn-minus" onclick="updateScore('Guest', -1); event.stopPropagation()">-</button>
-                <button class="btn-score btn-plus" onclick="updateScore('Guest', 1); event.stopPropagation()">+</button>
-            </div>
+
+        <div class="timer-box">
+            <div class="timer-val" id="timer">00:00</div>
+            <button class="btn-timer" onclick="toggleTimer()" id="btnTimer">START</button>
+        </div>
+
+        <div class="controls-bottom">
+            <button class="btn-ctrl" style="background:#2e7d32;" onclick="setServiceManual()">Cambia Battuta</button>
+            <button class="btn-ctrl btn-reset" onclick="resetMatch()">Reset Match</button>
+            <a href="index.html" class="btn-ctrl btn-exit" style="display:block; text-align:center; text-decoration:none;">Esci</a>
         </div>
     </div>
-    <div class="game-controls">
-        <button class="btn-ctrl btn-new-set" onclick="endSet()">Fine Set 🏁</button>
-        <button class="btn-ctrl btn-reset" onclick="resetMatch()">Nuova Partita 🔄</button>
+
+    <!-- GUEST TEAM -->
+    <div class="team-panel team-guest" id="colGuest" onclick="addPoint('Guest')">
+        <div class="service-ball">🏐</div>
+        <input type="text" class="team-name-input" value="OSPITI">
+        <div class="score-display" id="scoreGuest">0</div>
+        
+        <div class="fine-tune">
+            <button class="btn-tune" onclick="adjScore('Guest', -1); event.stopPropagation()">-</button>
+            <button class="btn-tune" onclick="adjScore('Guest', 1); event.stopPropagation()">+</button>
+        </div>
     </div>
-    <div style="text-align:center; margin-top:20px; font-size:11px; color:#777;">
-        💡 Tocca il box squadra per assegnare la battuta.<br>Lo schermo resterà attivo.
-    </div>
+
 </div>
 
 <script>
+    // STATO
     let scoreH = 0, scoreG = 0;
     let setsH = 0, setsG = 0;
-    let timerInterval;
+    let currentSet = 1;
+    let timerInt = null;
     let seconds = 0;
-    let isRunning = false;
-    let wakeLock = null;
+    let serving = null; // 'Home' or 'Guest'
 
-    async function requestWakeLock() {
-        try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
-    }
-    document.addEventListener('click', requestWakeLock, {once:true});
+    // Wake Lock
+    async function lockScreen() { try { await navigator.wakeLock.request('screen'); } catch(e){} }
+    document.addEventListener('click', lockScreen, {once:true});
 
-    function updateScore(team, delta) {
-        if (team === 'Home') {
-            scoreH = Math.max(0, scoreH + delta);
-            document.getElementById('scoreHome').innerText = scoreH;
-        } else {
-            scoreG = Math.max(0, scoreG + delta);
-            document.getElementById('scoreGuest').innerText = scoreG;
-        }
+    // LOGICA PUNTEGGIO
+    function addPoint(team) {
+        if(team === 'Home') scoreH++; else scoreG++;
+        serving = team; // Chi fa punto va in battuta
+        updateUI();
+        checkSetWin();
     }
 
-    function setService(team) {
-        document.getElementById('colHome').classList.remove('serving');
-        document.getElementById('colGuest').classList.remove('serving');
-        document.getElementById('col' + team).classList.add('serving');
-    }
-
-    function endSet() {
-        if (!confirm("Chiudere il set corrente e aggiornare il conteggio set?")) return;
-        if (scoreH > scoreG) setsH++; else if (scoreG > scoreH) setsG++;
-        scoreH = 0; scoreG = 0;
+    function adjScore(team, delta) {
+        if(team === 'Home') scoreH = Math.max(0, scoreH + delta);
+        else scoreG = Math.max(0, scoreG + delta);
         updateUI();
     }
 
+    function setServiceManual() {
+        if (serving === 'Home') serving = 'Guest';
+        else serving = 'Home';
+        updateUI();
+    }
+
+    // REGOLAMENTO PALLAVOLO
+    function checkSetWin() {
+        let limit = (currentSet === 5) ? 15 : 25;
+        
+        // Regola vantaggio di 2
+        if ((scoreH >= limit && scoreH >= scoreG + 2) || (scoreG >= limit && scoreG >= scoreH + 2)) {
+            let winner = (scoreH > scoreG) ? "CASA" : "OSPITI";
+            
+            setTimeout(() => {
+                if (confirm(`SET TERMINATO!\\nVince: ${winner}\\n\\nIniziare il prossimo set?`)) {
+                    if (scoreH > scoreG) setsH++; else setsG++;
+                    
+                    if (setsH === 3 || setsG === 3) {
+                        alert(`PARTITA FINITA!\\nVince: ${winner}`);
+                        // Non resetto automatico, lascio vedere il risultato
+                    } else {
+                        // Nuovo Set
+                        currentSet++;
+                        scoreH = 0; scoreG = 0;
+                        stopTimer(); seconds = 0; updateTimer();
+                        updateUI();
+                    }
+                }
+            }, 100);
+        }
+    }
+
     function resetMatch() {
-        if (!confirm("Azzerare tutto e iniziare nuova partita?")) return;
-        scoreH = 0; scoreG = 0; setsH = 0; setsG = 0; seconds = 0;
-        stopTimer(); updateTimerDisplay(); updateUI();
+        if(!confirm("Sicuro di voler azzerare tutto?")) return;
+        scoreH = 0; scoreG = 0; setsH = 0; setsG = 0; currentSet = 1;
+        seconds = 0; stopTimer(); updateTimer();
+        updateUI();
     }
 
     function updateUI() {
@@ -311,13 +347,31 @@ SCOREBOARD_CODE = """
         document.getElementById('scoreGuest').innerText = scoreG;
         document.getElementById('setsHome').innerText = setsH;
         document.getElementById('setsGuest').innerText = setsG;
+        document.getElementById('setNum').innerText = "SET " + currentSet;
+
+        // Battuta
+        document.getElementById('colHome').classList.remove('serving');
+        document.getElementById('colGuest').classList.remove('serving');
+        if(serving) document.getElementById('col' + serving).classList.add('serving');
     }
 
-    function toggleTimer() { if (isRunning) stopTimer(); else startTimer(); }
-    function startTimer() { isRunning = true; document.getElementById('btnStartStop').innerText = "⏸ Stop"; document.getElementById('btnStartStop').classList.remove('active'); timerInterval = setInterval(() => { seconds++; updateTimerDisplay(); }, 1000); }
-    function stopTimer() { isRunning = false; document.getElementById('btnStartStop').innerText = "▶ Start"; document.getElementById('btnStartStop').classList.add('active'); clearInterval(timerInterval); }
-    function resetTimer() { stopTimer(); seconds = 0; updateTimerDisplay(); }
-    function updateTimerDisplay() { const m = Math.floor(seconds / 60).toString().padStart(2, '0'); const s = (seconds % 60).toString().padStart(2, '0'); document.getElementById('timer').innerText = `${m}:${s}`; }
+    // TIMER
+    function toggleTimer() { if(timerInt) stopTimer(); else startTimer(); }
+    function startTimer() { 
+        document.getElementById('btnTimer').innerText = "STOP"; 
+        document.getElementById('btnTimer').style.background = "#d32f2f";
+        timerInt = setInterval(() => { seconds++; updateTimer(); }, 1000); 
+    }
+    function stopTimer() { 
+        clearInterval(timerInt); timerInt = null; 
+        document.getElementById('btnTimer').innerText = "START"; 
+        document.getElementById('btnTimer').style.background = "#444";
+    }
+    function updateTimer() {
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        document.getElementById('timer').innerText = `${m}:${s}`;
+    }
 </script>
 """
 
@@ -499,7 +553,6 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
     if is_score: title = "Segnapunti"
     elif not is_app: title = "Risultati Completi"
     
-    # Header Icons Logic
     nav_links = ""
     if is_score:
         nav_links = f'<a href="{FILE_APP}" class="btn-nav">🏠</a>'
@@ -534,20 +587,21 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
         <meta name="apple-mobile-web-app-capable" content="yes">
         {CSS_BASE}
         {'<style>.app-header { background-color: #1976D2; }</style>' if mode == "GENERAL" else ''} 
-        {'<style>.app-header { background-color: #333; }</style>' if is_score else ''} 
+        {'<style>.app-header { display:none; } </style>' if is_score else ''} 
     </head>
     <body>
         {modal_html}
+    """
+    
+    if not is_score:
+        html += f"""
         <div class="app-header">
             <div class="header-left">
                 <img src="{URL_LOGO}" alt="Logo">
                 <div><h1>{title}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
             </div>
-            <div class="nav-buttons">
-                {nav_links}
-            </div>
-        </div>
-    """
+            <div class="nav-buttons">{nav_links}</div>
+        </div>"""
 
     if is_score:
         html += SCOREBOARD_CODE
@@ -563,21 +617,17 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
 
         for i, camp in enumerate(campionati_disp):
             html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
-            
             html += f"<h2>🏆 Classifica</h2>"
             df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
             html += """<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>"""
             for _, r in df_c.iterrows():
-                # Evidenzia usando la funzione intelligente
                 cls = 'class="my-team-row"' if is_target_team(r['Squadra']) else ''
                 html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
             html += '</tbody></table></div></div>'
 
             html += f"<h2>📅 Calendario</h2>"
             df_r = df_ris[df_ris['Campionato'] == camp]
-            
             if is_app:
-                # Filtra usando la funzione intelligente
                 mask = df_r['Squadra Casa'].apply(is_target_team) | df_r['Squadra Ospite'].apply(is_target_team)
                 df_r = df_r[mask]
             
@@ -588,11 +638,9 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
                     giornate = df_r['Giornata'].unique()
                     for g in giornate:
                         html += f'<h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">{g}</h3>'
-                        for _, r in df_r[df_r['Giornata'] == g].iterrows():
-                             html += crea_card_html(r, camp, is_app)
+                        for _, r in df_r[df_r['Giornata'] == g].iterrows(): html += crea_card_html(r, camp, is_app)
                 else:
-                    for _, r in df_r.iterrows():
-                        html += crea_card_html(r, camp, is_app)
+                    for _, r in df_r.iterrows(): html += crea_card_html(r, camp, is_app)
             html += '</div>'
 
     html += footer_html
@@ -602,9 +650,6 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
 
 if __name__ == "__main__":
     df_ris, df_class = scrape_data()
-    # 1. Genera App Squadra
     genera_pagina(df_ris, df_class, FILE_APP, mode="APP")
-    # 2. Genera Vista Generale
     genera_pagina(df_ris, df_class, FILE_GEN, mode="GENERAL")
-    # 3. Genera Segnapunti
     genera_pagina(pd.DataFrame(), pd.DataFrame(), FILE_SCORE, mode="SCORE")
