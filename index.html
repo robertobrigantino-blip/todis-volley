@@ -8,6 +8,8 @@
         <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
         <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
         <meta name="apple-mobile-web-app-capable" content="yes">
+        <!-- PWA Manifest -->
+        <link rel="manifest" href="manifest.json">
         
 <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
@@ -73,9 +75,7 @@
         document.getElementById("content-" + tabIndex).classList.add("active");
         document.getElementById("btn-" + tabIndex).classList.add("active");
     }
-    
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
-    
     window.onload = function() {
         if (!document.title.toUpperCase().includes("TODIS") || document.title.includes("Segnapunti")) return;
         const today = new Date(); today.setHours(0,0,0,0);
@@ -120,11 +120,11 @@
         <div class="app-header">
             <div class="header-left">
                 <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" alt="Logo">
-                <div><h1>TODIS PASTENA VOLLEY</h1><div class="last-update">01/01 13:17</div></div>
+                <div><h1>TODIS PASTENA VOLLEY</h1><div class="last-update">01/01 13:54</div></div>
             </div>
             <div class="nav-buttons"><a href="generale.html" class="btn-nav" title="Tutti i risultati">🌍</a> <a href="segnapunti.html" class="btn-nav" title="Segnapunti">🔢</a></div>
         </div><div class="tab-bar"><button id="btn-0" class="tab-btn active" onclick="openTab(0)">Serie D C</button><button id="btn-1" class="tab-btn " onclick="openTab(1)">Serie C A</button><button id="btn-2" class="tab-btn " onclick="openTab(2)">Under 18 B</button><button id="btn-3" class="tab-btn " onclick="openTab(3)">Under 16 A</button><button id="btn-4" class="tab-btn " onclick="openTab(4)">Under 14 C</button></div><div id="content-0" class="tab-content active"><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>POLISPORTIVA SPORT FOR LIFE</td><td><b>25</b></td><td>9</td><td>9</td><td>0</td><td>27</td><td>6</td></tr><tr ><td>2</td><td>U.S. SALERNO OFFICIAL-MINERVA</td><td><b>20</b></td><td>9</td><td>7</td><td>2</td><td>24</td><td>12</td></tr><tr ><td>3</td><td>NOCERA VOLLEY</td><td><b>20</b></td><td>9</td><td>7</td><td>2</td><td>23</td><td>14</td></tr><tr ><td>4</td><td>NUOVA GS OLIMPICA</td><td><b>14</b></td><td>9</td><td>5</td><td>4</td><td>17</td><td>18</td></tr><tr class="my-team-row"><td>5</td><td>TODIS CS PASTENA VOLLEY</td><td><b>12</b></td><td>9</td><td>4</td><td>5</td><td>17</td><td>20</td></tr><tr ><td>6</td><td>PALL BATTIPAGLIA</td><td><b>12</b></td><td>9</td><td>3</td><td>6</td><td>20</td><td>22</td></tr><tr ><td>7</td><td>ZETA VOLLEY STRIANO</td><td><b>11</b></td><td>9</td><td>4</td><td>5</td><td>17</td><td>22</td></tr><tr ><td>8</td><td>ISV PRIMA COLTA</td><td><b>10</b></td><td>9</td><td>3</td><td>6</td><td>17</td><td>22</td></tr><tr ><td>9</td><td>ASD ACCA VOLLEY EBOLI</td><td><b>7</b></td><td>9</td><td>2</td><td>7</td><td>14</td><td>24</td></tr><tr ><td>10</td><td>MURATE VOLLEY</td><td><b>4</b></td><td>9</td><td>1</td><td>8</td><td>10</td><td>26</td></tr></tbody></table></div></div><h2>📅 Calendario</h2>
-    <div class="match-card loss" data-date-iso="2025-10-26" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card loss" data-date-iso="2025-10-26" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         <span class="result-badge badge-loss">PERSA</span>
         <div class="match-header">
             <span class="date-badge">📅 26/10/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 1</span>
@@ -135,11 +135,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ PALAPITTONI SANT' ARCANGELO di Cava de' Tirreni CAVA DE' TIRRENI SAVIA IDO LONGO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.69733720,14.69712620&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0AU.S.%20SALERNO%20OFFICIAL-MINERVA%203%20-%200%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.69733720,14.69712620&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0AU.S.%20SALERNO%20OFFICIAL-MINERVA%203%20-%200%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card win" data-date-iso="2025-11-02" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card win" data-date-iso="2025-11-02" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         <span class="result-badge badge-win">VINTA</span>
         <div class="match-header">
             <span class="date-badge">📅 02/11/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 2</span>
@@ -150,11 +150,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%203%20-%202%20MURATE%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%203%20-%202%20MURATE%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card loss" data-date-iso="2025-11-09" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card loss" data-date-iso="2025-11-09" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         <span class="result-badge badge-loss">PERSA</span>
         <div class="match-header">
             <span class="date-badge">📅 09/11/2025 ⏰ 11:30</span> <span>|</span> <span>Giornata 3</span>
@@ -165,11 +165,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ PALASPORT COSCIONI NOCERA INFERIORE SAViale San Francesco</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.74587140,14.65204840&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0ANOCERA%20VOLLEY%203%20-%202%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.74587140,14.65204840&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ANOCERA%20VOLLEY%203%20-%202%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card win" data-date-iso="2025-11-16" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card win" data-date-iso="2025-11-16" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         <span class="result-badge badge-win">VINTA</span>
         <div class="match-header">
             <span class="date-badge">📅 16/11/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 4</span>
@@ -180,11 +180,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%203%20-%200%20ZETA%20VOLLEY%20STRIANO" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%203%20-%200%20ZETA%20VOLLEY%20STRIANO" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card loss" data-date-iso="2025-11-23" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card loss" data-date-iso="2025-11-23" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         <span class="result-badge badge-loss">PERSA</span>
         <div class="match-header">
             <span class="date-badge">📅 23/11/2025 ⏰ 19:30</span> <span>|</span> <span>Giornata 5</span>
@@ -195,11 +195,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ PALAZZETTO PIGNOLA PZSTRADA COMUNALE DEL PANTANO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.58213060,15.77015110&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0APOLISPORTIVA%20SPORT%20FOR%20LIFE%203%20-%201%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.58213060,15.77015110&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0APOLISPORTIVA%20SPORT%20FOR%20LIFE%203%20-%201%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card loss" data-date-iso="2025-11-30" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card loss" data-date-iso="2025-11-30" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         <span class="result-badge badge-loss">PERSA</span>
         <div class="match-header">
             <span class="date-badge">📅 30/11/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 6</span>
@@ -210,11 +210,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%202%20-%203%20NUOVA%20GS%20OLIMPICA" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%202%20-%203%20NUOVA%20GS%20OLIMPICA" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card loss" data-date-iso="2025-12-07" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card loss" data-date-iso="2025-12-07" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         <span class="result-badge badge-loss">PERSA</span>
         <div class="match-header">
             <span class="date-badge">📅 07/12/2025 ⏰ 20:00</span> <span>|</span> <span>Giornata 7</span>
@@ -225,11 +225,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ PALESTRA COMUNALE CESINALI AVVIA VALLE</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.89768930,14.82822910&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0AISV%20PRIMA%20COLTA%203%20-%200%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.89768930,14.82822910&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0AISV%20PRIMA%20COLTA%203%20-%200%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card win" data-date-iso="2025-12-15" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card win" data-date-iso="2025-12-15" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         <span class="result-badge badge-win">VINTA</span>
         <div class="match-header">
             <span class="date-badge">📅 15/12/2025 ⏰ 21:30</span> <span>|</span> <span>Giornata 8</span>
@@ -240,11 +240,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ SMS PIETRO DA EBOLI EBOLI SAVia Caduti di Bruxelles</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.61482750,15.04864840&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0AASD%20ACCA%20VOLLEY%20EBOLI%201%20-%203%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.61482750,15.04864840&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0AASD%20ACCA%20VOLLEY%20EBOLI%201%20-%203%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card win" data-date-iso="2025-12-21" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card win" data-date-iso="2025-12-21" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         <span class="result-badge badge-win">VINTA</span>
         <div class="match-header">
             <span class="date-badge">📅 21/12/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 9</span>
@@ -255,11 +255,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%203%20-%202%20PALL%20BATTIPAGLIA" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%203%20-%202%20PALL%20BATTIPAGLIA" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card upcoming" data-date-iso="2026-01-11" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card upcoming" data-date-iso="2026-01-11" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         
         <div class="match-header">
             <span class="date-badge">📅 11/01/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 10</span>
@@ -270,11 +270,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20CS%20PASTENA%20VOLLEY%20vs%20U.S.%20SALERNO%20OFFICIAL-MINERVA&dates=20260111T180000/20260111T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Serie%20D%20%20Maschile%20%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0A11/01/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20CS%20PASTENA%20VOLLEY%20vs%20U.S.%20SALERNO%20OFFICIAL-MINERVA" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20CS%20PASTENA%20VOLLEY%20vs%20U.S.%20SALERNO%20OFFICIAL-MINERVA&dates=20260111T180000/20260111T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A11/01/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20CS%20PASTENA%20VOLLEY%20vs%20U.S.%20SALERNO%20OFFICIAL-MINERVA" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card upcoming" data-date-iso="2026-01-18" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card upcoming" data-date-iso="2026-01-18" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         
         <div class="match-header">
             <span class="date-badge">📅 18/01/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 11</span>
@@ -285,11 +285,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ PALESTRA CAIZZO POTENZA PZVIA CIRILLO 10 (RIONE LUCANIA)</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63815320,15.81455030&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20MURATE%20VOLLEY%20vs%20TODIS%20CS%20PASTENA%20VOLLEY&dates=20260118T180000/20260118T200000&location=PALESTRA%20CAIZZO%C2%A0POTENZA%20PZVIA%20CIRILLO%2010%20%28RIONE%20LUCANIA%29&details=Campionato+Serie%20D%20%20Maschile%20%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0A18/01/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20PALESTRA%20CAIZZO%C2%A0POTENZA%20PZVIA%20CIRILLO%2010%20%28RIONE%20LUCANIA%29%0AMURATE%20VOLLEY%20vs%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63815320,15.81455030&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20MURATE%20VOLLEY%20vs%20TODIS%20CS%20PASTENA%20VOLLEY&dates=20260118T180000/20260118T200000&location=PALESTRA%20CAIZZO%C2%A0POTENZA%20PZVIA%20CIRILLO%2010%20%28RIONE%20LUCANIA%29&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A18/01/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20PALESTRA%20CAIZZO%C2%A0POTENZA%20PZVIA%20CIRILLO%2010%20%28RIONE%20LUCANIA%29%0AMURATE%20VOLLEY%20vs%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card upcoming" data-date-iso="2026-01-25" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card upcoming" data-date-iso="2026-01-25" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         
         <div class="match-header">
             <span class="date-badge">📅 25/01/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 12</span>
@@ -300,11 +300,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20CS%20PASTENA%20VOLLEY%20vs%20NOCERA%20VOLLEY&dates=20260125T180000/20260125T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Serie%20D%20%20Maschile%20%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0A25/01/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20CS%20PASTENA%20VOLLEY%20vs%20NOCERA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20CS%20PASTENA%20VOLLEY%20vs%20NOCERA%20VOLLEY&dates=20260125T180000/20260125T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A25/01/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20CS%20PASTENA%20VOLLEY%20vs%20NOCERA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card upcoming" data-date-iso="2026-02-01" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card upcoming" data-date-iso="2026-02-01" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         
         <div class="match-header">
             <span class="date-badge">📅 01/02/2026 ⏰ 20:30</span> <span>|</span> <span>Giornata 13</span>
@@ -315,11 +315,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ PALESTRA SM A. D'AVINO STRIANO NAVIA MONTE</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.81894170,14.57672190&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ZETA%20VOLLEY%20STRIANO%20vs%20TODIS%20CS%20PASTENA%20VOLLEY&dates=20260201T203000/20260201T223000&location=PALESTRA%20SM%20A.%20D%27AVINO%C2%A0STRIANO%20NAVIA%20MONTE&details=Campionato+Serie%20D%20%20Maschile%20%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0A01/02/2026%20%E2%8F%B0%2020%3A30%0A%F0%9F%93%8D%20PALESTRA%20SM%20A.%20D%27AVINO%C2%A0STRIANO%20NAVIA%20MONTE%0AZETA%20VOLLEY%20STRIANO%20vs%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.81894170,14.57672190&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ZETA%20VOLLEY%20STRIANO%20vs%20TODIS%20CS%20PASTENA%20VOLLEY&dates=20260201T203000/20260201T223000&location=PALESTRA%20SM%20A.%20D%27AVINO%C2%A0STRIANO%20NAVIA%20MONTE&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A01/02/2026%20%E2%8F%B0%2020%3A30%0A%F0%9F%93%8D%20PALESTRA%20SM%20A.%20D%27AVINO%C2%A0STRIANO%20NAVIA%20MONTE%0AZETA%20VOLLEY%20STRIANO%20vs%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card upcoming" data-date-iso="2026-02-08" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card upcoming" data-date-iso="2026-02-08" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         
         <div class="match-header">
             <span class="date-badge">📅 08/02/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 14</span>
@@ -330,11 +330,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20CS%20PASTENA%20VOLLEY%20vs%20POLISPORTIVA%20SPORT%20FOR%20LIFE&dates=20260208T180000/20260208T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Serie%20D%20%20Maschile%20%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0A08/02/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20CS%20PASTENA%20VOLLEY%20vs%20POLISPORTIVA%20SPORT%20FOR%20LIFE" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20CS%20PASTENA%20VOLLEY%20vs%20POLISPORTIVA%20SPORT%20FOR%20LIFE&dates=20260208T180000/20260208T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A08/02/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20CS%20PASTENA%20VOLLEY%20vs%20POLISPORTIVA%20SPORT%20FOR%20LIFE" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card upcoming" data-date-iso="2026-02-15" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card upcoming" data-date-iso="2026-02-15" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         
         <div class="match-header">
             <span class="date-badge">📅 15/02/2026 ⏰ 19:30</span> <span>|</span> <span>Giornata 15</span>
@@ -345,11 +345,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ PALESTRA IPIA AMATUCCI AVELLINO AVVIA F.LLI CIOCCA</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.91419770,14.78114450&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20NUOVA%20GS%20OLIMPICA%20vs%20TODIS%20CS%20PASTENA%20VOLLEY&dates=20260215T193000/20260215T213000&location=PALESTRA%20IPIA%20AMATUCCI%C2%A0AVELLINO%20AVVIA%20F.LLI%20CIOCCA&details=Campionato+Serie%20D%20%20Maschile%20%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0A15/02/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20IPIA%20AMATUCCI%C2%A0AVELLINO%20AVVIA%20F.LLI%20CIOCCA%0ANUOVA%20GS%20OLIMPICA%20vs%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.91419770,14.78114450&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20NUOVA%20GS%20OLIMPICA%20vs%20TODIS%20CS%20PASTENA%20VOLLEY&dates=20260215T193000/20260215T213000&location=PALESTRA%20IPIA%20AMATUCCI%C2%A0AVELLINO%20AVVIA%20F.LLI%20CIOCCA&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A15/02/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20IPIA%20AMATUCCI%C2%A0AVELLINO%20AVVIA%20F.LLI%20CIOCCA%0ANUOVA%20GS%20OLIMPICA%20vs%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card upcoming" data-date-iso="2026-02-22" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card upcoming" data-date-iso="2026-02-22" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         
         <div class="match-header">
             <span class="date-badge">📅 22/02/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 16</span>
@@ -360,11 +360,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20CS%20PASTENA%20VOLLEY%20vs%20ISV%20PRIMA%20COLTA&dates=20260222T180000/20260222T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Serie%20D%20%20Maschile%20%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0A22/02/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20CS%20PASTENA%20VOLLEY%20vs%20ISV%20PRIMA%20COLTA" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20CS%20PASTENA%20VOLLEY%20vs%20ISV%20PRIMA%20COLTA&dates=20260222T180000/20260222T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A22/02/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20CS%20PASTENA%20VOLLEY%20vs%20ISV%20PRIMA%20COLTA" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card upcoming" data-date-iso="2026-03-01" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card upcoming" data-date-iso="2026-03-01" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         
         <div class="match-header">
             <span class="date-badge">📅 01/03/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 17</span>
@@ -375,11 +375,11 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20CS%20PASTENA%20VOLLEY%20vs%20ASD%20ACCA%20VOLLEY%20EBOLI&dates=20260301T180000/20260301T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Serie%20D%20%20Maschile%20%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0A01/03/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20CS%20PASTENA%20VOLLEY%20vs%20ASD%20ACCA%20VOLLEY%20EBOLI" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20CS%20PASTENA%20VOLLEY%20vs%20ASD%20ACCA%20VOLLEY%20EBOLI&dates=20260301T180000/20260301T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A01/03/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20CS%20PASTENA%20VOLLEY%20vs%20ASD%20ACCA%20VOLLEY%20EBOLI" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
-    <div class="match-card upcoming" data-date-iso="2026-03-08" data-camp="Serie D  Maschile  Gir.C" data-my-team="true">
+    <div class="match-card upcoming" data-date-iso="2026-03-08" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
         
         <div class="match-header">
             <span class="date-badge">📅 08/03/2026 ⏰ 19:00</span> <span>|</span> <span>Giornata 18</span>
@@ -390,7 +390,7 @@
         </div>
         <div class="match-footer">
             <span class="gym-name">🏟️ PALESTRA  SKIBA c/oSTADIO PASTENA  BATTIPAGLIA SAPIAZZA POZZO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.60091010,14.97733000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20PALL%20BATTIPAGLIA%20vs%20TODIS%20CS%20PASTENA%20VOLLEY&dates=20260308T190000/20260308T210000&location=PALESTRA%20%20SKIBA%20c/oSTADIO%20PASTENA%20%C2%A0BATTIPAGLIA%20SAPIAZZA%20POZZO&details=Campionato+Serie%20D%20%20Maschile%20%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20%20Gir.C%2A%0A08/03/2026%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20PALESTRA%20%20SKIBA%20c/oSTADIO%20PASTENA%20%C2%A0BATTIPAGLIA%20SAPIAZZA%20POZZO%0APALL%20BATTIPAGLIA%20vs%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.60091010,14.97733000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20PALL%20BATTIPAGLIA%20vs%20TODIS%20CS%20PASTENA%20VOLLEY&dates=20260308T190000/20260308T210000&location=PALESTRA%20%20SKIBA%20c/oSTADIO%20PASTENA%20%C2%A0BATTIPAGLIA%20SAPIAZZA%20POZZO&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A08/03/2026%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20PALESTRA%20%20SKIBA%20c/oSTADIO%20PASTENA%20%C2%A0BATTIPAGLIA%20SAPIAZZA%20POZZO%0APALL%20BATTIPAGLIA%20vs%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     </div><div id="content-1" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>CUCC VOLLEY</td><td><b>20</b></td><td>8</td><td>7</td><td>1</td><td>21</td><td>5</td></tr><tr ><td>2</td><td>ASD VOLLEY VOLLA</td><td><b>18</b></td><td>8</td><td>6</td><td>2</td><td>19</td><td>8</td></tr><tr ><td>3</td><td>VOLLEYTIME</td><td><b>17</b></td><td>8</td><td>6</td><td>2</td><td>18</td><td>9</td></tr><tr ><td>4</td><td>ANCIS VILLARICCA</td><td><b>16</b></td><td>8</td><td>5</td><td>3</td><td>18</td><td>11</td></tr><tr ><td>5</td><td>APD LIBERTAS SORRENTO</td><td><b>14</b></td><td>8</td><td>5</td><td>3</td><td>19</td><td>16</td></tr><tr ><td>6</td><td>VITOLO VOLLEY</td><td><b>9</b></td><td>8</td><td>3</td><td>5</td><td>13</td><td>18</td></tr><tr class="my-team-row"><td>7</td><td>TODIS PASTENA VOLLEY</td><td><b>8</b></td><td>8</td><td>3</td><td>5</td><td>13</td><td>19</td></tr><tr ><td>8</td><td>CARBAT MATESE</td><td><b>3</b></td><td>8</td><td>1</td><td>7</td><td>6</td><td>23</td></tr><tr ><td>9</td><td>SMILERS SAN LORENZO</td><td><b>3</b></td><td>8</td><td>0</td><td>8</td><td>6</td><td>24</td></tr></tbody></table></div></div><h2>📅 Calendario</h2>
