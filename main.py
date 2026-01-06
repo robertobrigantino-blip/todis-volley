@@ -18,8 +18,7 @@ TARGET_TEAM_ALIASES = [
     "TODIS C.S. PASTENA VOLLEY"
 ]
 
-# FILE DI OUTPUT
-FILE_LANDING = "index.html"      # Pagina Scelta (Immagine)
+FILE_LANDING = "index.html"      # Pagina Scelta (Hub)
 FILE_MALE = "maschile.html"      # App Maschile
 FILE_FEMALE = "femminile.html"   # App Femminile
 FILE_GEN = "generale.html"       # Vista Generale (Globale)
@@ -46,7 +45,6 @@ CAMPIONATI_FEMMINILI = {
     "Under 14 Femminile Gir.C": "86860",
 }
 
-# Unione per lo scraping
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 
 def is_target_team(team_name):
@@ -60,21 +58,30 @@ def is_target_team(team_name):
 CSS_BASE = """
 <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
+    
+    /* Header */
     .app-header { background-color: #d32f2f; color: white; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; }
-    .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; } /* Cursore per indicare cliccabile */
+    .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img { height: 35px; width: 35px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
     .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
+    
     .nav-buttons { display: flex; gap: 8px; }
     .btn-nav { background: rgba(255,255,255,0.2); color: white; text-decoration: none; font-size: 18px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); }
     .btn-nav.active { background: white; color: #d32f2f; }
+
+    /* Tabs */
     .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 54px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
     .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
+
     .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
+
+    /* Classifica */
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
@@ -82,27 +89,36 @@ CSS_BASE = """
     td { padding: 10px 6px; text-align: center; border-bottom: 1px solid #f0f0f0; }
     td:nth-child(2) { text-align: left; min-width: 140px; font-weight: 500; position: sticky; left: 0; background-color: white; border-right: 1px solid #eee; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
+
+    /* Card Partita */
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; }
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
+
     .result-badge { position: absolute; top: 0; right: 0; font-size: 9px; padding: 3px 6px; border-bottom-left-radius: 6px; font-weight: bold; color: white; z-index: 10; text-transform: uppercase; }
     .badge-win { background-color: #2e7d32; }
     .badge-loss { background-color: #c62828; }
     .badge-played { background-color: #78909c; } 
+
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; padding-right: 50px; }
     .date-badge { font-weight: bold; color: #d32f2f; display: flex; align-items: center; gap: 4px; }
+    
     .teams { display: flex; flex-direction: column; gap: 6px; font-size: 14px; margin-bottom: 8px; }
     .team-row { display: flex; justify-content: space-between; align-items: center; }
     .my-team-text { color: #d32f2f; font-weight: 700; }
     .team-score { font-weight: bold; background: #eee; padding: 2px 8px; border-radius: 4px; min-width: 25px; text-align: center; }
+    
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
     .gym-name { font-size: 11px; color: #666; width: 100%; display: block; margin-bottom: 5px; }
+    
     .action-buttons { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
     .btn { text-decoration: none; padding: 5px 10px; border-radius: 15px; font-size: 10px; font-weight: bold; display: flex; align-items: center; gap: 3px; border: 1px solid transparent; }
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
+
+    /* Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .modal-content { background: white; width: 85%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 20px; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
     @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -110,6 +126,7 @@ CSS_BASE = """
     .modal-title { font-size: 18px; font-weight: bold; color: #d32f2f; }
     .close-btn { background: #eee; border: none; font-size: 24px; padding: 0 10px; border-radius: 5px; color: #555; cursor: pointer; }
     .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
+    
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
     
@@ -117,6 +134,15 @@ CSS_BASE = """
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
+
+    /* LANDING PAGE STYLES */
+    .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
+    .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
+    .choice-img { width: 100%; display: block; height: auto; }
+    .click-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; }
+    .click-area { width: 50%; height: 100%; cursor: pointer; /* background: rgba(255,0,0,0.2); Debug */ }
+    .click-area:active { background: rgba(255,255,255,0.1); }
+    .instruction-text { margin-bottom: 15px; font-weight: 500; color: #555; font-size: 14px; }
 </style>
 <script>
     if ('serviceWorker' in navigator) {
@@ -137,54 +163,54 @@ CSS_BASE = """
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
 
+    // Popup Logic
     window.onload = function() {
-        // iOS Detection
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+        
         if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
 
-        // Popup Partite (Solo nelle pagine app, non nel segnapunti o landing)
-        if (!document.title.toUpperCase().includes("TODIS") || document.title.includes("Segnapunti") || document.title.includes("Benvenuto")) return;
-
-        const today = new Date();
-        today.setHours(0,0,0,0);
-        let nextMatches = {};
-        const allMatches = document.querySelectorAll('.match-card.upcoming');
-        
-        allMatches.forEach(card => {
-            const isMyTeam = card.getAttribute('data-my-team');
-            if(isMyTeam === 'true') {
-                const dateStr = card.getAttribute('data-date-iso');
-                const campName = card.getAttribute('data-camp');
-                if (dateStr && campName) {
-                    const parts = dateStr.split('-');
-                    const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
-                    if (matchDate >= today) {
-                        if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
-                            nextMatches[campName] = { date: matchDate, html: card.outerHTML };
+        // Popup solo se siamo in una pagina di dettaglio (Maschile/Femminile)
+        if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            let nextMatches = {};
+            
+            document.querySelectorAll('.match-card.upcoming').forEach(card => {
+                const isMyTeam = card.getAttribute('data-my-team');
+                if(isMyTeam === 'true') {
+                    const dateStr = card.getAttribute('data-date-iso');
+                    const campName = card.getAttribute('data-camp');
+                    if (dateStr && campName) {
+                        const parts = dateStr.split('-');
+                        const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
+                        if (matchDate >= today) {
+                            if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
+                                nextMatches[campName] = { date: matchDate, html: card.outerHTML };
+                            }
                         }
                     }
                 }
+            });
+            
+            let popupHTML = "";
+            let count = 0;
+            for (const [camp, data] of Object.entries(nextMatches)) {
+                popupHTML += `<h3>🏆 ${camp}</h3>`;
+                popupHTML += data.html;
+                count++;
             }
-        });
-        
-        let popupHTML = "";
-        let count = 0;
-        for (const [camp, data] of Object.entries(nextMatches)) {
-            popupHTML += `<h3>🏆 ${camp}</h3>`;
-            popupHTML += data.html;
-            count++;
-        }
-        
-        if (count > 0) {
-            const modalBody = document.getElementById('modal-body');
-            if(modalBody) {
-                modalBody.innerHTML = popupHTML;
-                setTimeout(function(){
-                    document.getElementById('modal-overlay').style.display = 'flex';
-                }, 500);
+            
+            if (count > 0) {
+                const modalBody = document.getElementById('modal-body');
+                if(modalBody) {
+                    modalBody.innerHTML = popupHTML;
+                    setTimeout(function(){
+                        document.getElementById('modal-overlay').style.display = 'flex';
+                    }, 500);
+                }
             }
         }
     };
@@ -457,54 +483,78 @@ def scrape_data():
     driver.quit()
     return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
 
-# ================= GENERATORE PAGINE =================
+# ================= GENERATORE LANDING PAGE =================
 def genera_landing_page():
     print(f"📄 Generazione Landing Page...")
+    
+    # Header per landing (con nav buttons)
+    nav_links = f'<a href="{FILE_GEN}" class="btn-nav" title="Tutti i risultati">🌍</a> <a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
+    
     html = f"""<!DOCTYPE html>
     <html lang="it">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <meta name="theme-color" content="#000000">
+        <meta name="theme-color" content="#d32f2f">
         <title>{NOME_VISUALIZZATO}</title>
         <link rel="icon" type="image/png" href="{URL_LOGO}">
         <link rel="apple-touch-icon" href="{URL_LOGO}">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <link rel="manifest" href="manifest.json">
-        <style>
-            body {{ margin: 0; padding: 0; background: #000; overflow: hidden; height: 100vh; width: 100vw; }}
-            .container {{ position: relative; width: 100%; height: 100%; }}
-            .bg-image {{ width: 100%; height: 100%; object-fit: cover; object-position: center; }}
-            .click-area {{ position: absolute; top: 0; height: 100%; width: 50%; z-index: 10; cursor: pointer; }}
-            .area-left {{ left: 0; }}
-            .area-right {{ right: 0; }}
-            /* Feedback tocco */
-            .click-area:active {{ background-color: rgba(255,255,255,0.1); }}
-        </style>
-        <script>
-            if ('serviceWorker' in navigator) {{
-                window.addEventListener('load', () => {{
-                    navigator.serviceWorker.register('sw.js');
-                }});
-            }}
-        </script>
+        {CSS_BASE}
     </head>
     <body>
-        <div class="container">
-            <img src="{URL_SPLIT_IMG}" class="bg-image" alt="Scelta Campionato">
-            <a href="{FILE_MALE}" class="click-area area-left" title="Maschile"></a>
-            <a href="{FILE_FEMALE}" class="click-area area-right" title="Femminile"></a>
+        <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div>
+                <div id="modal-body"></div>
+                <div style="text-align:center; margin-top:15px;"><button onclick="closeModal()" style="background:#d32f2f; color:white; border:none; padding:8px 20px; border-radius:20px;">Chiudi</button></div>
+            </div>
+        </div>
+        
+        <div class="app-header">
+            <div class="header-left">
+                <img src="{URL_LOGO}" alt="Logo">
+                <div><h1>{NOME_VISUALIZZATO}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
+            </div>
+            <div class="nav-buttons">{nav_links}</div>
+        </div>
+        
+        <div class="landing-container">
+            <div class="instruction-text">Seleziona il settore:</div>
+            <div class="choice-card">
+                <img src="{URL_SPLIT_IMG}" alt="Scelta Campionato" class="choice-img">
+                <div class="click-overlay">
+                    <a href="{FILE_MALE}" class="click-area"></a>
+                    <a href="{FILE_FEMALE}" class="click-area"></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"></div>
+        
+        <!-- Script iOS Popup per Landing -->
+        <div id="ios-popup" class="ios-install-popup">
+            <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
+            <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
+            <div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div>
+            <div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div>
+            <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
         </div>
     </body>
     </html>"""
     with open(FILE_LANDING, "w", encoding="utf-8") as f: f.write(html)
 
+# ================= GENERATORE PAGINE APP =================
 def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP"):
     print(f"📄 Generazione {filename} (Mode: {mode})...")
     is_app = True
-    title = NOME_VISUALIZZATO
     
-    # Header navigation: Logo torna alla Landing
+    # Titolo pagina specifico
+    if "maschile" in filename: page_title = "Settore Maschile"
+    elif "femminile" in filename: page_title = "Settore Femminile"
+    else: page_title = NOME_VISUALIZZATO
+    
     nav_links = f'<a href="{FILE_GEN}" class="btn-nav" title="Tutti i risultati">🌍</a> <a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
 
     modal_html = """
@@ -516,15 +566,13 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
             </div>
         </div>"""
     
-    footer_html = f'<div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"></div>'
-
     html = f"""<!DOCTYPE html>
     <html lang="it">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <meta name="theme-color" content="#d32f2f">
-        <title>{title}</title>
+        <title>{page_title}</title>
         <link rel="icon" type="image/png" href="{URL_LOGO}">
         <link rel="apple-touch-icon" href="{URL_LOGO}">
         <meta name="apple-mobile-web-app-capable" content="yes">
@@ -536,13 +584,12 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
         <div class="app-header">
             <div class="header-left" onclick="window.location.href='{FILE_LANDING}'">
                 <img src="{URL_LOGO}" alt="Logo">
-                <div><h1>{title}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
+                <div><h1>{page_title}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
             </div>
             <div class="nav-buttons">{nav_links}</div>
         </div>
     """
 
-    # Filtra i dati per i campionati specifici di questa pagina
     campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
     
     html += '<div class="tab-bar">'
@@ -571,8 +618,6 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
 
         html += f"<h2>📅 Calendario</h2>"
         df_r = df_ris[df_ris['Campionato'] == camp]
-        
-        # Filtro Squadra
         mask = df_r['Squadra Casa'].apply(is_target_team) | df_r['Squadra Ospite'].apply(is_target_team)
         df_r = df_r[mask]
         
@@ -582,14 +627,12 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
             for _, r in df_r.iterrows(): html += crea_card_html(r, camp, is_focus_mode=True)
         html += '</div>'
 
-    html += footer_html
-    html += "</body></html>"
+    html += '<div style="height:20px;"></div></body></html>'
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
 
 def genera_pagina_generale(df_ris, df_class, filename):
     print(f"📄 Generazione {filename} (Mode: GENERAL)...")
     title = "Risultati Completi"
-    # Link Home torna alla Landing
     nav_links = f'<a href="{FILE_LANDING}" class="btn-nav" title="Home">🏠</a> <a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
 
     html = f"""<!DOCTYPE html>
