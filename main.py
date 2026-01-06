@@ -24,27 +24,30 @@ FILE_FEMALE = "femminile.html"   # App Femminile
 FILE_GEN = "generale.html"       # Vista Generale (Globale)
 FILE_SCORE = "segnapunti.html"   # Segnapunti
 
-# URL IMMAGINI
-URL_LOGO = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg"
-URL_SPLIT_IMG = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/scelta_campionato.jpg"
+# --- URL IMMAGINI (RAW DA GITHUB) ---
+REPO_URL = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/"
+
+URL_LOGO = REPO_URL + "logo.jpg"
+URL_SPLIT_IMG = REPO_URL + "scelta_campionato.jpg"
+
+# NUOVI BOTTONI
+BTN_ALL_RESULTS = REPO_URL + "all_result.png"
+BTN_TODIS_RESULTS = REPO_URL + "todis_result.png"
+BTN_SCOREBOARD = REPO_URL + "tabellone_segnapunti.png"
+
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
 # CAMPIONATI
-CAMPIONATI_MASCHILI = {
+CAMPIONATI = {
     "Serie D  Maschile Gir.C": "85622",
     "Under 19 Maschile Gir.A": "86865",
     "Under 17 Maschile Gir.B": "86864",
     "Under 15 Maschile Gir.B": "86848",
-}
-
-CAMPIONATI_FEMMINILI = {
     "Serie C  Femminile Gir.A": "85471",
     "Under 18 Femminile Gir.B": "86850",
     "Under 16 Femminile Gir.A": "86853",
     "Under 14 Femminile Gir.C": "86860",
 }
-
-ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 
 def is_target_team(team_name):
     if pd.isna(team_name) or not str(team_name).strip(): return False
@@ -57,21 +60,39 @@ def is_target_team(team_name):
 CSS_BASE = """
 <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
-    .app-header { background-color: #d32f2f; color: white; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; }
+    
+    /* Header */
+    .app-header { background-color: #d32f2f; color: white; padding: 5px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; height: 60px; }
+    
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-    .app-header img { height: 35px; width: 35px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
+    .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
     .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
-    .nav-buttons { display: flex; gap: 8px; }
-    .btn-nav { background: rgba(255,255,255,0.2); color: white; text-decoration: none; font-size: 18px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); }
-    .btn-nav.active { background: white; color: #d32f2f; }
-    .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 54px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
+    
+    /* NUOVI BOTTONI HEADER */
+    .nav-buttons { display: flex; gap: 10px; align-items: center; }
+    
+    .nav-icon-img { 
+        height: 45px; /* Dimensione bottoni */
+        width: auto; 
+        transition: transform 0.1s, opacity 0.2s; 
+        filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+        cursor: pointer;
+    }
+    
+    .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
+
+    /* Tabs */
+    .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
     .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
     .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
+
+    /* Classifica */
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
@@ -79,14 +100,18 @@ CSS_BASE = """
     td { padding: 10px 6px; text-align: center; border-bottom: 1px solid #f0f0f0; }
     td:nth-child(2) { text-align: left; min-width: 140px; font-weight: 500; position: sticky; left: 0; background-color: white; border-right: 1px solid #eee; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
+
+    /* Card Partita */
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; }
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
+
     .result-badge { position: absolute; top: 0; right: 0; font-size: 9px; padding: 3px 6px; border-bottom-left-radius: 6px; font-weight: bold; color: white; z-index: 10; text-transform: uppercase; }
     .badge-win { background-color: #2e7d32; }
     .badge-loss { background-color: #c62828; }
     .badge-played { background-color: #78909c; } 
+
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; padding-right: 50px; }
     .date-badge { font-weight: bold; color: #d32f2f; display: flex; align-items: center; gap: 4px; }
     .teams { display: flex; flex-direction: column; gap: 6px; font-size: 14px; margin-bottom: 8px; }
@@ -109,9 +134,13 @@ CSS_BASE = """
     .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
+    
+    /* IOS INSTALL TIP */
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
+
+    /* LANDING PAGE STYLES */
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -408,7 +437,7 @@ def scrape_data():
     driver = webdriver.Chrome(options=chrome_options)
     all_results, all_standings = [], []
 
-    for nome_camp, id_camp in ALL_CAMPIONATI.items():
+    for nome_camp, id_camp in CAMPIONATI.items():
         print(f"   Analisi: {nome_camp}...")
         base_url = "https://www.fipavsalerno.it/mobile/"
         if "Serie C" in nome_camp or "Serie D" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/"
@@ -455,8 +484,9 @@ def scrape_data():
 # ================= GENERATORE LANDING PAGE =================
 def genera_landing_page():
     print(f"📄 Generazione Landing Page...")
-    # Solo segnapunti nell'header, rimosso il bottone "mondo" (generale)
-    nav_links = f'<a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
+    
+    # Header: Solo Segnapunti
+    nav_links = f'<a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
     
     html = f"""<!DOCTYPE html>
     <html lang="it">
@@ -482,7 +512,7 @@ def genera_landing_page():
         
         <div class="app-header">
             <div class="header-left">
-                <img src="{URL_LOGO}" alt="Logo">
+                <img src="{URL_LOGO}" alt="Logo" class="logo-main">
                 <div><h1>{NOME_VISUALIZZATO}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
             </div>
             <div class="nav-buttons">{nav_links}</div>
@@ -521,8 +551,11 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
     elif "femminile" in filename: page_title = "Settore Femminile"
     else: page_title = NOME_VISUALIZZATO
     
-    # Nelle pagine interne compare il bottone "Mondo" per vedere tutto
-    nav_links = f'<a href="{FILE_GEN}" class="btn-nav" title="Tutti i risultati">🌍</a> <a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
+    # NAVIGAZIONE INTERNA: Mondo (Tutti) + Segnapunti
+    nav_links = f"""
+    <a href="{FILE_GEN}" title="Tutti i risultati"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a>
+    <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
+    """
 
     modal_html = """
         <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
@@ -552,7 +585,7 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
         {modal_html}
         <div class="app-header">
             <div class="header-left" onclick="window.location.href='{FILE_LANDING}'">
-                <img src="{URL_LOGO}" alt="Logo">
+                <img src="{URL_LOGO}" alt="Logo" class="logo-main">
                 <div><h1>{page_title}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
             </div>
             <div class="nav-buttons">{nav_links}</div>
@@ -586,7 +619,6 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
 
         html += f"<h2>📅 Calendario</h2>"
         df_r = df_ris[df_ris['Campionato'] == camp]
-        
         mask = df_r['Squadra Casa'].apply(is_target_team) | df_r['Squadra Ospite'].apply(is_target_team)
         df_r = df_r[mask]
         
@@ -602,7 +634,11 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
 def genera_pagina_generale(df_ris, df_class, filename):
     print(f"📄 Generazione {filename} (Mode: GENERAL)...")
     title = "Risultati Completi"
-    nav_links = f'<a href="{FILE_LANDING}" class="btn-nav" title="Home">🏠</a> <a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
+    # NAVIGAZIONE: Torna a Todis (Home) + Segnapunti
+    nav_links = f"""
+    <a href="{FILE_LANDING}" title="Home"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>
+    <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
+    """
 
     html = f"""<!DOCTYPE html>
     <html lang="it">
@@ -621,7 +657,7 @@ def genera_pagina_generale(df_ris, df_class, filename):
     <body>
         <div class="app-header">
             <div class="header-left" onclick="window.location.href='{FILE_LANDING}'">
-                <img src="{URL_LOGO}" alt="Logo">
+                <img src="{URL_LOGO}" alt="Logo" class="logo-main">
                 <div><h1>{title}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
             </div>
             <div class="nav-buttons">{nav_links}</div>
@@ -669,6 +705,9 @@ def genera_pagina_generale(df_ris, df_class, filename):
 
 def genera_segnapunti():
     print(f"📄 Generazione Segnapunti...")
+    # Segnapunti torna alla Home
+    nav_links = f'<a href="{FILE_LANDING}" title="Home"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>'
+
     html = f"""<!DOCTYPE html>
     <html lang="it">
     <head>
