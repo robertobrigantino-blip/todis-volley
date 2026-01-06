@@ -12,21 +12,39 @@
         
 <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
-    .app-header { background-color: #d32f2f; color: white; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; }
+    
+    /* Header */
+    .app-header { background-color: #d32f2f; color: white; padding: 5px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; height: 60px; }
+    
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-    .app-header img { height: 35px; width: 35px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
+    .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
     .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
-    .nav-buttons { display: flex; gap: 8px; }
-    .btn-nav { background: rgba(255,255,255,0.2); color: white; text-decoration: none; font-size: 18px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); }
-    .btn-nav.active { background: white; color: #d32f2f; }
-    .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 54px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
+    
+    /* NUOVI BOTTONI HEADER */
+    .nav-buttons { display: flex; gap: 10px; align-items: center; }
+    
+    .nav-icon-img { 
+        height: 45px; 
+        width: auto; 
+        transition: transform 0.1s, opacity 0.2s; 
+        filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+        cursor: pointer;
+    }
+    
+    .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
+
+    /* Tabs */
+    .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
     .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
     .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
+
+    /* Classifica */
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
@@ -34,22 +52,28 @@
     td { padding: 10px 6px; text-align: center; border-bottom: 1px solid #f0f0f0; }
     td:nth-child(2) { text-align: left; min-width: 140px; font-weight: 500; position: sticky; left: 0; background-color: white; border-right: 1px solid #eee; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
+
+    /* Card Partita */
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; }
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
+
     .result-badge { position: absolute; top: 0; right: 0; font-size: 9px; padding: 3px 6px; border-bottom-left-radius: 6px; font-weight: bold; color: white; z-index: 10; text-transform: uppercase; }
     .badge-win { background-color: #2e7d32; }
     .badge-loss { background-color: #c62828; }
     .badge-played { background-color: #78909c; } 
+
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; padding-right: 50px; }
     .date-badge { font-weight: bold; color: #d32f2f; display: flex; align-items: center; gap: 4px; }
     .teams { display: flex; flex-direction: column; gap: 6px; font-size: 14px; margin-bottom: 8px; }
     .team-row { display: flex; justify-content: space-between; align-items: center; }
     .my-team-text { color: #d32f2f; font-weight: 700; }
     .team-score { font-weight: bold; background: #eee; padding: 2px 8px; border-radius: 4px; min-width: 25px; text-align: center; }
+    
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
     .gym-name { font-size: 11px; color: #666; width: 100%; display: block; margin-bottom: 5px; }
+    
     .action-buttons { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
     .btn { text-decoration: none; padding: 5px 10px; border-radius: 15px; font-size: 10px; font-weight: bold; display: flex; align-items: center; gap: 3px; border: 1px solid transparent; }
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
@@ -64,9 +88,13 @@
     .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
+    
+    /* IOS INSTALL TIP */
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
+
+    /* LANDING PAGE STYLES */
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -94,9 +122,11 @@
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
 
+    // Popup Logic
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+        
         if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
@@ -105,6 +135,7 @@
             const today = new Date();
             today.setHours(0,0,0,0);
             let nextMatches = {};
+            
             document.querySelectorAll('.match-card.upcoming').forEach(card => {
                 const isMyTeam = card.getAttribute('data-my-team');
                 if(isMyTeam === 'true') {
@@ -121,6 +152,7 @@
                     }
                 }
             });
+            
             let popupHTML = "";
             let count = 0;
             for (const [camp, data] of Object.entries(nextMatches)) {
@@ -128,6 +160,7 @@
                 popupHTML += data.html;
                 count++;
             }
+            
             if (count > 0) {
                 const modalBody = document.getElementById('modal-body');
                 if(modalBody) {
@@ -153,10 +186,13 @@
         </div>
         <div class="app-header">
             <div class="header-left" onclick="window.location.href='index.html'">
-                <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" alt="Logo">
-                <div><h1>Settore Femminile</h1><div class="last-update">06/01 11:03</div></div>
+                <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" alt="Logo" class="logo-main">
+                <div><h1>Settore Femminile</h1><div class="last-update">06/01 11:55</div></div>
             </div>
-            <div class="nav-buttons"><a href="generale.html" class="btn-nav" title="Tutti i risultati">🌍</a> <a href="segnapunti.html" class="btn-nav" title="Segnapunti">🔢</a></div>
+            <div class="nav-buttons">
+    <a href="generale.html" title="Tutti i risultati"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/all_result.png" class="nav-icon-img"></a>
+    <a href="segnapunti.html" title="Segnapunti"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a>
+    </div>
         </div>
     <div class="tab-bar"><button id="btn-0" class="tab-btn active" onclick="openTab(0)">Serie C Gir.A</button><button id="btn-1" class="tab-btn " onclick="openTab(1)">Under 18 Gir.B</button><button id="btn-2" class="tab-btn " onclick="openTab(2)">Under 16 Gir.A</button><button id="btn-3" class="tab-btn " onclick="openTab(3)">Under 14 Gir.C</button></div><div id="content-0" class="tab-content active"><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>CUCC VOLLEY</td><td><b>20</b></td><td>8</td><td>7</td><td>1</td><td>21</td><td>5</td></tr><tr ><td>2</td><td>ASD VOLLEY VOLLA</td><td><b>18</b></td><td>8</td><td>6</td><td>2</td><td>19</td><td>8</td></tr><tr ><td>3</td><td>VOLLEYTIME</td><td><b>17</b></td><td>8</td><td>6</td><td>2</td><td>18</td><td>9</td></tr><tr ><td>4</td><td>ANCIS VILLARICCA</td><td><b>16</b></td><td>8</td><td>5</td><td>3</td><td>18</td><td>11</td></tr><tr ><td>5</td><td>APD LIBERTAS SORRENTO</td><td><b>14</b></td><td>8</td><td>5</td><td>3</td><td>19</td><td>16</td></tr><tr ><td>6</td><td>VITOLO VOLLEY</td><td><b>9</b></td><td>8</td><td>3</td><td>5</td><td>13</td><td>18</td></tr><tr class="my-team-row"><td>7</td><td>TODIS PASTENA VOLLEY</td><td><b>8</b></td><td>8</td><td>3</td><td>5</td><td>13</td><td>19</td></tr><tr ><td>8</td><td>CARBAT MATESE</td><td><b>3</b></td><td>8</td><td>1</td><td>7</td><td>6</td><td>23</td></tr><tr ><td>9</td><td>SMILERS SAN LORENZO</td><td><b>3</b></td><td>8</td><td>0</td><td>8</td><td>6</td><td>24</td></tr></tbody></table></div></div><h2>📅 Calendario</h2>
     <div class="match-card loss" data-date-iso="2025-10-26" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
