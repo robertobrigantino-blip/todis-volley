@@ -18,21 +18,36 @@ TARGET_TEAM_ALIASES = [
     "TODIS C.S. PASTENA VOLLEY"
 ]
 
-FILE_APP = "index.html"
-FILE_GEN = "generale.html"
-FILE_SCORE = "segnapunti.html"
+# FILE DI OUTPUT
+FILE_LANDING = "index.html"      # Pagina Scelta (Immagine)
+FILE_MALE = "maschile.html"      # App Maschile
+FILE_FEMALE = "femminile.html"   # App Femminile
+FILE_GEN = "generale.html"       # Vista Generale (Globale)
+FILE_SCORE = "segnapunti.html"   # Segnapunti
 
-# URL LOGO
+# URL IMMAGINI (RAW da GitHub)
 URL_LOGO = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg"
+URL_SPLIT_IMG = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/scelta_campionato.jpg"
+
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
-CAMPIONATI = {
+# DEFINIZIONE CAMPIONATI DIVISI
+CAMPIONATI_MASCHILI = {
     "Serie D  Maschile Gir.C": "85622",
+    "Under 19 Maschile Gir.A": "86865",
+    "Under 17 Maschile Gir.B": "86864",
+    "Under 15 Maschile Gir.B": "86848",
+}
+
+CAMPIONATI_FEMMINILI = {
     "Serie C  Femminile Gir.A": "85471",
     "Under 18 Femminile Gir.B": "86850",
     "Under 16 Femminile Gir.A": "86853",
     "Under 14 Femminile Gir.C": "86860",
 }
+
+# Unione per lo scraping
+ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 
 def is_target_team(team_name):
     if pd.isna(team_name) or not str(team_name).strip(): return False
@@ -46,7 +61,7 @@ CSS_BASE = """
 <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
     .app-header { background-color: #d32f2f; color: white; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; }
-    .header-left { display: flex; align-items: center; gap: 10px; }
+    .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; } /* Cursore per indicare cliccabile */
     .app-header img { height: 35px; width: 35px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
     .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
@@ -123,15 +138,15 @@ CSS_BASE = """
     function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
 
     window.onload = function() {
-        // iOS Detection e Popup Installazione
+        // iOS Detection
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
-        
         if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
 
-        if (!document.title.toUpperCase().includes("TODIS") || document.title.includes("Segnapunti")) return;
+        // Popup Partite (Solo nelle pagine app, non nel segnapunti o landing)
+        if (!document.title.toUpperCase().includes("TODIS") || document.title.includes("Segnapunti") || document.title.includes("Benvenuto")) return;
 
         const today = new Date();
         today.setHours(0,0,0,0);
@@ -176,57 +191,34 @@ CSS_BASE = """
 </script>
 """
 
+# ================= SEGNAPUNTI =================
 SCOREBOARD_CODE = """
 <style>
     body { background-color: #121212; color: white; overflow: hidden; margin: 0; padding: 0; }
     .rotate-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; }
     @media (orientation: portrait) { .rotate-overlay { display: flex; } .sb-container { display: none; } }
-    
     .sb-container { display: grid; grid-template-columns: 1fr 180px 1fr; height: 100vh; width: 100vw; }
-    
     .team-panel { display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; cursor: pointer; transition: background 0.2s; }
     .team-home { background-color: #1e3a8a; border-right: 2px solid #333; }
     .team-guest { background-color: #b91c1c; border-left: 2px solid #333; }
     .team-home:active, .team-guest:active { opacity: 0.9; }
-    
     .team-name-input { background: transparent; border: none; color: rgba(255,255,255,0.8); font-size: 24px; font-weight: bold; text-align: center; width: 80%; margin-bottom: 10px; text-transform: uppercase; }
     .score-display { font-size: 180px; font-weight: 800; line-height: 1; user-select: none; }
-    
     .service-ball { font-size: 30px; position: absolute; top: 20px; opacity: 0.1; transition: opacity 0.3s; }
     .serving .service-ball { opacity: 1; }
-    
     .center-panel { background-color: #222; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 10px 5px; }
     .sets-box { text-align: center; margin-top: 5px; }
     .sets-label { font-size: 10px; color: #888; letter-spacing: 2px; }
     .sets-score { font-size: 35px; font-weight: bold; color: #fff; }
     .current-set-badge { background: #d32f2f; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-top: 5px; }
-    
     .timer-box { text-align: center; }
     .timer-val { font-size: 28px; font-family: monospace; font-weight: bold; color: #fbbf24; }
     .btn-timer { background: #444; border: none; color: white; padding: 5px 15px; border-radius: 5px; margin-top: 5px; cursor: pointer; }
-    
     .controls-bottom { display: flex; flex-direction: column; gap: 8px; width: 90%; margin-bottom: 10px; }
-    
-    .btn-ctrl { 
-        padding: 10px; 
-        border: none; 
-        border-radius: 5px; 
-        font-weight: bold; 
-        cursor: pointer; 
-        width: 100%; 
-        color: white; 
-        font-size: 12px; 
-        text-decoration: none; 
-        text-align: center; 
-        display: block; 
-        box-sizing: border-box; 
-        font-family: inherit;
-    }
-    
+    .btn-ctrl { padding: 8px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; color: white; font-size: 12px; text-decoration: none; text-align: center; display: block; box-sizing: border-box; font-family: inherit; }
     .btn-reset { background: #546e7a; }
     .btn-exit { background: #333; border: 1px solid #555; }
     .btn-fs { background: #000; border: 1px solid #444; }
-    
     .fine-tune { display: flex; gap: 20px; margin-top: 10px; }
     .btn-tune { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); background: transparent; color: white; font-size: 20px; cursor: pointer; }
 </style>
@@ -421,7 +413,7 @@ def scrape_data():
     driver = webdriver.Chrome(options=chrome_options)
     all_results, all_standings = [], []
 
-    for nome_camp, id_camp in CAMPIONATI.items():
+    for nome_camp, id_camp in ALL_CAMPIONATI.items():
         print(f"   Analisi: {nome_camp}...")
         base_url = "https://www.fipavsalerno.it/mobile/"
         if "Serie C" in nome_camp or "Serie D" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/"
@@ -466,27 +458,56 @@ def scrape_data():
     return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
 
 # ================= GENERATORE PAGINE =================
-def genera_pagina(df_ris, df_class, filename, mode="APP"):
-    print(f"📄 Generazione {filename} (Mode: {mode})...")
-    is_app = (mode == "APP")
-    is_score = (mode == "SCORE")
-    
-    title = NOME_VISUALIZZATO
-    if is_score: title = "Segnapunti"
-    elif not is_app: title = "Risultati Completi"
-    
-    nav_links = ""
-    if is_score:
-        nav_links = f'<a href="{FILE_APP}" class="btn-nav">🏠</a>'
-    else:
-        if is_app:
-            nav_links = f'<a href="{FILE_GEN}" class="btn-nav" title="Tutti i risultati">🌍</a> <a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
-        else:
-            nav_links = f'<a href="{FILE_APP}" class="btn-nav" title="Home">🏠</a> <a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
+def genera_landing_page():
+    print(f"📄 Generazione Landing Page...")
+    html = f"""<!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="theme-color" content="#000000">
+        <title>{NOME_VISUALIZZATO}</title>
+        <link rel="icon" type="image/png" href="{URL_LOGO}">
+        <link rel="apple-touch-icon" href="{URL_LOGO}">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="manifest" href="manifest.json">
+        <style>
+            body {{ margin: 0; padding: 0; background: #000; overflow: hidden; height: 100vh; width: 100vw; }}
+            .container {{ position: relative; width: 100%; height: 100%; }}
+            .bg-image {{ width: 100%; height: 100%; object-fit: cover; object-position: center; }}
+            .click-area {{ position: absolute; top: 0; height: 100%; width: 50%; z-index: 10; cursor: pointer; }}
+            .area-left {{ left: 0; }}
+            .area-right {{ right: 0; }}
+            /* Feedback tocco */
+            .click-area:active {{ background-color: rgba(255,255,255,0.1); }}
+        </style>
+        <script>
+            if ('serviceWorker' in navigator) {{
+                window.addEventListener('load', () => {{
+                    navigator.serviceWorker.register('sw.js');
+                }});
+            }}
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <img src="{URL_SPLIT_IMG}" class="bg-image" alt="Scelta Campionato">
+            <a href="{FILE_MALE}" class="click-area area-left" title="Maschile"></a>
+            <a href="{FILE_FEMALE}" class="click-area area-right" title="Femminile"></a>
+        </div>
+    </body>
+    </html>"""
+    with open(FILE_LANDING, "w", encoding="utf-8") as f: f.write(html)
 
-    modal_html = ""
-    if is_app:
-        modal_html = """
+def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP"):
+    print(f"📄 Generazione {filename} (Mode: {mode})...")
+    is_app = True
+    title = NOME_VISUALIZZATO
+    
+    # Header navigation: Logo torna alla Landing
+    nav_links = f'<a href="{FILE_GEN}" class="btn-nav" title="Tutti i risultati">🌍</a> <a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
+
+    modal_html = """
         <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
             <div class="modal-content" onclick="event.stopPropagation()">
                 <div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div>
@@ -494,21 +515,8 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
                 <div style="text-align:center; margin-top:15px;"><button onclick="closeModal()" style="background:#d32f2f; color:white; border:none; padding:8px 20px; border-radius:20px;">Chiudi</button></div>
             </div>
         </div>"""
-        
-        # POPUP ISTRUZIONI IOS
-        ios_tip_html = """
-        <div id="ios-popup" class="ios-install-popup">
-            <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
-            <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
-            <div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div>
-            <div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div>
-            <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
-        </div>
-        """
-    else:
-        ios_tip_html = "" # Niente popup iOS in generale/score
     
-    footer_html = f'<div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"></div>' if is_app else ""
+    footer_html = f'<div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"></div>'
 
     html = f"""<!DOCTYPE html>
     <html lang="it">
@@ -516,92 +524,204 @@ def genera_pagina(df_ris, df_class, filename, mode="APP"):
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <meta name="theme-color" content="#d32f2f">
-        
-        <!-- APPLE IOS META TAGS SPECIFICI -->
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="apple-mobile-web-app-title" content="Todis Volley">
-        
         <title>{title}</title>
         <link rel="icon" type="image/png" href="{URL_LOGO}">
         <link rel="apple-touch-icon" href="{URL_LOGO}">
-        
-        <!-- PWA Manifest -->
+        <meta name="apple-mobile-web-app-capable" content="yes">
         <link rel="manifest" href="manifest.json">
         {CSS_BASE}
-        {'<style>.app-header { background-color: #1976D2; }</style>' if mode == "GENERAL" else ''} 
-        {'<style>.app-header { display:none; } </style>' if is_score else ''} 
     </head>
     <body>
         {modal_html}
-        {ios_tip_html}
-    """
-    
-    if not is_score:
-        html += f"""
         <div class="app-header">
-            <div class="header-left">
+            <div class="header-left" onclick="window.location.href='{FILE_LANDING}'">
                 <img src="{URL_LOGO}" alt="Logo">
                 <div><h1>{title}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
             </div>
             <div class="nav-buttons">{nav_links}</div>
-        </div>"""
+        </div>
+    """
 
-    if is_score:
-        html += SCOREBOARD_CODE
-    else:
-        campionati_disp = df_class['Campionato'].unique()
-        html += '<div class="tab-bar">'
-        for i, camp in enumerate(campionati_disp):
-            # --- MODIFICA NOME TAB LEGGIBILE ---
-            if "Gir." in camp:
-                parts = camp.split("Gir.")
-                base = parts[0].strip().split()
-                # Prende le prime 2 parole (es. "Serie C" o "Under 18")
-                nome_base = f"{base[0]} {base[1]}" if len(base) >= 2 else parts[0]
-                lettera_girone = parts[1].strip()
-                n = f"{nome_base} Gir.{lettera_girone}"
-            else:
-                n = camp
-            
-            html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{n}</button>'
+    # Filtra i dati per i campionati specifici di questa pagina
+    campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
+    
+    html += '<div class="tab-bar">'
+    for i, camp in enumerate(campionati_disp):
+        # NOME TAB LEGGIBILE
+        if "Gir." in camp:
+            parts = camp.split("Gir.")
+            base = parts[0].strip().split()
+            nome_base = f"{base[0]} {base[1]}" if len(base) >= 2 else parts[0]
+            lettera_girone = parts[1].strip()
+            n = f"{nome_base} Gir.{lettera_girone}"
+        else:
+            n = camp
+        html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{n}</button>'
+    html += '</div>'
+
+    for i, camp in enumerate(campionati_disp):
+        html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
+        html += f"<h2>🏆 Classifica</h2>"
+        df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
+        html += """<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>"""
+        for _, r in df_c.iterrows():
+            cls = 'class="my-team-row"' if is_target_team(r['Squadra']) else ''
+            html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
+        html += '</tbody></table></div></div>'
+
+        html += f"<h2>📅 Calendario</h2>"
+        df_r = df_ris[df_ris['Campionato'] == camp]
+        
+        # Filtro Squadra
+        mask = df_r['Squadra Casa'].apply(is_target_team) | df_r['Squadra Ospite'].apply(is_target_team)
+        df_r = df_r[mask]
+        
+        if df_r.empty:
+            html += "<p>Nessuna partita trovata.</p>"
+        else:
+            for _, r in df_r.iterrows(): html += crea_card_html(r, camp, is_focus_mode=True)
         html += '</div>'
-
-        for i, camp in enumerate(campionati_disp):
-            html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
-            html += f"<h2>🏆 Classifica</h2>"
-            df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
-            html += """<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>"""
-            for _, r in df_c.iterrows():
-                cls = 'class="my-team-row"' if is_target_team(r['Squadra']) else ''
-                html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
-            html += '</tbody></table></div></div>'
-
-            html += f"<h2>📅 Calendario</h2>"
-            df_r = df_ris[df_ris['Campionato'] == camp]
-            if is_app:
-                mask = df_r['Squadra Casa'].apply(is_target_team) | df_r['Squadra Ospite'].apply(is_target_team)
-                df_r = df_r[mask]
-            
-            if df_r.empty:
-                html += "<p>Nessuna partita trovata.</p>"
-            else:
-                if not is_app:
-                    giornate = df_r['Giornata'].unique()
-                    for g in giornate:
-                        html += f'<h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">{g}</h3>'
-                        for _, r in df_r[df_r['Giornata'] == g].iterrows(): html += crea_card_html(r, camp, is_app)
-                else:
-                    for _, r in df_r.iterrows(): html += crea_card_html(r, camp, is_app)
-            html += '</div>'
 
     html += footer_html
     html += "</body></html>"
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
-    print(f"✅ Creato: {filename}")
+
+def genera_pagina_generale(df_ris, df_class, filename):
+    print(f"📄 Generazione {filename} (Mode: GENERAL)...")
+    title = "Risultati Completi"
+    # Link Home torna alla Landing
+    nav_links = f'<a href="{FILE_LANDING}" class="btn-nav" title="Home">🏠</a> <a href="{FILE_SCORE}" class="btn-nav" title="Segnapunti">🔢</a>'
+
+    html = f"""<!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="theme-color" content="#1976D2">
+        <title>{title}</title>
+        <link rel="icon" type="image/png" href="{URL_LOGO}">
+        <link rel="apple-touch-icon" href="{URL_LOGO}">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="manifest" href="manifest.json">
+        {CSS_BASE}
+        <style>.app-header {{ background-color: #1976D2; }}</style>
+    </head>
+    <body>
+        <div class="app-header">
+            <div class="header-left" onclick="window.location.href='{FILE_LANDING}'">
+                <img src="{URL_LOGO}" alt="Logo">
+                <div><h1>{title}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
+            </div>
+            <div class="nav-buttons">{nav_links}</div>
+        </div>
+    """
+
+    campionati_disp = df_class['Campionato'].unique()
+    html += '<div class="tab-bar">'
+    for i, camp in enumerate(campionati_disp):
+        if "Gir." in camp:
+            parts = camp.split("Gir.")
+            base = parts[0].strip().split()
+            nome_base = f"{base[0]} {base[1]}" if len(base) >= 2 else parts[0]
+            lettera_girone = parts[1].strip()
+            n = f"{nome_base} Gir.{lettera_girone}"
+        else:
+            n = camp
+        html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{n}</button>'
+    html += '</div>'
+
+    for i, camp in enumerate(campionati_disp):
+        html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
+        html += f"<h2>🏆 Classifica</h2>"
+        df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
+        html += """<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>"""
+        for _, r in df_c.iterrows():
+            cls = 'class="my-team-row"' if is_target_team(r['Squadra']) else ''
+            html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
+        html += '</tbody></table></div></div>'
+
+        html += f"<h2>📅 Calendario</h2>"
+        df_r = df_ris[df_ris['Campionato'] == camp]
+        
+        if df_r.empty:
+            html += "<p>Nessuna partita trovata.</p>"
+        else:
+            giornate = df_r['Giornata'].unique()
+            for g in giornate:
+                html += f'<h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">{g}</h3>'
+                for _, r in df_r[df_r['Giornata'] == g].iterrows(): html += crea_card_html(r, camp, is_focus_mode=False)
+        html += '</div>'
+
+    html += "</body></html>"
+    with open(filename, "w", encoding="utf-8") as f: f.write(html)
+
+def genera_segnapunti():
+    print(f"📄 Generazione Segnapunti...")
+    html = f"""<!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="theme-color" content="#121212">
+        <title>Segnapunti</title>
+        <link rel="icon" type="image/png" href="{URL_LOGO}">
+        <link rel="apple-touch-icon" href="{URL_LOGO}">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="manifest" href="manifest.json">
+        {SCOREBOARD_CODE}
+    </head>
+    <body>
+        <div class="sb-container">
+            <div class="team-panel team-home" id="colHome" onclick="addPoint('Home')">
+                <div class="service-ball">🏐</div>
+                <input type="text" class="team-name-input" value="CASA">
+                <div class="score-display" id="scoreHome">0</div>
+                <div class="fine-tune">
+                    <button class="btn-tune" onclick="adjScore('Home', -1); event.stopPropagation()">-</button>
+                    <button class="btn-tune" onclick="adjScore('Home', 1); event.stopPropagation()">+</button>
+                </div>
+            </div>
+            <div class="center-panel">
+                <div class="sets-box"><div class="sets-label">SETS</div><div class="sets-score"><span id="setsHome">0</span> - <span id="setsGuest">0</span></div><div class="current-set-badge" id="setNum">SET 1</div></div>
+                <div class="timer-box"><div class="timer-val" id="timer">00:00</div><button class="btn-timer" onclick="toggleTimer()" id="btnTimer">START</button></div>
+                <div class="controls-bottom">
+                    <button class="btn-ctrl" style="background:#2e7d32;" onclick="setServiceManual()">Battuta</button>
+                    <button class="btn-ctrl btn-fs" onclick="toggleFullScreen()">⛶ Full</button>
+                    <button class="btn-ctrl btn-reset" onclick="resetMatch()">Reset</button>
+                    <a href="{FILE_LANDING}" class="btn-ctrl btn-exit">Esci</a>
+                </div>
+            </div>
+            <div class="team-panel team-guest" id="colGuest" onclick="addPoint('Guest')">
+                <div class="service-ball">🏐</div>
+                <input type="text" class="team-name-input" value="OSPITI">
+                <div class="score-display" id="scoreGuest">0</div>
+                <div class="fine-tune">
+                    <button class="btn-tune" onclick="adjScore('Guest', -1); event.stopPropagation()">-</button>
+                    <button class="btn-tune" onclick="adjScore('Guest', 1); event.stopPropagation()">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="rotate-overlay"><div style="font-size: 50px;">🔄</div><h2>Ruota il dispositivo</h2><p>Il segnapunti funziona in orizzontale</p></div>
+    </body>
+    </html>"""
+    with open(FILE_SCORE, "w", encoding="utf-8") as f: f.write(html)
 
 if __name__ == "__main__":
     df_ris, df_class = scrape_data()
-    genera_pagina(df_ris, df_class, FILE_APP, mode="APP")
-    genera_pagina(df_ris, df_class, FILE_GEN, mode="GENERAL")
-    genera_pagina(pd.DataFrame(), pd.DataFrame(), FILE_SCORE, mode="SCORE")
+    
+    # 1. Landing Page
+    genera_landing_page()
+    
+    # 2. App Maschile
+    genera_pagina_app(df_ris, df_class, FILE_MALE, CAMPIONATI_MASCHILI, mode="APP")
+    
+    # 3. App Femminile
+    genera_pagina_app(df_ris, df_class, FILE_FEMALE, CAMPIONATI_FEMMINILI, mode="APP")
+    
+    # 4. Vista Generale
+    genera_pagina_generale(df_ris, df_class, FILE_GEN)
+    
+    # 5. Segnapunti
+    genera_segnapunti()
+    
+    print("✅ Generazione completata! Site structure built.")
