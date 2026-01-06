@@ -24,7 +24,7 @@ FILE_FEMALE = "femminile.html"   # App Femminile
 FILE_GEN = "generale.html"       # Vista Generale (Globale)
 FILE_SCORE = "segnapunti.html"   # Segnapunti
 
-# --- URL IMMAGINI (RAW DA GITHUB) ---
+# URL IMMAGINI (RAW DA GITHUB)
 REPO_URL = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/"
 
 URL_LOGO = REPO_URL + "logo.jpg"
@@ -37,17 +37,23 @@ BTN_SCOREBOARD = REPO_URL + "tabellone_segnapunti.png"
 
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
-# CAMPIONATI
-CAMPIONATI = {
+# --- DEFINIZIONE CAMPIONATI (SPOSTATA QUI IN ALTO) ---
+CAMPIONATI_MASCHILI = {
     "Serie D  Maschile Gir.C": "85622",
     "Under 19 Maschile Gir.A": "86865",
     "Under 17 Maschile Gir.B": "86864",
     "Under 15 Maschile Gir.B": "86848",
+}
+
+CAMPIONATI_FEMMINILI = {
     "Serie C  Femminile Gir.A": "85471",
     "Under 18 Femminile Gir.B": "86850",
     "Under 16 Femminile Gir.A": "86853",
     "Under 14 Femminile Gir.C": "86860",
 }
+
+# Unione dei due dizionari per lo scraping
+ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 
 def is_target_team(team_name):
     if pd.isna(team_name) or not str(team_name).strip(): return False
@@ -73,7 +79,7 @@ CSS_BASE = """
     .nav-buttons { display: flex; gap: 10px; align-items: center; }
     
     .nav-icon-img { 
-        height: 45px; /* Dimensione bottoni */
+        height: 45px; 
         width: auto; 
         transition: transform 0.1s, opacity 0.2s; 
         filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
@@ -118,8 +124,10 @@ CSS_BASE = """
     .team-row { display: flex; justify-content: space-between; align-items: center; }
     .my-team-text { color: #d32f2f; font-weight: 700; }
     .team-score { font-weight: bold; background: #eee; padding: 2px 8px; border-radius: 4px; min-width: 25px; text-align: center; }
+    
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
     .gym-name { font-size: 11px; color: #666; width: 100%; display: block; margin-bottom: 5px; }
+    
     .action-buttons { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
     .btn { text-decoration: none; padding: 5px 10px; border-radius: 15px; font-size: 10px; font-weight: bold; display: flex; align-items: center; gap: 3px; border: 1px solid transparent; }
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
@@ -168,9 +176,11 @@ CSS_BASE = """
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
 
+    // Popup Logic
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+        
         if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
@@ -179,6 +189,7 @@ CSS_BASE = """
             const today = new Date();
             today.setHours(0,0,0,0);
             let nextMatches = {};
+            
             document.querySelectorAll('.match-card.upcoming').forEach(card => {
                 const isMyTeam = card.getAttribute('data-my-team');
                 if(isMyTeam === 'true') {
@@ -195,6 +206,7 @@ CSS_BASE = """
                     }
                 }
             });
+            
             let popupHTML = "";
             let count = 0;
             for (const [camp, data] of Object.entries(nextMatches)) {
@@ -202,6 +214,7 @@ CSS_BASE = """
                 popupHTML += data.html;
                 count++;
             }
+            
             if (count > 0) {
                 const modalBody = document.getElementById('modal-body');
                 if(modalBody) {
@@ -437,7 +450,7 @@ def scrape_data():
     driver = webdriver.Chrome(options=chrome_options)
     all_results, all_standings = [], []
 
-    for nome_camp, id_camp in CAMPIONATI.items():
+    for nome_camp, id_camp in ALL_CAMPIONATI.items():
         print(f"   Analisi: {nome_camp}...")
         base_url = "https://www.fipavsalerno.it/mobile/"
         if "Serie C" in nome_camp or "Serie D" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/"
@@ -484,8 +497,7 @@ def scrape_data():
 # ================= GENERATORE LANDING PAGE =================
 def genera_landing_page():
     print(f"📄 Generazione Landing Page...")
-    
-    # Header: Solo Segnapunti
+    # Solo Segnapunti in alto a destra
     nav_links = f'<a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
     
     html = f"""<!DOCTYPE html>
@@ -551,7 +563,7 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
     elif "femminile" in filename: page_title = "Settore Femminile"
     else: page_title = NOME_VISUALIZZATO
     
-    # NAVIGAZIONE INTERNA: Mondo (Tutti) + Segnapunti
+    # NAVIGAZIONE INTERNA: Mondo + Segnapunti
     nav_links = f"""
     <a href="{FILE_GEN}" title="Tutti i risultati"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a>
     <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
@@ -634,7 +646,7 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
 def genera_pagina_generale(df_ris, df_class, filename):
     print(f"📄 Generazione {filename} (Mode: GENERAL)...")
     title = "Risultati Completi"
-    # NAVIGAZIONE: Torna a Todis (Home) + Segnapunti
+    # NAVIGAZIONE: Todis (Home) + Segnapunti
     nav_links = f"""
     <a href="{FILE_LANDING}" title="Home"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>
     <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
@@ -705,7 +717,7 @@ def genera_pagina_generale(df_ris, df_class, filename):
 
 def genera_segnapunti():
     print(f"📄 Generazione Segnapunti...")
-    # Segnapunti torna alla Home
+    # Segnapunti torna alla Home (Todis)
     nav_links = f'<a href="{FILE_LANDING}" title="Home"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>'
 
     html = f"""<!DOCTYPE html>
