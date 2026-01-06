@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="theme-color" content="#d32f2f">
+        <title>TODIS PASTENA VOLLEY</title>
+        <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
+        <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="manifest" href="manifest.json">
+        
+<style>
+    body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
+    .app-header { background-color: #d32f2f; color: white; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; }
+    .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; } /* Cursore per indicare cliccabile */
+    .app-header img { height: 35px; width: 35px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
+    .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
+    .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
+    .nav-buttons { display: flex; gap: 8px; }
+    .btn-nav { background: rgba(255,255,255,0.2); color: white; text-decoration: none; font-size: 18px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4); }
+    .btn-nav.active { background: white; color: #d32f2f; }
+    .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 54px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
+    .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
+    .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
+    .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
+    .tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
+    .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
+    th { background-color: #ffebee; color: #c62828; padding: 10px 6px; text-align: center; font-weight: bold; font-size: 11px; text-transform: uppercase; }
+    td { padding: 10px 6px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+    td:nth-child(2) { text-align: left; min-width: 140px; font-weight: 500; position: sticky; left: 0; background-color: white; border-right: 1px solid #eee; }
+    .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
+    .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; }
+    .match-card.win { border-left-color: #2e7d32; } 
+    .match-card.loss { border-left-color: #c62828; } 
+    .match-card.upcoming { border-left-color: #ff9800; } 
+    .result-badge { position: absolute; top: 0; right: 0; font-size: 9px; padding: 3px 6px; border-bottom-left-radius: 6px; font-weight: bold; color: white; z-index: 10; text-transform: uppercase; }
+    .badge-win { background-color: #2e7d32; }
+    .badge-loss { background-color: #c62828; }
+    .badge-played { background-color: #78909c; } 
+    .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; padding-right: 50px; }
+    .date-badge { font-weight: bold; color: #d32f2f; display: flex; align-items: center; gap: 4px; }
+    .teams { display: flex; flex-direction: column; gap: 6px; font-size: 14px; margin-bottom: 8px; }
+    .team-row { display: flex; justify-content: space-between; align-items: center; }
+    .my-team-text { color: #d32f2f; font-weight: 700; }
+    .team-score { font-weight: bold; background: #eee; padding: 2px 8px; border-radius: 4px; min-width: 25px; text-align: center; }
+    .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+    .gym-name { font-size: 11px; color: #666; width: 100%; display: block; margin-bottom: 5px; }
+    .action-buttons { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
+    .btn { text-decoration: none; padding: 5px 10px; border-radius: 15px; font-size: 10px; font-weight: bold; display: flex; align-items: center; gap: 3px; border: 1px solid transparent; }
+    .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
+    .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
+    .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+    .modal-content { background: white; width: 85%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 20px; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
+    @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+    .modal-title { font-size: 18px; font-weight: bold; color: #d32f2f; }
+    .close-btn { background: #eee; border: none; font-size: 24px; padding: 0 10px; border-radius: 5px; color: #555; cursor: pointer; }
+    .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
+    .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
+    .footer-counter img { height: 20px; vertical-align: middle; }
+    
+    /* IOS INSTALL TIP */
+    .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
+    .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
+    @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
+</style>
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js');
+        });
+    }
+
+    function openTab(tabIndex) {
+        var contents = document.getElementsByClassName("tab-content");
+        for (var i = 0; i < contents.length; i++) contents[i].classList.remove("active");
+        var buttons = document.getElementsByClassName("tab-btn");
+        for (var i = 0; i < buttons.length; i++) buttons[i].classList.remove("active");
+        document.getElementById("content-" + tabIndex).classList.add("active");
+        document.getElementById("btn-" + tabIndex).classList.add("active");
+    }
+    
+    function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+    function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
+
+    window.onload = function() {
+        // iOS Detection
+        const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
+        const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+        if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
+            setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
+        }
+
+        // Popup Partite (Solo nelle pagine app, non nel segnapunti o landing)
+        if (!document.title.toUpperCase().includes("TODIS") || document.title.includes("Segnapunti") || document.title.includes("Benvenuto")) return;
+
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        let nextMatches = {};
+        const allMatches = document.querySelectorAll('.match-card.upcoming');
+        
+        allMatches.forEach(card => {
+            const isMyTeam = card.getAttribute('data-my-team');
+            if(isMyTeam === 'true') {
+                const dateStr = card.getAttribute('data-date-iso');
+                const campName = card.getAttribute('data-camp');
+                if (dateStr && campName) {
+                    const parts = dateStr.split('-');
+                    const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
+                    if (matchDate >= today) {
+                        if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
+                            nextMatches[campName] = { date: matchDate, html: card.outerHTML };
+                        }
+                    }
+                }
+            }
+        });
+        
+        let popupHTML = "";
+        let count = 0;
+        for (const [camp, data] of Object.entries(nextMatches)) {
+            popupHTML += `<h3>🏆 ${camp}</h3>`;
+            popupHTML += data.html;
+            count++;
+        }
+        
+        if (count > 0) {
+            const modalBody = document.getElementById('modal-body');
+            if(modalBody) {
+                modalBody.innerHTML = popupHTML;
+                setTimeout(function(){
+                    document.getElementById('modal-overlay').style.display = 'flex';
+                }, 500);
+            }
+        }
+    };
+</script>
+
+    </head>
+    <body>
+        
+        <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div>
+                <div id="modal-body"></div>
+                <div style="text-align:center; margin-top:15px;"><button onclick="closeModal()" style="background:#d32f2f; color:white; border:none; padding:8px 20px; border-radius:20px;">Chiudi</button></div>
+            </div>
+        </div>
+        <div class="app-header">
+            <div class="header-left" onclick="window.location.href='index.html'">
+                <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" alt="Logo">
+                <div><h1>TODIS PASTENA VOLLEY</h1><div class="last-update">06/01 09:40</div></div>
+            </div>
+            <div class="nav-buttons"><a href="generale.html" class="btn-nav" title="Tutti i risultati">🌍</a> <a href="segnapunti.html" class="btn-nav" title="Segnapunti">🔢</a></div>
+        </div>
+    <div class="tab-bar"><button id="btn-0" class="tab-btn active" onclick="openTab(0)">Serie D Gir.C</button><button id="btn-1" class="tab-btn " onclick="openTab(1)">Under 19 Gir.A</button><button id="btn-2" class="tab-btn " onclick="openTab(2)">Under 17 Gir.B</button><button id="btn-3" class="tab-btn " onclick="openTab(3)">Under 15 Gir.B</button></div><div id="content-0" class="tab-content active"><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>POLISPORTIVA SPORT FOR LIFE</td><td><b>25</b></td><td>9</td><td>9</td><td>0</td><td>27</td><td>6</td></tr><tr ><td>2</td><td>U.S. SALERNO OFFICIAL-MINERVA</td><td><b>20</b></td><td>9</td><td>7</td><td>2</td><td>24</td><td>12</td></tr><tr ><td>3</td><td>NOCERA VOLLEY</td><td><b>20</b></td><td>9</td><td>7</td><td>2</td><td>23</td><td>14</td></tr><tr ><td>4</td><td>NUOVA GS OLIMPICA</td><td><b>14</b></td><td>9</td><td>5</td><td>4</td><td>17</td><td>18</td></tr><tr class="my-team-row"><td>5</td><td>TODIS CS PASTENA VOLLEY</td><td><b>12</b></td><td>9</td><td>4</td><td>5</td><td>17</td><td>20</td></tr><tr ><td>6</td><td>PALL BATTIPAGLIA</td><td><b>12</b></td><td>9</td><td>3</td><td>6</td><td>20</td><td>22</td></tr><tr ><td>7</td><td>ZETA VOLLEY STRIANO</td><td><b>11</b></td><td>9</td><td>4</td><td>5</td><td>17</td><td>22</td></tr><tr ><td>8</td><td>ISV PRIMA COLTA</td><td><b>10</b></td><td>9</td><td>3</td><td>6</td><td>17</td><td>22</td></tr><tr ><td>9</td><td>ASD ACCA VOLLEY EBOLI</td><td><b>7</b></td><td>9</td><td>2</td><td>7</td><td>14</td><td>24</td></tr><tr ><td>10</td><td>MURATE VOLLEY</td><td><b>4</b></td><td>9</td><td>1</td><td>8</td><td>10</td><td>26</td></tr></tbody></table></div></div><h2>📅 Calendario</h2>
+    <div class="match-card loss" data-date-iso="2025-10-26" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        <span class="result-badge badge-loss">PERSA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 26/10/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 1</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">U.S. SALERNO OFFICIAL-MINERVA</span><span class="team-score">3</span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">0</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALAPITTONI SANT' ARCANGELO di Cava de' Tirreni CAVA DE' TIRRENI SAVIA IDO LONGO</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.69733720,14.69712620&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0AU.S.%20SALERNO%20OFFICIAL-MINERVA%203%20-%200%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card win" data-date-iso="2025-11-02" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        <span class="result-badge badge-win">VINTA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 02/11/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 2</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">3</span></div>
+            <div class="team-row"><span class="team-name">MURATE VOLLEY</span><span class="team-score">2</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%203%20-%202%20MURATE%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card loss" data-date-iso="2025-11-09" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        <span class="result-badge badge-loss">PERSA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 09/11/2025 ⏰ 11:30</span> <span>|</span> <span>Giornata 3</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">NOCERA VOLLEY</span><span class="team-score">3</span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">2</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALASPORT COSCIONI NOCERA INFERIORE SAViale San Francesco</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.74587140,14.65204840&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ANOCERA%20VOLLEY%203%20-%202%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card win" data-date-iso="2025-11-16" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        <span class="result-badge badge-win">VINTA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 16/11/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 4</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">3</span></div>
+            <div class="team-row"><span class="team-name">ZETA VOLLEY STRIANO</span><span class="team-score">0</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%203%20-%200%20ZETA%20VOLLEY%20STRIANO" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card loss" data-date-iso="2025-11-23" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        <span class="result-badge badge-loss">PERSA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 23/11/2025 ⏰ 19:30</span> <span>|</span> <span>Giornata 5</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">POLISPORTIVA SPORT FOR LIFE</span><span class="team-score">3</span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">1</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALAZZETTO PIGNOLA PZSTRADA COMUNALE DEL PANTANO</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.58213060,15.77015110&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0APOLISPORTIVA%20SPORT%20FOR%20LIFE%203%20-%201%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card loss" data-date-iso="2025-11-30" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        <span class="result-badge badge-loss">PERSA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 30/11/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 6</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">2</span></div>
+            <div class="team-row"><span class="team-name">NUOVA GS OLIMPICA</span><span class="team-score">3</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%202%20-%203%20NUOVA%20GS%20OLIMPICA" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card loss" data-date-iso="2025-12-07" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        <span class="result-badge badge-loss">PERSA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 07/12/2025 ⏰ 20:00</span> <span>|</span> <span>Giornata 7</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">ISV PRIMA COLTA</span><span class="team-score">3</span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">0</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALESTRA COMUNALE CESINALI AVVIA VALLE</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.89768930,14.82822910&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0AISV%20PRIMA%20COLTA%203%20-%200%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card win" data-date-iso="2025-12-15" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        <span class="result-badge badge-win">VINTA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 15/12/2025 ⏰ 21:30</span> <span>|</span> <span>Giornata 8</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">ASD ACCA VOLLEY EBOLI</span><span class="team-score">1</span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">3</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ SMS PIETRO DA EBOLI EBOLI SAVia Caduti di Bruxelles</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.61482750,15.04864840&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0AASD%20ACCA%20VOLLEY%20EBOLI%201%20-%203%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card win" data-date-iso="2025-12-21" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        <span class="result-badge badge-win">VINTA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 21/12/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 9</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">3</span></div>
+            <div class="team-row"><span class="team-name">PALL BATTIPAGLIA</span><span class="team-score">2</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%203%20-%202%20PALL%20BATTIPAGLIA" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-01-11" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 11/01/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 10</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name">U.S. SALERNO OFFICIAL-MINERVA</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20CS%20PASTENA%20VOLLEY%20vs%20U.S.%20SALERNO%20OFFICIAL-MINERVA&dates=20260111T180000/20260111T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A11/01/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20CS%20PASTENA%20VOLLEY%20vs%20U.S.%20SALERNO%20OFFICIAL-MINERVA" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-01-18" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 18/01/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 11</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">MURATE VOLLEY</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALESTRA CAIZZO POTENZA PZVIA CIRILLO 10 (RIONE LUCANIA)</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63815320,15.81455030&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20MURATE%20VOLLEY%20vs%20TODIS%20CS%20PASTENA%20VOLLEY&dates=20260118T180000/20260118T200000&location=PALESTRA%20CAIZZO%C2%A0POTENZA%20PZVIA%20CIRILLO%2010%20%28RIONE%20LUCANIA%29&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A18/01/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20PALESTRA%20CAIZZO%C2%A0POTENZA%20PZVIA%20CIRILLO%2010%20%28RIONE%20LUCANIA%29%0AMURATE%20VOLLEY%20vs%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-01-25" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 25/01/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 12</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name">NOCERA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20CS%20PASTENA%20VOLLEY%20vs%20NOCERA%20VOLLEY&dates=20260125T180000/20260125T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A25/01/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20CS%20PASTENA%20VOLLEY%20vs%20NOCERA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-02-01" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 01/02/2026 ⏰ 20:30</span> <span>|</span> <span>Giornata 13</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">ZETA VOLLEY STRIANO</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALESTRA SM A. D'AVINO STRIANO NAVIA MONTE</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.81894170,14.57672190&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ZETA%20VOLLEY%20STRIANO%20vs%20TODIS%20CS%20PASTENA%20VOLLEY&dates=20260201T203000/20260201T223000&location=PALESTRA%20SM%20A.%20D%27AVINO%C2%A0STRIANO%20NAVIA%20MONTE&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A01/02/2026%20%E2%8F%B0%2020%3A30%0A%F0%9F%93%8D%20PALESTRA%20SM%20A.%20D%27AVINO%C2%A0STRIANO%20NAVIA%20MONTE%0AZETA%20VOLLEY%20STRIANO%20vs%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-02-08" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 08/02/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 14</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name">POLISPORTIVA SPORT FOR LIFE</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20CS%20PASTENA%20VOLLEY%20vs%20POLISPORTIVA%20SPORT%20FOR%20LIFE&dates=20260208T180000/20260208T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A08/02/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20CS%20PASTENA%20VOLLEY%20vs%20POLISPORTIVA%20SPORT%20FOR%20LIFE" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-02-15" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 15/02/2026 ⏰ 19:30</span> <span>|</span> <span>Giornata 15</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">NUOVA GS OLIMPICA</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALESTRA IPIA AMATUCCI AVELLINO AVVIA F.LLI CIOCCA</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.91419770,14.78114450&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20NUOVA%20GS%20OLIMPICA%20vs%20TODIS%20CS%20PASTENA%20VOLLEY&dates=20260215T193000/20260215T213000&location=PALESTRA%20IPIA%20AMATUCCI%C2%A0AVELLINO%20AVVIA%20F.LLI%20CIOCCA&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A15/02/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20IPIA%20AMATUCCI%C2%A0AVELLINO%20AVVIA%20F.LLI%20CIOCCA%0ANUOVA%20GS%20OLIMPICA%20vs%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-02-22" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 22/02/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 16</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name">ISV PRIMA COLTA</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20CS%20PASTENA%20VOLLEY%20vs%20ISV%20PRIMA%20COLTA&dates=20260222T180000/20260222T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A22/02/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20CS%20PASTENA%20VOLLEY%20vs%20ISV%20PRIMA%20COLTA" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-03-01" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 01/03/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 17</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name">ASD ACCA VOLLEY EBOLI</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20CS%20PASTENA%20VOLLEY%20vs%20ASD%20ACCA%20VOLLEY%20EBOLI&dates=20260301T180000/20260301T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A01/03/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20CS%20PASTENA%20VOLLEY%20vs%20ASD%20ACCA%20VOLLEY%20EBOLI" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-03-08" data-camp="Serie D  Maschile Gir.C" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 08/03/2026 ⏰ 19:00</span> <span>|</span> <span>Giornata 18</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">PALL BATTIPAGLIA</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALESTRA  SKIBA c/oSTADIO PASTENA  BATTIPAGLIA SAPIAZZA POZZO</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.60091010,14.97733000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20PALL%20BATTIPAGLIA%20vs%20TODIS%20CS%20PASTENA%20VOLLEY&dates=20260308T190000/20260308T210000&location=PALESTRA%20%20SKIBA%20c/oSTADIO%20PASTENA%20%C2%A0BATTIPAGLIA%20SAPIAZZA%20POZZO&details=Campionato+Serie%20D%20%20Maschile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Maschile%20Gir.C%2A%0A08/03/2026%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20PALESTRA%20%20SKIBA%20c/oSTADIO%20PASTENA%20%C2%A0BATTIPAGLIA%20SAPIAZZA%20POZZO%0APALL%20BATTIPAGLIA%20vs%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    </div><div id="content-1" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>POLISPORTIVA PESSY</td><td><b>12</b></td><td>4</td><td>4</td><td>0</td><td>12</td><td>2</td></tr><tr class="my-team-row"><td>2</td><td>TODIS PASTENA VOLLEY</td><td><b>9</b></td><td>4</td><td>3</td><td>1</td><td>9</td><td>4</td></tr><tr ><td>3</td><td>INDOMITA</td><td><b>6</b></td><td>4</td><td>2</td><td>2</td><td>8</td><td>6</td></tr><tr ><td>4</td><td>ANNALISA VOLLEY SAN MARZANO</td><td><b>3</b></td><td>4</td><td>1</td><td>3</td><td>4</td><td>9</td></tr><tr ><td>5</td><td>ASD INTRAMONTES</td><td><b>0</b></td><td>4</td><td>0</td><td>4</td><td>0</td><td>12</td></tr></tbody></table></div></div><h2>📅 Calendario</h2>
+    <div class="match-card win" data-date-iso="2025-11-27" data-camp="Under 19 Maschile Gir.A" data-my-team="true">
+        <span class="result-badge badge-win">VINTA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 27/11/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 1</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">3</span></div>
+            <div class="team-row"><span class="team-name">INDOMITA</span><span class="team-score">1</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2019%20Maschile%20Gir.A%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%201%20INDOMITA" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card win" data-date-iso="2025-12-05" data-camp="Under 19 Maschile Gir.A" data-my-team="true">
+        <span class="result-badge badge-win">VINTA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 05/12/2025 ⏰ 20:30</span> <span>|</span> <span>Giornata 3</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">ASD INTRAMONTES</span><span class="team-score">0</span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">3</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ Palazzetto dello Sport TRAMONTI SAVia Acconciagioco 8</span>
+            <div class="action-buttons"><a href="http://maps.google.it/maps?q=TRAMONTI+SA%0D%0AVia+Acconciagioco+8&hl=it" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2019%20Maschile%20Gir.A%2A%0AASD%20INTRAMONTES%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card win" data-date-iso="2025-12-11" data-camp="Under 19 Maschile Gir.A" data-my-team="true">
+        <span class="result-badge badge-win">VINTA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 11/12/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 4</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">3</span></div>
+            <div class="team-row"><span class="team-name">ANNALISA VOLLEY SAN MARZANO</span><span class="team-score">0</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2019%20Maschile%20Gir.A%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20ANNALISA%20VOLLEY%20SAN%20MARZANO" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card loss" data-date-iso="2025-12-22" data-camp="Under 19 Maschile Gir.A" data-my-team="true">
+        <span class="result-badge badge-loss">PERSA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 22/12/2025 ⏰ 19:00</span> <span>|</span> <span>Giornata 5</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">POLISPORTIVA PESSY</span><span class="team-score">3</span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">0</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ IMPIANTO POLIVALENTE GIANCARLO SIANI BIVIO PRATOLE MONTECORVINO PUGLIANO SAVIA MONTETERMINILLO</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.62575000,14.92946000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2019%20Maschile%20Gir.A%2A%0APOLISPORTIVA%20PESSY%203%20-%200%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-01-07" data-camp="Under 19 Maschile Gir.A" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 07/01/2026 ⏰ 18:30</span> <span>|</span> <span>Giornata 6</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">INDOMITA</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALESTRA I.C. ALFANO -QUASIMODO  SALERNO SAVIA DEI MILLE- INGRESSO PROL VIALE KENNEDY DI FRONTE POLIAMBULATORIO DI PASTENA</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.68244080,14.76809610&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20INDOMITA%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260107T183000/20260107T203000&location=PALESTRA%20I.C.%20ALFANO%20-QUASIMODO%20%C2%A0SALERNO%20SAVIA%20DEI%20MILLE-%20INGRESSO%20PROL%20VIALE%20KENNEDY%20DI%20FRONTE%20POLIAMBULATORIO%20DI%20PASTENA&details=Campionato+Under%2019%20Maschile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2019%20Maschile%20Gir.A%2A%0A07/01/2026%20%E2%8F%B0%2018%3A30%0A%F0%9F%93%8D%20PALESTRA%20I.C.%20ALFANO%20-QUASIMODO%20%C2%A0SALERNO%20SAVIA%20DEI%20MILLE-%20INGRESSO%20PROL%20VIALE%20KENNEDY%20DI%20FRONTE%20POLIAMBULATORIO%20DI%20PASTENA%0AINDOMITA%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-01-20" data-camp="Under 19 Maschile Gir.A" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 20/01/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 8</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name">ASD INTRAMONTES</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASD%20INTRAMONTES&dates=20260120T180000/20260120T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Under%2019%20Maschile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2019%20Maschile%20Gir.A%2A%0A20/01/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASD%20INTRAMONTES" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-01-28" data-camp="Under 19 Maschile Gir.A" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 28/01/2026 ⏰ 17:00</span> <span>|</span> <span>Giornata 9</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">ANNALISA VOLLEY SAN MARZANO</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALESTRA SMS FRANK  SAN MARZANO SUL SARNO SAVIA PENDINO</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.77768300,14.58891370&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ANNALISA%20VOLLEY%20SAN%20MARZANO%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260128T170000/20260128T190000&location=PALESTRA%20SMS%20FRANK%20%C2%A0SAN%20MARZANO%20SUL%20SARNO%20SAVIA%20PENDINO&details=Campionato+Under%2019%20Maschile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2019%20Maschile%20Gir.A%2A%0A28/01/2026%20%E2%8F%B0%2017%3A00%0A%F0%9F%93%8D%20PALESTRA%20SMS%20FRANK%20%C2%A0SAN%20MARZANO%20SUL%20SARNO%20SAVIA%20PENDINO%0AANNALISA%20VOLLEY%20SAN%20MARZANO%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-02-03" data-camp="Under 19 Maschile Gir.A" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 03/02/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 10</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name">POLISPORTIVA PESSY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20POLISPORTIVA%20PESSY&dates=20260203T180000/20260203T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Under%2019%20Maschile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2019%20Maschile%20Gir.A%2A%0A03/02/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20PASTENA%20VOLLEY%20vs%20POLISPORTIVA%20PESSY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    </div><div id="content-2" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>ASD VOLLEY SALERNO OFFICIAL</td><td><b>12</b></td><td>4</td><td>4</td><td>0</td><td>12</td><td>2</td></tr><tr ><td>2</td><td>MURATE</td><td><b>11</b></td><td>4</td><td>4</td><td>0</td><td>12</td><td>2</td></tr><tr ><td>3</td><td>DMB PALLAVOLO VILLA D'AGRI</td><td><b>9</b></td><td>5</td><td>3</td><td>2</td><td>10</td><td>6</td></tr><tr ><td>4</td><td>POLISPORTIVA PESSY</td><td><b>4</b></td><td>4</td><td>1</td><td>3</td><td>6</td><td>9</td></tr><tr class="my-team-row"><td>5</td><td>TODIS PASTENA VOLLEY</td><td><b>3</b></td><td>4</td><td>1</td><td>3</td><td>3</td><td>9</td></tr><tr ><td>6</td><td>XENIA SCAFATI</td><td><b>0</b></td><td>5</td><td>0</td><td>5</td><td>0</td><td>15</td></tr></tbody></table></div></div><h2>📅 Calendario</h2>
+    <div class="match-card loss" data-date-iso="2025-11-20" data-camp="Under 17 Maschile Gir.B" data-my-team="true">
+        <span class="result-badge badge-loss">PERSA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 20/11/2025 ⏰ 19:30</span> <span>|</span> <span>Giornata 1</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">ASD VOLLEY SALERNO OFFICIAL</span><span class="team-score">3</span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">0</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALESTRA I.C. ALFANO -QUASIMODO  SALERNO SAVIA DEI MILLE- INGRESSO PROL VIALE KENNEDY DI FRONTE POLIAMBULATORIO DI PASTENA</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.68244080,14.76809610&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2017%20Maschile%20Gir.B%2A%0AASD%20VOLLEY%20SALERNO%20OFFICIAL%203%20-%200%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2025-11-25" data-camp="Under 17 Maschile Gir.B" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 25/11/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 2</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name">POLISPORTIVA PESSY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20POLISPORTIVA%20PESSY&dates=20251125T180000/20251125T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Under%2017%20Maschile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2017%20Maschile%20Gir.B%2A%0A25/11/2025%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20PASTENA%20VOLLEY%20vs%20POLISPORTIVA%20PESSY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card loss" data-date-iso="2025-12-02" data-camp="Under 17 Maschile Gir.B" data-my-team="true">
+        <span class="result-badge badge-loss">PERSA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 02/12/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 3</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">0</span></div>
+            <div class="team-row"><span class="team-name">DMB PALLAVOLO VILLA D'AGRI</span><span class="team-score">3</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2017%20Maschile%20Gir.B%2A%0ATODIS%20PASTENA%20VOLLEY%200%20-%203%20DMB%20PALLAVOLO%20VILLA%20D%27AGRI" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card loss" data-date-iso="2025-12-12" data-camp="Under 17 Maschile Gir.B" data-my-team="true">
+        <span class="result-badge badge-loss">PERSA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 12/12/2025 ⏰ 18:30</span> <span>|</span> <span>Giornata 4</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">MURATE</span><span class="team-score">3</span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">0</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALESTRA LUIGI LA VISTA POTENZA PZVIA E. TOTI</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63370980,15.80881810&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2017%20Maschile%20Gir.B%2A%0AMURATE%203%20-%200%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card win" data-date-iso="2025-12-16" data-camp="Under 17 Maschile Gir.B" data-my-team="true">
+        <span class="result-badge badge-win">VINTA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 16/12/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 5</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">3</span></div>
+            <div class="team-row"><span class="team-name">XENIA SCAFATI</span><span class="team-score">0</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2017%20Maschile%20Gir.B%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20XENIA%20SCAFATI" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-01-08" data-camp="Under 17 Maschile Gir.B" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 08/01/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 6</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name">ASD VOLLEY SALERNO OFFICIAL</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASD%20VOLLEY%20SALERNO%20OFFICIAL&dates=20260108T180000/20260108T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Under%2017%20Maschile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2017%20Maschile%20Gir.B%2A%0A08/01/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASD%20VOLLEY%20SALERNO%20OFFICIAL" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-01-12" data-camp="Under 17 Maschile Gir.B" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 12/01/2026 ⏰ 19:00</span> <span>|</span> <span>Giornata 7</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">POLISPORTIVA PESSY</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ IMPIANTO POLIVALENTE GIANCARLO SIANI BIVIO PRATOLE MONTECORVINO PUGLIANO SAVIA MONTETERMINILLO</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.62575000,14.92946000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20POLISPORTIVA%20PESSY%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260112T190000/20260112T210000&location=IMPIANTO%20POLIVALENTE%20GIANCARLO%20SIANI%C2%A0BIVIO%20PRATOLE%20MONTECORVINO%20PUGLIANO%20SAVIA%20MONTETERMINILLO&details=Campionato+Under%2017%20Maschile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2017%20Maschile%20Gir.B%2A%0A12/01/2026%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20IMPIANTO%20POLIVALENTE%20GIANCARLO%20SIANI%C2%A0BIVIO%20PRATOLE%20MONTECORVINO%20PUGLIANO%20SAVIA%20MONTETERMINILLO%0APOLISPORTIVA%20PESSY%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-01-23" data-camp="Under 17 Maschile Gir.B" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 23/01/2026 ⏰ 20:30</span> <span>|</span> <span>Giornata 8</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">DMB PALLAVOLO VILLA D'AGRI</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALAZZETTO DELLO SPORT VILLA D'AGRI MARSICOVETERE PZVIA DELLO SPORT (ADIACENTE CAMPO SPORTIVO)</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.35174840,15.83029780&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20DMB%20PALLAVOLO%20VILLA%20D%27AGRI%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260123T203000/20260123T223000&location=PALAZZETTO%20DELLO%20SPORT%C2%A0VILLA%20D%27AGRI%20MARSICOVETERE%20PZVIA%20DELLO%20SPORT%20%28ADIACENTE%20CAMPO%20SPORTIVO%29&details=Campionato+Under%2017%20Maschile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2017%20Maschile%20Gir.B%2A%0A23/01/2026%20%E2%8F%B0%2020%3A30%0A%F0%9F%93%8D%20PALAZZETTO%20DELLO%20SPORT%C2%A0VILLA%20D%27AGRI%20MARSICOVETERE%20PZVIA%20DELLO%20SPORT%20%28ADIACENTE%20CAMPO%20SPORTIVO%29%0ADMB%20PALLAVOLO%20VILLA%20D%27AGRI%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-01-27" data-camp="Under 17 Maschile Gir.B" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 27/01/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 9</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name">MURATE</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20MURATE&dates=20260127T180000/20260127T200000&location=LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3&details=Campionato+Under%2017%20Maschile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2017%20Maschile%20Gir.B%2A%0A27/01/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20GINNASIO%20FRANCESCO%20DE%20SANCTIS%C2%A0SALERNO%20SAVIA%20U.%20STANZIONE%2C3%0ATODIS%20PASTENA%20VOLLEY%20vs%20MURATE" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-02-05" data-camp="Under 17 Maschile Gir.B" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 05/02/2026 ⏰ 19:30</span> <span>|</span> <span>Giornata 10</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">XENIA SCAFATI</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ ITIS Pacinotti SCAFATI SAvia Don Angelo Pagano, 1</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.75305050,14.53010850&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20XENIA%20SCAFATI%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260205T193000/20260205T213000&location=ITIS%20Pacinotti%C2%A0SCAFATI%20SAvia%20Don%20Angelo%20Pagano%2C%201&details=Campionato+Under%2017%20Maschile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2017%20Maschile%20Gir.B%2A%0A05/02/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20ITIS%20Pacinotti%C2%A0SCAFATI%20SAvia%20Don%20Angelo%20Pagano%2C%201%0AXENIA%20SCAFATI%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    </div><div id="content-3" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>PALL BATTIPAGLIA</td><td><b>11</b></td><td>4</td><td>4</td><td>0</td><td>12</td><td>4</td></tr><tr ><td>2</td><td>MURATE</td><td><b>10</b></td><td>4</td><td>3</td><td>1</td><td>11</td><td>5</td></tr><tr ><td>3</td><td>INDOMITA</td><td><b>6</b></td><td>3</td><td>2</td><td>1</td><td>7</td><td>4</td></tr><tr class="my-team-row"><td>4</td><td>TODIS PASTENA VOLLEY</td><td><b>5</b></td><td>5</td><td>2</td><td>3</td><td>8</td><td>11</td></tr><tr ><td>5</td><td>NOCERA VOLLEY</td><td><b>4</b></td><td>4</td><td>1</td><td>3</td><td>6</td><td>9</td></tr><tr ><td>6</td><td>RINASCITA LAGONEGRO</td><td><b>3</b></td><td>3</td><td>1</td><td>2</td><td>4</td><td>6</td></tr><tr ><td>7</td><td>VOLLEY MONTECORVINO</td><td><b>0</b></td><td>3</td><td>0</td><td>3</td><td>0</td><td>9</td></tr></tbody></table></div></div><h2>📅 Calendario</h2>
+    <div class="match-card loss" data-date-iso="2025-11-18" data-camp="Under 15 Maschile Gir.B" data-my-team="true">
+        <span class="result-badge badge-loss">PERSA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 18/11/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 1</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">1</span></div>
+            <div class="team-row"><span class="team-name">INDOMITA</span><span class="team-score">3</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ SMS Giovanni XXIII-MERCATELLO  SALERNO SAVia Parmenide</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.65583900,14.80636530&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2015%20Maschile%20Gir.B%2A%0ATODIS%20PASTENA%20VOLLEY%201%20-%203%20INDOMITA" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card win" data-date-iso="2025-11-26" data-camp="Under 15 Maschile Gir.B" data-my-team="true">
+        <span class="result-badge badge-win">VINTA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 26/11/2025 ⏰ 17:15</span> <span>|</span> <span>Giornata 2</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">NOCERA VOLLEY</span><span class="team-score">2</span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">3</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ SMS FRESA - PASCOLI NOCERA SUPERIORE SAViale Europa</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.74589260,14.67372320&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2015%20Maschile%20Gir.B%2A%0ANOCERA%20VOLLEY%202%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card loss" data-date-iso="2025-12-02" data-camp="Under 15 Maschile Gir.B" data-my-team="true">
+        <span class="result-badge badge-loss">PERSA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 02/12/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 3</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">0</span></div>
+            <div class="team-row"><span class="team-name">RINASCITA LAGONEGRO</span><span class="team-score">3</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ SMS Giovanni XXIII-MERCATELLO  SALERNO SAVia Parmenide</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.65583900,14.80636530&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2015%20Maschile%20Gir.B%2A%0ATODIS%20PASTENA%20VOLLEY%200%20-%203%20RINASCITA%20LAGONEGRO" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card loss" data-date-iso="2025-12-09" data-camp="Under 15 Maschile Gir.B" data-my-team="true">
+        <span class="result-badge badge-loss">PERSA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 09/12/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 4</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">1</span></div>
+            <div class="team-row"><span class="team-name">MURATE</span><span class="team-score">3</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ SMS Giovanni XXIII-MERCATELLO  SALERNO SAVia Parmenide</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.65583900,14.80636530&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2015%20Maschile%20Gir.B%2A%0ATODIS%20PASTENA%20VOLLEY%201%20-%203%20MURATE" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card win" data-date-iso="2025-12-16" data-camp="Under 15 Maschile Gir.B" data-my-team="true">
+        <span class="result-badge badge-win">VINTA</span>
+        <div class="match-header">
+            <span class="date-badge">📅 16/12/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 5</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">3</span></div>
+            <div class="team-row"><span class="team-name">VOLLEY MONTECORVINO</span><span class="team-score">0</span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ SMS Giovanni XXIII-MERCATELLO  SALERNO SAVia Parmenide</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.65583900,14.80636530&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2015%20Maschile%20Gir.B%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20VOLLEY%20MONTECORVINO" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-01-14" data-camp="Under 15 Maschile Gir.B" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 14/01/2026 ⏰ 20:00</span> <span>|</span> <span>Giornata 7</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">PALL BATTIPAGLIA</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALESTRA  SKIBA c/oSTADIO PASTENA  BATTIPAGLIA SAPIAZZA POZZO</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.60091010,14.97733000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20PALL%20BATTIPAGLIA%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260114T200000/20260114T220000&location=PALESTRA%20%20SKIBA%20c/oSTADIO%20PASTENA%20%C2%A0BATTIPAGLIA%20SAPIAZZA%20POZZO&details=Campionato+Under%2015%20Maschile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2015%20Maschile%20Gir.B%2A%0A14/01/2026%20%E2%8F%B0%2020%3A00%0A%F0%9F%93%8D%20PALESTRA%20%20SKIBA%20c/oSTADIO%20PASTENA%20%C2%A0BATTIPAGLIA%20SAPIAZZA%20POZZO%0APALL%20BATTIPAGLIA%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-01-21" data-camp="Under 15 Maschile Gir.B" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 21/01/2026 ⏰ 20:30</span> <span>|</span> <span>Giornata 8</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">INDOMITA</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALESTRA I.C. ALFANO -QUASIMODO  SALERNO SAVIA DEI MILLE- INGRESSO PROL VIALE KENNEDY DI FRONTE POLIAMBULATORIO DI PASTENA</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.68244080,14.76809610&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20INDOMITA%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260121T203000/20260121T223000&location=PALESTRA%20I.C.%20ALFANO%20-QUASIMODO%20%C2%A0SALERNO%20SAVIA%20DEI%20MILLE-%20INGRESSO%20PROL%20VIALE%20KENNEDY%20DI%20FRONTE%20POLIAMBULATORIO%20DI%20PASTENA&details=Campionato+Under%2015%20Maschile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2015%20Maschile%20Gir.B%2A%0A21/01/2026%20%E2%8F%B0%2020%3A30%0A%F0%9F%93%8D%20PALESTRA%20I.C.%20ALFANO%20-QUASIMODO%20%C2%A0SALERNO%20SAVIA%20DEI%20MILLE-%20INGRESSO%20PROL%20VIALE%20KENNEDY%20DI%20FRONTE%20POLIAMBULATORIO%20DI%20PASTENA%0AINDOMITA%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-01-27" data-camp="Under 15 Maschile Gir.B" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 27/01/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 9</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name">NOCERA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ SMS Giovanni XXIII-MERCATELLO  SALERNO SAVia Parmenide</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.65583900,14.80636530&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20NOCERA%20VOLLEY&dates=20260127T180000/20260127T200000&location=SMS%20Giovanni%20XXIII-MERCATELLO%20%C2%A0SALERNO%20SAVia%20Parmenide&details=Campionato+Under%2015%20Maschile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2015%20Maschile%20Gir.B%2A%0A27/01/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20SMS%20Giovanni%20XXIII-MERCATELLO%20%C2%A0SALERNO%20SAVia%20Parmenide%0ATODIS%20PASTENA%20VOLLEY%20vs%20NOCERA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-02-04" data-camp="Under 15 Maschile Gir.B" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 04/02/2026 ⏰ 19:00</span> <span>|</span> <span>Giornata 10</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">RINASCITA LAGONEGRO</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ ITCG VITTORINO D'ALESSANDRO LAGONEGRO PZC.da VERNETA</span>
+            <div class="action-buttons"><a href="http://maps.google.it/maps?q=LAGONEGRO+PZ%0D%0AC%2Eda+VERNETA&hl=it" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20RINASCITA%20LAGONEGRO%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260204T190000/20260204T210000&location=ITCG%20VITTORINO%20D%27ALESSANDRO%C2%A0LAGONEGRO%20PZC.da%20VERNETA&details=Campionato+Under%2015%20Maschile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2015%20Maschile%20Gir.B%2A%0A04/02/2026%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20ITCG%20VITTORINO%20D%27ALESSANDRO%C2%A0LAGONEGRO%20PZC.da%20VERNETA%0ARINASCITA%20LAGONEGRO%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-02-11" data-camp="Under 15 Maschile Gir.B" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 11/02/2026 ⏰ 18:30</span> <span>|</span> <span>Giornata 11</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">MURATE</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALESTRA LUIGI LA VISTA POTENZA PZVIA E. TOTI</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63370980,15.80881810&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20MURATE%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260211T183000/20260211T203000&location=PALESTRA%20LUIGI%20LA%20VISTA%C2%A0POTENZA%20PZVIA%20E.%20TOTI&details=Campionato+Under%2015%20Maschile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2015%20Maschile%20Gir.B%2A%0A11/02/2026%20%E2%8F%B0%2018%3A30%0A%F0%9F%93%8D%20PALESTRA%20LUIGI%20LA%20VISTA%C2%A0POTENZA%20PZVIA%20E.%20TOTI%0AMURATE%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-02-18" data-camp="Under 15 Maschile Gir.B" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 18/02/2026 ⏰ 20:30</span> <span>|</span> <span>Giornata 12</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name">VOLLEY MONTECORVINO</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ PALESTRA SABATO DE LUCA MONTECORVINO ROVELLA MONTECORVINO ROVELLA SAVIA LARGO DEL PONTE</span>
+            <div class="action-buttons"><a href="http://maps.google.it/maps?q=MONTECORVINO+ROVELLA+MONTECORVINO+ROVELLA+SA%0D%0AVIA+LARGO+DEL+PONTE&hl=it" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20MONTECORVINO%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260218T203000/20260218T223000&location=PALESTRA%20SABATO%20DE%20LUCA%C2%A0MONTECORVINO%20ROVELLA%20MONTECORVINO%20ROVELLA%20SAVIA%20LARGO%20DEL%20PONTE&details=Campionato+Under%2015%20Maschile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2015%20Maschile%20Gir.B%2A%0A18/02/2026%20%E2%8F%B0%2020%3A30%0A%F0%9F%93%8D%20PALESTRA%20SABATO%20DE%20LUCA%C2%A0MONTECORVINO%20ROVELLA%20MONTECORVINO%20ROVELLA%20SAVIA%20LARGO%20DEL%20PONTE%0AVOLLEY%20MONTECORVINO%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
+    <div class="match-card upcoming" data-date-iso="2026-03-03" data-camp="Under 15 Maschile Gir.B" data-my-team="true">
+        
+        <div class="match-header">
+            <span class="date-badge">📅 03/03/2026 ⏰ 18:00</span> <span>|</span> <span>Giornata 14</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score"></span></div>
+            <div class="team-row"><span class="team-name">PALL BATTIPAGLIA</span><span class="team-score"></span></div>
+        </div>
+        <div class="match-footer">
+            <span class="gym-name">🏟️ SMS Giovanni XXIII-MERCATELLO  SALERNO SAVia Parmenide</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.65583900,14.80636530&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20PALL%20BATTIPAGLIA&dates=20260303T180000/20260303T200000&location=SMS%20Giovanni%20XXIII-MERCATELLO%20%C2%A0SALERNO%20SAVia%20Parmenide&details=Campionato+Under%2015%20Maschile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2015%20Maschile%20Gir.B%2A%0A03/03/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20SMS%20Giovanni%20XXIII-MERCATELLO%20%C2%A0SALERNO%20SAVia%20Parmenide%0ATODIS%20PASTENA%20VOLLEY%20vs%20PALL%20BATTIPAGLIA" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    </div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f" alt="Visite"></div></body></html>
