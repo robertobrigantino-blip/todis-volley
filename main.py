@@ -18,11 +18,13 @@ TARGET_TEAM_ALIASES = [
     "TODIS C.S. PASTENA VOLLEY"
 ]
 
-FILE_LANDING = "index.html"      # Pagina Scelta (Hub)
-FILE_MALE = "maschile.html"      # App Maschile
-FILE_FEMALE = "femminile.html"   # App Femminile
-FILE_GEN = "generale.html"       # Vista Generale (Globale)
-FILE_SCORE = "segnapunti.html"   # Segnapunti
+# --- NOMI FILE AGGIORNATI PER GESTIRE I FLUSSI SEPARATI ---
+FILE_LANDING = "index.html"
+FILE_MALE = "maschile.html"           # Todis Maschile
+FILE_FEMALE = "femminile.html"        # Todis Femminile
+FILE_GEN_MALE = "generale_m.html"     # Generale Maschile (Nuovo)
+FILE_GEN_FEMALE = "generale_f.html"   # Generale Femminile (Nuovo)
+FILE_SCORE = "segnapunti.html"
 
 # URL IMMAGINI
 REPO_URL = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/"
@@ -67,13 +69,11 @@ CSS_BASE = """
     
     /* Header */
     .app-header { background-color: #d32f2f; color: white; padding: 5px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; height: 60px; }
-    
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
     .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
     
-    /* Nav Buttons */
     .nav-buttons { display: flex; gap: 10px; align-items: center; }
     .nav-icon-img { height: 45px; width: auto; transition: transform 0.1s, opacity 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
@@ -88,7 +88,7 @@ CSS_BASE = """
     
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
 
-    /* Classifica & Scroll */
+    /* Classifica */
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
@@ -137,13 +137,13 @@ CSS_BASE = """
     .bg-gray { background-color: #78909c; }
     .partials-container { display: flex; gap: 5px; overflow-x: auto; }
     .small-badge { width: 30px; height: 30px; background-color: #7986cb; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; flex-shrink: 0; }
+
     .toggle-icon { margin-left: 5px; transition: transform 0.3s; cursor: pointer; color: #aaa; font-size:14px; }
     .toggle-icon.rotated { transform: rotate(180deg); }
 
     /* Modals & Footer */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .modal-content { background: white; width: 85%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 20px; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
-    @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
     .modal-title { font-size: 18px; font-weight: bold; color: #d32f2f; }
     .close-btn { background: #eee; border: none; font-size: 24px; padding: 0 10px; border-radius: 5px; color: #555; cursor: pointer; }
@@ -151,11 +151,12 @@ CSS_BASE = """
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
     
-    /* IOS INSTALL TIP & LANDING */
+    /* IOS INSTALL TIP */
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
 
+    /* LANDING PAGE STYLES */
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -166,7 +167,9 @@ CSS_BASE = """
 </style>
 <script>
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js');
+        });
     }
 
     function openTab(tabIndex) {
@@ -180,20 +183,6 @@ CSS_BASE = """
     
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
-
-    // Funzione Smart Back FIXATA: Usa Parametri URL
-    function tornaAlSettore() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const origin = urlParams.get('from');
-        
-        if (origin === 'maschile') {
-            window.location.href = "maschile.html";
-        } else if (origin === 'femminile') {
-            window.location.href = "femminile.html";
-        } else {
-            window.location.href = "index.html"; // Default landing
-        }
-    }
 
     // Toggle Details Function
     function toggleDetails(id) {
@@ -213,7 +202,6 @@ CSS_BASE = """
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
 
-        // Popup solo se siamo in una pagina di dettaglio
         if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -584,6 +572,7 @@ def scrape_data():
 # ================= GENERATORE LANDING PAGE =================
 def genera_landing_page():
     print(f"📄 Generazione Landing Page...")
+    # Solo Segnapunti in alto a destra
     nav_links = f'<a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
     
     html = f"""<!DOCTYPE html>
@@ -647,17 +636,17 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
     
     if "maschile" in filename: 
         page_title = "Settore Maschile"
-        origin_param = "maschile"
+        link_gen = FILE_GEN_MALE # Link specifico per il generale maschile
     elif "femminile" in filename: 
         page_title = "Settore Femminile"
-        origin_param = "femminile"
+        link_gen = FILE_GEN_FEMALE # Link specifico per il generale femminile
     else: 
         page_title = NOME_VISUALIZZATO
-        origin_param = ""
+        link_gen = "#"
     
-    # PASSAGGIO PARAMETRO ORIGIN
+    # NAVIGAZIONE INTERNA: Mondo + Segnapunti
     nav_links = f"""
-    <a href="{FILE_GEN}?from={origin_param}" title="Tutti i risultati"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a>
+    <a href="{link_gen}" title="Tutti i risultati"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a>
     <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
     """
 
@@ -735,13 +724,13 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
     html += '<div style="height:20px;"></div></body></html>'
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
 
-def genera_pagina_generale(df_ris, df_class, filename):
+def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_link):
     print(f"📄 Generazione {filename} (Mode: GENERAL)...")
     title = "Risultati Completi"
     
-    # NAVIGAZIONE INTELLIGENTE
+    # NAVIGAZIONE: Todis (Back link specifico) + Segnapunti
     nav_links = f"""
-    <a href="#" onclick="tornaAlSettore(); return false;" title="Filtro Todis"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>
+    <a href="{back_link}" title="Filtro Todis"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>
     <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
     """
 
@@ -769,7 +758,8 @@ def genera_pagina_generale(df_ris, df_class, filename):
         </div>
     """
 
-    campionati_disp = df_class['Campionato'].unique()
+    campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
+    
     html += '<div class="tab-bar">'
     for i, camp in enumerate(campionati_disp):
         if "Gir." in camp:
@@ -873,8 +863,9 @@ if __name__ == "__main__":
     # 3. App Femminile
     genera_pagina_app(df_ris, df_class, FILE_FEMALE, CAMPIONATI_FEMMINILI, mode="APP")
     
-    # 4. Vista Generale
-    genera_pagina_generale(df_ris, df_class, FILE_GEN)
+    # 4. Vista Generale (DUE PAGINE SEPARATE)
+    genera_pagina_generale(df_ris, df_class, FILE_GEN_MALE, CAMPIONATI_MASCHILI, back_link=FILE_MALE)
+    genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, back_link=FILE_FEMALE)
     
     # 5. Segnapunti
     genera_segnapunti()
