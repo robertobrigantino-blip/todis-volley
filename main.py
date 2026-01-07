@@ -18,26 +18,23 @@ TARGET_TEAM_ALIASES = [
     "TODIS C.S. PASTENA VOLLEY"
 ]
 
-FILE_LANDING = "index.html"      # Pagina Scelta (Hub)
-FILE_MALE = "maschile.html"      # App Maschile
-FILE_FEMALE = "femminile.html"   # App Femminile
-FILE_GEN = "generale.html"       # Vista Generale (Globale)
-FILE_SCORE = "segnapunti.html"   # Segnapunti
+FILE_APP = "index.html"
+FILE_GEN = "generale.html"
+FILE_SCORE = "segnapunti.html"
 
-# URL IMMAGINI (RAW DA GITHUB)
+# URL IMMAGINI
 REPO_URL = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/"
-
 URL_LOGO = REPO_URL + "logo.jpg"
 URL_SPLIT_IMG = REPO_URL + "scelta_campionato.jpg"
 
-# NUOVI BOTTONI
+# BOTTONI
 BTN_ALL_RESULTS = REPO_URL + "all_result.png"
 BTN_TODIS_RESULTS = REPO_URL + "todis_result.png"
 BTN_SCOREBOARD = REPO_URL + "tabellone_segnapunti.png"
 
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
-# --- DEFINIZIONE CAMPIONATI ---
+# CAMPIONATI
 CAMPIONATI_MASCHILI = {
     "Serie D  Maschile Gir.C": "85622",
     "Under 19 Maschile Gir.A": "86865",
@@ -52,7 +49,6 @@ CAMPIONATI_FEMMINILI = {
     "Under 14 Femminile Gir.C": "86860",
 }
 
-# Unione dei due dizionari per lo scraping
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 
 def is_target_team(team_name):
@@ -69,23 +65,12 @@ CSS_BASE = """
     
     /* Header */
     .app-header { background-color: #d32f2f; color: white; padding: 5px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; height: 60px; }
-    
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
     .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
-    
-    /* NUOVI BOTTONI HEADER */
     .nav-buttons { display: flex; gap: 10px; align-items: center; }
-    
-    .nav-icon-img { 
-        height: 45px; 
-        width: auto; 
-        transition: transform 0.1s, opacity 0.2s; 
-        filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
-        cursor: pointer;
-    }
-    
+    .nav-icon-img { height: 45px; width: auto; transition: transform 0.1s, opacity 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
 
     /* Tabs */
@@ -127,20 +112,45 @@ CSS_BASE = """
     
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
     .gym-name { font-size: 11px; color: #666; width: 100%; display: block; margin-bottom: 5px; }
-    
     .action-buttons { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
     .btn { text-decoration: none; padding: 5px 10px; border-radius: 15px; font-size: 10px; font-weight: bold; display: flex; align-items: center; gap: 3px; border: 1px solid transparent; }
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
 
-    /* DETTAGLIO SET (Accordion) */
-    .sets-details { display: none; margin-top: 10px; background: #f9f9f9; padding: 10px; border-radius: 8px; font-size: 12px; }
-    .sets-details.open { display: block; animation: fadeIn 0.3s; }
-    .sets-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed #eee; }
-    .sets-row:last-child { border-bottom: none; }
-    .sets-num { font-weight: bold; color: #d32f2f; width: 40px; }
-    .toggle-icon { margin-left: 5px; transition: transform 0.3s; cursor: pointer; color: #aaa; }
+    /* DETTAGLIO SET GRAFICO (BLOCCHI) */
+    .sets-details { display: none; margin-top: 10px; background: #f0f4f8; padding: 10px; border-radius: 8px; border: 1px solid #e1e8ed; }
+    .sets-details.open { display: block; animation: slideDown 0.3s; }
+    @keyframes slideDown { from{opacity:0; transform:translateY(-5px);} to{opacity:1; transform:translateY(0);} }
+
+    .score-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .score-row:last-child { margin-bottom: 0; }
+    
+    /* Blocco grande (Risultato finale) */
+    .big-badge { 
+        width: 30px; height: 30px; 
+        border-radius: 6px; 
+        display: flex; align-items: center; justify-content: center; 
+        color: white; font-weight: bold; font-size: 16px; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .bg-green { background-color: #2e7d32; } /* Verde vittoria */
+    .bg-red { background-color: #c62828; }   /* Rosso sconfitta */
+    .bg-gray { background-color: #78909c; }  /* Grigio pareggio/neutro */
+
+    /* Blocchi piccoli (Parziali) */
+    .partials-container { display: flex; gap: 5px; overflow-x: auto; }
+    .small-badge {
+        width: 30px; height: 30px;
+        background-color: #7986cb; /* Blu indaco */
+        color: white;
+        border-radius: 6px;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: bold; font-size: 13px;
+        flex-shrink: 0;
+    }
+
+    .toggle-icon { margin-left: 5px; transition: transform 0.3s; cursor: pointer; color: #aaa; font-size:14px; }
     .toggle-icon.rotated { transform: rotate(180deg); }
 
     /* Modals & Footer */
@@ -187,19 +197,6 @@ CSS_BASE = """
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
 
-    // Funzione Smart Back per la pagina Generale
-    function tornaAlSettore() {
-        const ref = document.referrer;
-        if (ref && ref.includes("maschile.html")) {
-            window.location.href = "maschile.html";
-        } else if (ref && ref.includes("femminile.html")) {
-            window.location.href = "femminile.html";
-        } else {
-            // Se non c'è referrer o non è riconosciuto, vai alla landing
-            window.location.href = "index.html";
-        }
-    }
-
     // Toggle Details Function
     function toggleDetails(id) {
         const details = document.getElementById('details-' + id);
@@ -214,12 +211,10 @@ CSS_BASE = """
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
-        
         if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
 
-        // Popup solo se siamo in una pagina di dettaglio
         if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -404,6 +399,10 @@ def crea_card_html(r, camp, is_focus_mode=False):
     if r['Punteggio']:
         try:
             sc, so = int(r['Set Casa']), int(r['Set Ospite'])
+            # Colori Badge Set Totali
+            bg_c = "bg-green" if sc > so else "bg-red"
+            bg_o = "bg-green" if so > sc else "bg-red"
+            
             if is_my_match:
                 if (is_home and sc > so) or (is_away and so > sc):
                     status_class = "win"
@@ -414,23 +413,41 @@ def crea_card_html(r, camp, is_focus_mode=False):
             else:
                 status_class = "played"
                 badge_html = '<span class="result-badge badge-played">FINALE</span>'
-            
-            # PARZIALI SET
+                bg_c, bg_o = "bg-gray", "bg-gray" # Colori neutri per altre squadre
+
+            # --- PARZIALI SET (GRAFICA A BLOCCHI) ---
             if r['Parziali'] and str(r['Parziali']) != 'nan':
                 unique_id = re.sub(r'\W+', '', r['Squadra Casa'] + r['Giornata'])
                 toggle_onclick = f'onclick="toggleDetails(\'{unique_id}\')"'
                 toggle_icon = f'<span id="icon-{unique_id}" class="toggle-icon">▼</span>'
                 
                 parziali_list = r['Parziali'].split(',')
-                sets_rows = ""
-                for idx, p in enumerate(parziali_list):
+                # Liste per accumulare i punteggi e disegnarli
+                p_c_list = []
+                p_o_list = []
+                
+                for p in parziali_list:
                     try:
-                        p_casa, p_ospite = p.strip().split('-')
-                        sets_rows += f'<div class="sets-row"><div class="sets-num">Set {idx+1}</div><div>{p_casa} - {p_ospite}</div></div>'
+                        pts = p.strip().split('-')
+                        p_c_list.append(f'<div class="small-badge">{pts[0]}</div>')
+                        p_o_list.append(f'<div class="small-badge">{pts[1]}</div>')
                     except: pass
                 
-                sets_html = f'<div id="details-{unique_id}" class="sets-details">{sets_rows}</div>'
-                
+                html_c_row = "".join(p_c_list)
+                html_o_row = "".join(p_o_list)
+
+                sets_html = f"""
+                <div id="details-{unique_id}" class="sets-details">
+                    <div class="score-row">
+                        <div class="big-badge {bg_c}">{sc}</div>
+                        <div class="partials-container">{html_c_row}</div>
+                    </div>
+                    <div class="score-row">
+                        <div class="big-badge {bg_o}">{so}</div>
+                        <div class="partials-container">{html_o_row}</div>
+                    </div>
+                </div>
+                """
         except: status_class = "played"
     
     lnk_wa = create_whatsapp_link(r)
@@ -569,7 +586,6 @@ def scrape_data():
 # ================= GENERATORE LANDING PAGE =================
 def genera_landing_page():
     print(f"📄 Generazione Landing Page...")
-    # Solo Segnapunti in alto a destra
     nav_links = f'<a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
     
     html = f"""<!DOCTYPE html>
@@ -840,9 +856,20 @@ def genera_segnapunti():
 
 if __name__ == "__main__":
     df_ris, df_class = scrape_data()
+    
+    # 1. Landing Page
     genera_landing_page()
+    
+    # 2. App Maschile
     genera_pagina_app(df_ris, df_class, FILE_MALE, CAMPIONATI_MASCHILI, mode="APP")
+    
+    # 3. App Femminile
     genera_pagina_app(df_ris, df_class, FILE_FEMALE, CAMPIONATI_FEMMINILI, mode="APP")
+    
+    # 4. Vista Generale
     genera_pagina_generale(df_ris, df_class, FILE_GEN)
+    
+    # 5. Segnapunti
     genera_segnapunti()
+    
     print("✅ Generazione completata! Site structure built.")
