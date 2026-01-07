@@ -9,7 +9,9 @@ import re
 from datetime import datetime, timedelta
 import os
 
-# ================= CONFIGURAZIONE =================
+# ==========================================
+# 1. CONFIGURAZIONE (NON CANCELLARE)
+# ==========================================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
 
 TARGET_TEAM_ALIASES = [
@@ -18,23 +20,28 @@ TARGET_TEAM_ALIASES = [
     "TODIS C.S. PASTENA VOLLEY"
 ]
 
-FILE_APP = "index.html"
-FILE_GEN = "generale.html"
-FILE_SCORE = "segnapunti.html"
+# Nomi dei file generati
+FILE_APP = "index.html"      # Pagina Scelta (Hub)
+FILE_MALE = "maschile.html"      # App Maschile
+FILE_FEMALE = "femminile.html"   # App Femminile
+FILE_GEN = "generale.html"       # Vista Generale (Globale)
+FILE_SCORE = "segnapunti.html"   # Segnapunti
 
-# URL IMMAGINI
+# URL Immagini (RAW da GitHub)
 REPO_URL = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/"
+
 URL_LOGO = REPO_URL + "logo.jpg"
 URL_SPLIT_IMG = REPO_URL + "scelta_campionato.jpg"
 
-# BOTTONI
+# Bottoni personalizzati
 BTN_ALL_RESULTS = REPO_URL + "all_result.png"
 BTN_TODIS_RESULTS = REPO_URL + "todis_result.png"
 BTN_SCOREBOARD = REPO_URL + "tabellone_segnapunti.png"
 
+# Contatore visite
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
-# CAMPIONATI
+# Definizioni Campionati
 CAMPIONATI_MASCHILI = {
     "Serie D  Maschile Gir.C": "85622",
     "Under 19 Maschile Gir.A": "86865",
@@ -49,26 +56,25 @@ CAMPIONATI_FEMMINILI = {
     "Under 14 Femminile Gir.C": "86860",
 }
 
+# Unione per lo scraping
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 
-def is_target_team(team_name):
-    if pd.isna(team_name) or not str(team_name).strip(): return False
-    name_clean = str(team_name).upper().strip()
-    for alias in TARGET_TEAM_ALIASES:
-        if alias.upper() in name_clean: return True
-    return False
-
-# ================= CSS COMUNE =================
+# ==========================================
+# 2. CSS CONDIVISO
+# ==========================================
 CSS_BASE = """
 <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
     
     /* Header */
     .app-header { background-color: #d32f2f; color: white; padding: 5px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; height: 60px; }
+    
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
     .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
+    
+    /* Navigazione Header */
     .nav-buttons { display: flex; gap: 10px; align-items: center; }
     .nav-icon-img { height: 45px; width: auto; transition: transform 0.1s, opacity 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
@@ -112,13 +118,14 @@ CSS_BASE = """
     
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
     .gym-name { font-size: 11px; color: #666; width: 100%; display: block; margin-bottom: 5px; }
+    
     .action-buttons { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
     .btn { text-decoration: none; padding: 5px 10px; border-radius: 15px; font-size: 10px; font-weight: bold; display: flex; align-items: center; gap: 3px; border: 1px solid transparent; }
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
 
-    /* DETTAGLIO SET GRAFICO (BLOCCHI) */
+    /* DETTAGLIO SET GRAFICO */
     .sets-details { display: none; margin-top: 10px; background: #f0f4f8; padding: 10px; border-radius: 8px; border: 1px solid #e1e8ed; }
     .sets-details.open { display: block; animation: slideDown 0.3s; }
     @keyframes slideDown { from{opacity:0; transform:translateY(-5px);} to{opacity:1; transform:translateY(0);} }
@@ -126,29 +133,13 @@ CSS_BASE = """
     .score-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
     .score-row:last-child { margin-bottom: 0; }
     
-    /* Blocco grande (Risultato finale) */
-    .big-badge { 
-        width: 30px; height: 30px; 
-        border-radius: 6px; 
-        display: flex; align-items: center; justify-content: center; 
-        color: white; font-weight: bold; font-size: 16px; 
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    .bg-green { background-color: #2e7d32; } /* Verde vittoria */
-    .bg-red { background-color: #c62828; }   /* Rosso sconfitta */
-    .bg-gray { background-color: #78909c; }  /* Grigio pareggio/neutro */
+    .big-badge { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .bg-green { background-color: #2e7d32; } 
+    .bg-red { background-color: #c62828; }
+    .bg-gray { background-color: #78909c; }
 
-    /* Blocchi piccoli (Parziali) */
     .partials-container { display: flex; gap: 5px; overflow-x: auto; }
-    .small-badge {
-        width: 30px; height: 30px;
-        background-color: #7986cb; /* Blu indaco */
-        color: white;
-        border-radius: 6px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 13px;
-        flex-shrink: 0;
-    }
+    .small-badge { width: 30px; height: 30px; background-color: #7986cb; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; flex-shrink: 0; }
 
     .toggle-icon { margin-left: 5px; transition: transform 0.3s; cursor: pointer; color: #aaa; font-size:14px; }
     .toggle-icon.rotated { transform: rotate(180deg); }
@@ -156,7 +147,6 @@ CSS_BASE = """
     /* Modals & Footer */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .modal-content { background: white; width: 85%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 20px; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
-    @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
     .modal-title { font-size: 18px; font-weight: bold; color: #d32f2f; }
     .close-btn { background: #eee; border: none; font-size: 24px; padding: 0 10px; border-radius: 5px; color: #555; cursor: pointer; }
@@ -204,6 +194,18 @@ CSS_BASE = """
         if (details) {
             details.classList.toggle('open');
             if(icon) icon.classList.toggle('rotated');
+        }
+    }
+    
+    // Funzione Smart Back
+    function tornaAlSettore() {
+        const ref = document.referrer;
+        if (ref && ref.includes("maschile.html")) {
+            window.location.href = "maschile.html";
+        } else if (ref && ref.includes("femminile.html")) {
+            window.location.href = "femminile.html";
+        } else {
+            window.location.href = "index.html";
         }
     }
 
@@ -259,6 +261,7 @@ CSS_BASE = """
 </script>
 """
 
+# ================= SEGNAPUNTI =================
 SCOREBOARD_CODE = """
 <style>
     body { background-color: #121212; color: white; overflow: hidden; margin: 0; padding: 0; }
@@ -381,6 +384,13 @@ def create_whatsapp_link(row):
         text = f"📅 *Gara {row['Campionato']}*\n{row['Data']}\n📍 {row['Impianto']}\n{row['Squadra Casa']} vs {row['Squadra Ospite']}"
     return f"https://wa.me/?text={quote(text)}"
 
+def is_target_team(team_name):
+    if pd.isna(team_name) or not str(team_name).strip(): return False
+    name_clean = str(team_name).upper().strip()
+    for alias in TARGET_TEAM_ALIASES:
+        if alias.upper() in name_clean: return True
+    return False
+
 # ================= GENERATORE HTML CARD =================
 def crea_card_html(r, camp, is_focus_mode=False):
     is_home = is_target_team(r['Squadra Casa'])
@@ -399,7 +409,7 @@ def crea_card_html(r, camp, is_focus_mode=False):
     if r['Punteggio']:
         try:
             sc, so = int(r['Set Casa']), int(r['Set Ospite'])
-            # Colori Badge Set Totali
+            # Colori Badge
             bg_c = "bg-green" if sc > so else "bg-red"
             bg_o = "bg-green" if so > sc else "bg-red"
             
@@ -413,16 +423,15 @@ def crea_card_html(r, camp, is_focus_mode=False):
             else:
                 status_class = "played"
                 badge_html = '<span class="result-badge badge-played">FINALE</span>'
-                bg_c, bg_o = "bg-gray", "bg-gray" # Colori neutri per altre squadre
+                bg_c, bg_o = "bg-gray", "bg-gray"
 
-            # --- PARZIALI SET (GRAFICA A BLOCCHI) ---
+            # --- PARZIALI SET ---
             if r['Parziali'] and str(r['Parziali']) != 'nan':
                 unique_id = re.sub(r'\W+', '', r['Squadra Casa'] + r['Giornata'])
                 toggle_onclick = f'onclick="toggleDetails(\'{unique_id}\')"'
                 toggle_icon = f'<span id="icon-{unique_id}" class="toggle-icon">▼</span>'
                 
                 parziali_list = r['Parziali'].split(',')
-                # Liste per accumulare i punteggi e disegnarli
                 p_c_list = []
                 p_o_list = []
                 
