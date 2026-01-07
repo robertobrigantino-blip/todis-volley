@@ -37,7 +37,7 @@ BTN_SCOREBOARD = REPO_URL + "tabellone_segnapunti.png"
 
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
-# --- DEFINIZIONE CAMPIONATI (SPOSTATA QUI IN ALTO) ---
+# --- DEFINIZIONE CAMPIONATI ---
 CAMPIONATI_MASCHILI = {
     "Serie D  Maschile Gir.C": "85622",
     "Under 19 Maschile Gir.A": "86865",
@@ -176,6 +176,19 @@ CSS_BASE = """
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
 
+    // Funzione Smart Back per la pagina Generale
+    function tornaAlSettore() {
+        const ref = document.referrer;
+        if (ref && ref.includes("maschile.html")) {
+            window.location.href = "maschile.html";
+        } else if (ref && ref.includes("femminile.html")) {
+            window.location.href = "femminile.html";
+        } else {
+            // Se non c'è referrer o non è riconosciuto, vai alla landing
+            window.location.href = "index.html";
+        }
+    }
+
     // Popup Logic
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
@@ -185,6 +198,7 @@ CSS_BASE = """
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
 
+        // Popup solo se siamo in una pagina di dettaglio
         if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -646,9 +660,10 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
 def genera_pagina_generale(df_ris, df_class, filename):
     print(f"📄 Generazione {filename} (Mode: GENERAL)...")
     title = "Risultati Completi"
-    # NAVIGAZIONE: Todis (Home) + Segnapunti
+    
+    # NAVIGAZIONE INTELLIGENTE: Todis (Smart Back) + Segnapunti
     nav_links = f"""
-    <a href="{FILE_LANDING}" title="Home"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>
+    <a href="#" onclick="tornaAlSettore(); return false;" title="Filtro Todis"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>
     <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
     """
 
