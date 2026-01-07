@@ -54,7 +54,7 @@
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
 
     /* Card Partita */
-    .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; }
+    .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; transition: max-height 0.3s ease; }
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
@@ -79,6 +79,17 @@
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
+
+    /* DETTAGLIO SET (Accordion) */
+    .sets-details { display: none; margin-top: 10px; background: #f9f9f9; padding: 10px; border-radius: 8px; font-size: 12px; }
+    .sets-details.open { display: block; animation: fadeIn 0.3s; }
+    .sets-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed #eee; }
+    .sets-row:last-child { border-bottom: none; }
+    .sets-num { font-weight: bold; color: #d32f2f; width: 40px; }
+    .toggle-icon { margin-left: 5px; transition: transform 0.3s; cursor: pointer; color: #aaa; }
+    .toggle-icon.rotated { transform: rotate(180deg); }
+
+    /* Modals & Footer */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .modal-content { background: white; width: 85%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 20px; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
     @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -132,6 +143,16 @@
         } else {
             // Se non c'è referrer o non è riconosciuto, vai alla landing
             window.location.href = "index.html";
+        }
+    }
+
+    // Toggle Details Function
+    function toggleDetails(id) {
+        const details = document.getElementById('details-' + id);
+        const icon = document.getElementById('icon-' + id);
+        if (details) {
+            details.classList.toggle('open');
+            if(icon) icon.classList.toggle('rotated');
         }
     }
 
@@ -201,7 +222,7 @@
         <div class="app-header">
             <div class="header-left">
                 <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" alt="Logo" class="logo-main">
-                <div><h1>TODIS PASTENA VOLLEY</h1><div class="last-update">07/01 09:33</div></div>
+                <div><h1>TODIS PASTENA VOLLEY</h1><div class="last-update">07/01 10:06</div></div>
             </div>
             <div class="nav-buttons"><a href="segnapunti.html" title="Segnapunti"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div>
         </div>
