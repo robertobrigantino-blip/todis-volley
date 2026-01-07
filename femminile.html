@@ -122,6 +122,19 @@
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
 
+    // Funzione Smart Back per la pagina Generale
+    function tornaAlSettore() {
+        const ref = document.referrer;
+        if (ref && ref.includes("maschile.html")) {
+            window.location.href = "maschile.html";
+        } else if (ref && ref.includes("femminile.html")) {
+            window.location.href = "femminile.html";
+        } else {
+            // Se non c'è referrer o non è riconosciuto, vai alla landing
+            window.location.href = "index.html";
+        }
+    }
+
     // Popup Logic
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
@@ -131,6 +144,7 @@
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
 
+        // Popup solo se siamo in una pagina di dettaglio
         if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -187,7 +201,7 @@
         <div class="app-header">
             <div class="header-left" onclick="window.location.href='index.html'">
                 <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" alt="Logo" class="logo-main">
-                <div><h1>Settore Femminile</h1><div class="last-update">07/01 07:50</div></div>
+                <div><h1>Settore Femminile</h1><div class="last-update">07/01 09:33</div></div>
             </div>
             <div class="nav-buttons">
     <a href="generale.html" title="Tutti i risultati"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/all_result.png" class="nav-icon-img"></a>
