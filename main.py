@@ -18,23 +18,26 @@ TARGET_TEAM_ALIASES = [
     "TODIS C.S. PASTENA VOLLEY"
 ]
 
-FILE_APP = "index.html"
-FILE_GEN = "generale.html"
-FILE_SCORE = "segnapunti.html"
+FILE_LANDING = "index.html"      # Pagina Scelta (Hub)
+FILE_MALE = "maschile.html"      # App Maschile
+FILE_FEMALE = "femminile.html"   # App Femminile
+FILE_GEN = "generale.html"       # Vista Generale (Globale)
+FILE_SCORE = "segnapunti.html"   # Segnapunti
 
-# URL IMMAGINI
+# URL IMMAGINI (RAW DA GITHUB)
 REPO_URL = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/"
+
 URL_LOGO = REPO_URL + "logo.jpg"
 URL_SPLIT_IMG = REPO_URL + "scelta_campionato.jpg"
 
-# BOTTONI
+# NUOVI BOTTONI
 BTN_ALL_RESULTS = REPO_URL + "all_result.png"
 BTN_TODIS_RESULTS = REPO_URL + "todis_result.png"
 BTN_SCOREBOARD = REPO_URL + "tabellone_segnapunti.png"
 
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
-# CAMPIONATI
+# --- DEFINIZIONE CAMPIONATI ---
 CAMPIONATI_MASCHILI = {
     "Serie D  Maschile Gir.C": "85622",
     "Under 19 Maschile Gir.A": "86865",
@@ -49,6 +52,7 @@ CAMPIONATI_FEMMINILI = {
     "Under 14 Femminile Gir.C": "86860",
 }
 
+# Unione dei due dizionari per lo scraping
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 
 def is_target_team(team_name):
@@ -65,13 +69,23 @@ CSS_BASE = """
     
     /* Header */
     .app-header { background-color: #d32f2f; color: white; padding: 5px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; height: 60px; }
+    
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
     .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
     
+    /* NUOVI BOTTONI HEADER */
     .nav-buttons { display: flex; gap: 10px; align-items: center; }
-    .nav-icon-img { height: 45px; width: auto; transition: transform 0.1s, opacity 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
+    
+    .nav-icon-img { 
+        height: 45px; 
+        width: auto; 
+        transition: transform 0.1s, opacity 0.2s; 
+        filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+        cursor: pointer;
+    }
+    
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
 
     /* Tabs */
@@ -140,10 +154,12 @@ CSS_BASE = """
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
     
-    /* IOS POPUP & LANDING (Keep existing) */
+    /* IOS INSTALL TIP */
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
+
+    /* LANDING PAGE STYLES */
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -154,7 +170,9 @@ CSS_BASE = """
 </style>
 <script>
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js');
+        });
     }
 
     function openTab(tabIndex) {
@@ -169,6 +187,19 @@ CSS_BASE = """
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
 
+    // Funzione Smart Back per la pagina Generale
+    function tornaAlSettore() {
+        const ref = document.referrer;
+        if (ref && ref.includes("maschile.html")) {
+            window.location.href = "maschile.html";
+        } else if (ref && ref.includes("femminile.html")) {
+            window.location.href = "femminile.html";
+        } else {
+            // Se non c'è referrer o non è riconosciuto, vai alla landing
+            window.location.href = "index.html";
+        }
+    }
+
     // Toggle Details Function
     function toggleDetails(id) {
         const details = document.getElementById('details-' + id);
@@ -179,17 +210,21 @@ CSS_BASE = """
         }
     }
 
+    // Popup Logic
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+        
         if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
 
+        // Popup solo se siamo in una pagina di dettaglio
         if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
             const today = new Date();
             today.setHours(0,0,0,0);
             let nextMatches = {};
+            
             document.querySelectorAll('.match-card.upcoming').forEach(card => {
                 const isMyTeam = card.getAttribute('data-my-team');
                 if(isMyTeam === 'true') {
@@ -206,11 +241,23 @@ CSS_BASE = """
                     }
                 }
             });
-            let popupHTML = ""; let count = 0;
-            for (const [camp, data] of Object.entries(nextMatches)) { popupHTML += `<h3>🏆 ${camp}</h3>` + data.html; count++; }
+            
+            let popupHTML = "";
+            let count = 0;
+            for (const [camp, data] of Object.entries(nextMatches)) {
+                popupHTML += `<h3>🏆 ${camp}</h3>`;
+                popupHTML += data.html;
+                count++;
+            }
+            
             if (count > 0) {
-                const mb = document.getElementById('modal-body');
-                if(mb) { mb.innerHTML = popupHTML; setTimeout(() => document.getElementById('modal-overlay').style.display = 'flex', 500); }
+                const modalBody = document.getElementById('modal-body');
+                if(modalBody) {
+                    modalBody.innerHTML = popupHTML;
+                    setTimeout(function(){
+                        document.getElementById('modal-overlay').style.display = 'flex';
+                    }, 500);
+                }
             }
         }
     };
@@ -368,14 +415,12 @@ def crea_card_html(r, camp, is_focus_mode=False):
                 status_class = "played"
                 badge_html = '<span class="result-badge badge-played">FINALE</span>'
             
-            # --- LOGICA PARZIALI SET ---
+            # PARZIALI SET
             if r['Parziali'] and str(r['Parziali']) != 'nan':
-                # ID univoco per il toggle
                 unique_id = re.sub(r'\W+', '', r['Squadra Casa'] + r['Giornata'])
                 toggle_onclick = f'onclick="toggleDetails(\'{unique_id}\')"'
                 toggle_icon = f'<span id="icon-{unique_id}" class="toggle-icon">▼</span>'
                 
-                # Costruzione tabella parziali
                 parziali_list = r['Parziali'].split(',')
                 sets_rows = ""
                 for idx, p in enumerate(parziali_list):
@@ -399,7 +444,6 @@ def crea_card_html(r, camp, is_focus_mode=False):
         if lnk_cal: btns_html += f'<a href="{lnk_cal}" target="_blank" class="btn btn-cal">📅</a>'
         if lnk_wa: btns_html += f'<a href="{lnk_wa}" target="_blank" class="btn btn-wa">💬</a>'
 
-    # Aggiungi cursore se cliccabile
     cursor_style = 'style="cursor:pointer;"' if sets_html else ''
 
     return f"""
@@ -413,7 +457,7 @@ def crea_card_html(r, camp, is_focus_mode=False):
             <div class="team-row"><span {os}>{r['Squadra Ospite']}</span><span class="team-score">{r['Set Ospite']}</span></div>
         </div>
         {sets_html}
-        <div class="match-footer" onclick="event.stopPropagation()"> <!-- stopPropagation per evitare che il click sui bottoni apra la tendina -->
+        <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ {r['Impianto']}</span>
             <div class="action-buttons">{btns_html}</div>
         </div>
@@ -423,7 +467,7 @@ def crea_card_html(r, camp, is_focus_mode=False):
 # ================= SCRAPING =================
 def get_match_details_robust(driver, match_url):
     data_ora_full, data_iso, luogo, link_maps = "Data da definire", "", "Impianto non definito", ""
-    parziali_str = "" # Stringa es: "25-17, 25-20, 25-10"
+    parziali_str = ""
     
     try:
         driver.get(match_url)
@@ -431,7 +475,6 @@ def get_match_details_robust(driver, match_url):
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
         
-        # Data e Ora
         date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:\.]\d{2})', clean_text)
         if date_pattern:
             d, o = date_pattern.group(1), date_pattern.group(2)
@@ -445,11 +488,9 @@ def get_match_details_robust(driver, match_url):
                 try: data_iso = datetime.strptime(data_ora_full, "%d/%m/%Y").strftime("%Y-%m-%d")
                 except: pass
 
-        # Impianto
         imp = soup.find('div', class_='divImpianto')
         if imp: luogo = imp.get_text(strip=True)
         
-        # Maps
         a_map = soup.find('a', href=lambda x: x and ('google.com/maps' in x or 'maps.google' in x))
         if a_map: 
             link_maps = a_map['href']
@@ -457,21 +498,15 @@ def get_match_details_robust(driver, match_url):
             clean_gym = re.sub(r'\s+', ' ', luogo).strip()
             link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
             
-        # --- ESTRAZIONE PARZIALI SET ---
-        # Cerchiamo i div con classe 'parziale' dentro risultatoCasa e risultatoOspite
         try:
             p_casa = [div.get_text(strip=True) for div in soup.select('#risultatoCasa .parziale')]
             p_ospite = [div.get_text(strip=True) for div in soup.select('#risultatoOspite .parziale')]
-            
-            # Uniamo i risultati (es: "25-17")
             sets = []
             for i in range(len(p_casa)):
-                if p_casa[i] and p_ospite[i]: # Assicura che ci siano dati
+                if p_casa[i] and p_ospite[i]:
                     sets.append(f"{p_casa[i]}-{p_ospite[i]}")
-            
             parziali_str = ",".join(sets)
-        except:
-            parziali_str = ""
+        except: parziali_str = ""
 
     except: pass
     return data_ora_full, data_iso, luogo, link_maps, parziali_str
@@ -509,16 +544,14 @@ def scrape_data():
                     o = o.replace(pt_o, '').strip()
 
                     full_url = urljoin(base_url, el.get('href', ''))
-                    # Chiamata aggiornata che restituisce anche i parziali
                     d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, full_url)
-                    
                     all_results.append({
                         'Campionato': nome_camp, 'Giornata': curr_giornata,
                         'Squadra Casa': c, 'Squadra Ospite': o,
                         'Punteggio': f"{pt_c}-{pt_o}" if pt_c else "", 
                         'Data': d_ora, 'DataISO': d_iso, 'Impianto': luogo, 'Maps': maps,
                         'Set Casa': pt_c, 'Set Ospite': pt_o,
-                        'Parziali': parziali # Nuovo campo
+                        'Parziali': parziali
                     })
         try:
             driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
@@ -533,6 +566,66 @@ def scrape_data():
     driver.quit()
     return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
 
+# ================= GENERATORE LANDING PAGE =================
+def genera_landing_page():
+    print(f"📄 Generazione Landing Page...")
+    # Solo Segnapunti in alto a destra
+    nav_links = f'<a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
+    
+    html = f"""<!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="theme-color" content="#d32f2f">
+        <title>{NOME_VISUALIZZATO}</title>
+        <link rel="icon" type="image/png" href="{URL_LOGO}">
+        <link rel="apple-touch-icon" href="{URL_LOGO}">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="manifest" href="manifest.json">
+        {CSS_BASE}
+    </head>
+    <body>
+        <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div>
+                <div id="modal-body"></div>
+                <div style="text-align:center; margin-top:15px;"><button onclick="closeModal()" style="background:#d32f2f; color:white; border:none; padding:8px 20px; border-radius:20px;">Chiudi</button></div>
+            </div>
+        </div>
+        
+        <div class="app-header">
+            <div class="header-left">
+                <img src="{URL_LOGO}" alt="Logo" class="logo-main">
+                <div><h1>{NOME_VISUALIZZATO}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
+            </div>
+            <div class="nav-buttons">{nav_links}</div>
+        </div>
+        
+        <div class="landing-container">
+            <div class="instruction-text">Seleziona il settore:</div>
+            <div class="choice-card">
+                <img src="{URL_SPLIT_IMG}" alt="Scelta Campionato" class="choice-img">
+                <div class="click-overlay">
+                    <a href="{FILE_MALE}" class="click-area"></a>
+                    <a href="{FILE_FEMALE}" class="click-area"></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"></div>
+        
+        <div id="ios-popup" class="ios-install-popup">
+            <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
+            <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
+            <div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div>
+            <div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div>
+            <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
+        </div>
+    </body>
+    </html>"""
+    with open(FILE_LANDING, "w", encoding="utf-8") as f: f.write(html)
+
 # ================= GENERATORE PAGINE APP =================
 def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP"):
     print(f"📄 Generazione {filename} (Mode: {mode})...")
@@ -542,7 +635,6 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
     elif "femminile" in filename: page_title = "Settore Femminile"
     else: page_title = NOME_VISUALIZZATO
     
-    # NAVIGAZIONE INTERNA: Mondo + Segnapunti
     nav_links = f"""
     <a href="{FILE_GEN}" title="Tutti i risultati"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a>
     <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
@@ -625,7 +717,6 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
 def genera_pagina_generale(df_ris, df_class, filename):
     print(f"📄 Generazione {filename} (Mode: GENERAL)...")
     title = "Risultati Completi"
-    # NAVIGAZIONE INTELLIGENTE: Todis (Smart Back) + Segnapunti
     nav_links = f"""
     <a href="#" onclick="tornaAlSettore(); return false;" title="Filtro Todis"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>
     <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
@@ -696,7 +787,6 @@ def genera_pagina_generale(df_ris, df_class, filename):
 
 def genera_segnapunti():
     print(f"📄 Generazione Segnapunti...")
-    # Segnapunti torna alla Home (Todis)
     nav_links = f'<a href="{FILE_LANDING}" title="Home"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>'
 
     html = f"""<!DOCTYPE html>
@@ -750,20 +840,9 @@ def genera_segnapunti():
 
 if __name__ == "__main__":
     df_ris, df_class = scrape_data()
-    
-    # 1. Landing Page
     genera_landing_page()
-    
-    # 2. App Maschile
     genera_pagina_app(df_ris, df_class, FILE_MALE, CAMPIONATI_MASCHILI, mode="APP")
-    
-    # 3. App Femminile
     genera_pagina_app(df_ris, df_class, FILE_FEMALE, CAMPIONATI_FEMMINILI, mode="APP")
-    
-    # 4. Vista Generale
     genera_pagina_generale(df_ris, df_class, FILE_GEN)
-    
-    # 5. Segnapunti
     genera_segnapunti()
-    
     print("✅ Generazione completata! Site structure built.")
