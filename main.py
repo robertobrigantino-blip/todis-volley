@@ -522,7 +522,7 @@ def get_match_details_robust(driver, match_url):
             clean_gym = re.sub(r'\s+', ' ', luogo).strip()
             link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
             
-        # --- FIX PARZIALI SET (Regex Cleaner) ---
+# --- FIX DEFINITIVO PARZIALI SET (Regex Search) ---
         try:
             div_casa = soup.find('div', id='risultatoCasa')
             div_ospite = soup.find('div', id='risultatoOspite')
@@ -532,13 +532,23 @@ def get_match_details_robust(driver, match_url):
                 raw_ospite = div_ospite.find_all('div', class_='parziale')
                 
                 sets_list = []
+                # Itera su tutti i parziali trovati
                 for i in range(min(len(raw_casa), len(raw_ospite))):
-                    txt_c = re.sub(r'\D', '', raw_casa[i].get_text())
-                    txt_o = re.sub(r'\D', '', raw_ospite[i].get_text())
-                    if txt_c and txt_o:
-                        sets_list.append(f"{txt_c}-{txt_o}")
+                    txt_c = raw_casa[i].get_text(strip=True)
+                    txt_o = raw_ospite[i].get_text(strip=True)
+                    
+                    # Cerca specificamente una sequenza di numeri all'interno del testo
+                    # Questo risolve problemi di spaziature strane o caratteri invisibili
+                    match_c = re.search(r'\d+', txt_c)
+                    match_o = re.search(r'\d+', txt_o)
+                    
+                    if match_c and match_o:
+                        sets_list.append(f"{match_c.group()}-{match_o.group()}")
+                
                 parziali_str = ",".join(sets_list)
-        except: parziali_str = ""
+        except Exception as e:
+            # print(f"Debug Error: {e}") # Decommenta per debug locale
+            parziali_str = ""
 
     except: pass
     return data_ora_full, data_iso, luogo, link_maps, parziali_str
