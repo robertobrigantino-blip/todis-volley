@@ -386,7 +386,7 @@ def create_whatsapp_link(row):
         text = f"📅 *Gara {row['Campionato']}*\n{row['Data']}\n📍 {row['Impianto']}\n{row['Squadra Casa']} vs {row['Squadra Ospite']}"
     return f"https://wa.me/?text={quote(text)}"
 
-# ================= GENERATORE HTML CARD =================
+# ================= GENERATORE HTML CARD (FIXED) =================
 def crea_card_html(r, camp, is_focus_mode=False):
     is_home = is_target_team(r['Squadra Casa'])
     is_away = is_target_team(r['Squadra Ospite'])
@@ -401,9 +401,19 @@ def crea_card_html(r, camp, is_focus_mode=False):
     toggle_icon = ""
     sets_html = ""
     
-    if r['Punteggio']:
+    # Gestione Punteggio
+    punteggio_valido = False
+    if pd.notna(r['Punteggio']) and str(r['Punteggio']).strip() != "":
+        punteggio_valido = True
+
+    if punteggio_valido:
         try:
-            sc, so = int(r['Set Casa']), int(r['Set Ospite'])
+            # Estrae i set totali (es. 3-0)
+            pts = str(r['Punteggio']).split('-')
+            sc = int(pts[0])
+            so = int(pts[1])
+            
+            # Colori Badge
             bg_c = "bg-green" if sc > so else "bg-red"
             bg_o = "bg-green" if so > sc else "bg-red"
             
@@ -419,43 +429,49 @@ def crea_card_html(r, camp, is_focus_mode=False):
                 badge_html = '<span class="result-badge badge-played">FINALE</span>'
                 bg_c, bg_o = "bg-gray", "bg-gray"
 
-            # --- FIX PARZIALI SET (Regex) ---
-            if r['Parziali'] and str(r['Parziali']).strip():
-                unique_id = re.sub(r'\W+', '', r['Squadra Casa'] + r['Giornata'])
+            # --- FIX VISUALIZZAZIONE PARZIALI ---
+            # Converte in stringa sicura e rimuove spazi
+            raw_parziali = str(r.get('Parziali', '')).strip()
+            
+            # Se la stringa contiene almeno un numero e non è 'nan'
+            if raw_parziali and raw_parziali.lower() != 'nan' and re.search(r'\d', raw_parziali):
+                unique_id = re.sub(r'\W+', '', str(r['Squadra Casa']) + str(r['Giornata']))
                 toggle_onclick = f'onclick="toggleDetails(\'{unique_id}\')"'
                 toggle_icon = f'<span id="icon-{unique_id}" class="toggle-icon">▼</span>'
                 
-                parziali_list = r['Parziali'].split(',')
-                p_c_list = []
-                p_o_list = []
+                parziali_list = raw_parziali.split(',')
+                html_c_row = ""
+                html_o_row = ""
                 
                 for p in parziali_list:
                     try:
                         pts = p.strip().split('-')
-                        p_c_list.append(f'<div class="small-badge">{pts[0]}</div>')
-                        p_o_list.append(f'<div class="small-badge">{pts[1]}</div>')
+                        if len(pts) == 2:
+                            html_c_row += f'<div class="small-badge">{pts[0]}</div>'
+                            html_o_row += f'<div class="small-badge">{pts[1]}</div>'
                     except: pass
                 
-                html_c_row = "".join(p_c_list)
-                html_o_row = "".join(p_o_list)
-
-                sets_html = f"""
-                <div id="details-{unique_id}" class="sets-details">
-                    <div class="score-row">
-                        <div class="big-badge {bg_c}">{sc}</div>
-                        <div class="partials-container">{html_c_row}</div>
+                if html_c_row: # Crea il blocco solo se abbiamo dati
+                    sets_html = f"""
+                    <div id="details-{unique_id}" class="sets-details">
+                        <div class="score-row">
+                            <div class="big-badge {bg_c}">{sc}</div>
+                            <div class="partials-container">{html_c_row}</div>
+                        </div>
+                        <div class="score-row">
+                            <div class="big-badge {bg_o}">{so}</div>
+                            <div class="partials-container">{html_o_row}</div>
+                        </div>
                     </div>
-                    <div class="score-row">
-                        <div class="big-badge {bg_o}">{so}</div>
-                        <div class="partials-container">{html_o_row}</div>
-                    </div>
-                </div>
-                """
-        except: status_class = "played"
+                    """
+        except Exception as e: 
+            print(f"Errore generazione card: {e}")
+            status_class = "played"
     
+    # Link
     lnk_wa = create_whatsapp_link(r)
-    lnk_cal = create_google_calendar_link(r) if not r['Punteggio'] else ""
-    lnk_map = r['Maps']
+    lnk_cal = create_google_calendar_link(r) if not punteggio_valido else ""
+    lnk_map = r['Maps'] if pd.notna(r['Maps']) else ""
     
     btns_html = ""
     if lnk_map: btns_html += f'<a href="{lnk_map}" target="_blank" class="btn btn-map">📍 Mappa</a>'
