@@ -83,7 +83,8 @@ CSS_BASE = """
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
 
     /* Bottone Calendario e Notifica */
-    .calendar-container { position: relative; display: inline-block; } /* Sempre visibile */
+    .calendar-container { position: relative; display: inline-block; display: none; }
+    .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
     .calendar-container.has-events::after { 
         content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; 
         background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; 
@@ -115,6 +116,7 @@ CSS_BASE = """
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
+
     .result-badge { position: absolute; top: 0; right: 0; font-size: 9px; padding: 3px 6px; border-bottom-left-radius: 6px; font-weight: bold; color: white; z-index: 10; text-transform: uppercase; }
     .badge-win { background-color: #2e7d32; }
     .badge-loss { background-color: #c62828; }
@@ -212,7 +214,6 @@ CSS_BASE = """
     }
 
     window.onload = function() {
-        // iOS Check
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
         if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
@@ -250,13 +251,13 @@ CSS_BASE = """
                 count++;
             }
             
-            // Notification Dot Logic
-            const calContainer = document.getElementById('btn-calendar');
             if (count > 0) {
                 const modalBody = document.getElementById('modal-body');
+                const calContainer = document.getElementById('btn-calendar');
                 if(modalBody && calContainer) {
                     modalBody.innerHTML = popupHTML;
                     calContainer.classList.add('has-events');
+                    calContainer.style.display = 'inline-block';
                 }
             }
         }
@@ -490,6 +491,7 @@ def get_match_details_robust(driver, match_url):
     
     try:
         driver.get(match_url)
+        # SMART WAIT (Max 1.5s per elemento Impianto)
         try:
             WebDriverWait(driver, 1.5).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
         except: pass
@@ -497,6 +499,7 @@ def get_match_details_robust(driver, match_url):
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
         
+        # Data
         date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:\.]\d{2})', clean_text)
         if date_pattern:
             d, o = date_pattern.group(1), date_pattern.group(2)
@@ -519,17 +522,25 @@ def get_match_details_robust(driver, match_url):
             clean_gym = re.sub(r'\s+', ' ', luogo).strip()
             link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
             
+        # --- FIX PARZIALI SET (Index Based) ---
         try:
             div_casa = soup.find('div', id='risultatoCasa')
             div_ospite = soup.find('div', id='risultatoOspite')
+
             if div_casa and div_ospite:
+                # Trova tutti i div parziale
                 raw_casa = div_casa.find_all('div', class_='parziale')
                 raw_ospite = div_ospite.find_all('div', class_='parziale')
+                
                 sets_list = []
+                # Itera per indice (0-4) e controlla se entrambi esistono e sono numeri
                 for i in range(min(len(raw_casa), len(raw_ospite))):
                     txt_c = re.sub(r'\D', '', raw_casa[i].get_text())
                     txt_o = re.sub(r'\D', '', raw_ospite[i].get_text())
-                    if txt_c and txt_o: sets_list.append(f"{txt_c}-{txt_o}")
+                    
+                    if txt_c and txt_o:
+                        sets_list.append(f"{txt_c}-{txt_o}")
+                
                 parziali_str = ",".join(sets_list)
         except: parziali_str = ""
 
@@ -569,7 +580,9 @@ def scrape_data():
                     o = o.replace(pt_o, '').strip()
 
                     full_url = urljoin(base_url, el.get('href', ''))
+                    # Chiamata ottimizzata
                     d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, full_url)
+                    
                     all_results.append({
                         'Campionato': nome_camp, 'Giornata': curr_giornata,
                         'Squadra Casa': c, 'Squadra Ospite': o,
@@ -591,7 +604,57 @@ def scrape_data():
     driver.quit()
     return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
 
-# ================= GENERATORE PAGINE APP =================
+# ================= GENERATORE LANDING PAGE =================
+def genera_landing_page():
+    print(f"📄 Generazione Landing Page...")
+    nav_links = f'<a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
+    
+    html = f"""<!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="theme-color" content="#d32f2f">
+        <title>{NOME_VISUALIZZATO}</title>
+        <link rel="icon" type="image/png" href="{URL_LOGO}">
+        <link rel="apple-touch-icon" href="{URL_LOGO}">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="manifest" href="manifest.json">
+        {CSS_BASE}
+    </head>
+    <body>
+        <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div>
+                <div id="modal-body"></div>
+                <div style="text-align:center; margin-top:15px;"><button onclick="closeModal()" style="background:#d32f2f; color:white; border:none; padding:8px 20px; border-radius:20px;">Chiudi</button></div>
+            </div>
+        </div>
+        
+        <div class="app-header">
+            <div class="header-left">
+                <img src="{URL_LOGO}" alt="Logo" class="logo-main">
+                <div><h1>{NOME_VISUALIZZATO}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
+            </div>
+            <div class="nav-buttons">{nav_links}</div>
+        </div>
+        
+        <div class="landing-container">
+            <div class="instruction-text">Seleziona il settore:</div>
+            <div class="choice-card">
+                <img src="{URL_SPLIT_IMG}" alt="Scelta Campionato" class="choice-img">
+                <div class="click-overlay">
+                    <a href="{FILE_MALE}" class="click-area"></a>
+                    <a href="{FILE_FEMALE}" class="click-area"></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"></div>
+    </body>
+    </html>"""
+    with open(FILE_LANDING, "w", encoding="utf-8") as f: f.write(html)
+
 def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP"):
     print(f"📄 Generazione {filename} (Mode: {mode})...")
     is_app = True
@@ -718,7 +781,7 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
         </div>
     """
 
-    campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
+    campionati_disp = df_class['Campionato'].unique()
     html += '<div class="tab-bar">'
     for i, camp in enumerate(campionati_disp):
         if "Gir." in camp:
