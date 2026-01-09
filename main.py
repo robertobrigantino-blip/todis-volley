@@ -484,31 +484,33 @@ def crea_card_html(r, camp, is_focus_mode=False):
     </div>
     """
 
-# ================= SCRAPING =================
+# ================= SCRAPING DEBUG VERSION =================
 def get_match_details_robust(driver, match_url):
     data_ora_full, data_iso, luogo, link_maps = "Data da definire", "", "Impianto non definito", ""
     parziali_str = ""
     
+    # DEBUG: Stampa URL
+    print(f"DEBUG: Analisi URL: {match_url}")
+
     try:
         driver.get(match_url)
         
-        # SMART WAIT 1: Aspetta che la struttura base (Impianto) ci sia
+        # SMART WAIT
         try:
             WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
         except: pass
-
-        # SMART WAIT 2: Aspetta specificamente che i risultati siano caricati (se esistono)
-        # Questo è il fix chiave per i parziali che arrivano in ritardo
+        
         try:
-            WebDriverWait(driver, 1.5).until(EC.presence_of_element_located((By.ID, "risultatoCasa")))
-            # Piccola pausa extra per permettere al JS di riempire i div vuoti
+            # Aspetta che appaiano i risultati
+            WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, "risultatoCasa")))
             time.sleep(0.5) 
-        except: pass
+        except: 
+            print("DEBUG: Timeout attesa #risultatoCasa")
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
         
-        # Data
+        # ... (Codice Data e Impianto invariato) ...
         date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:\.]\d{2})', clean_text)
         if date_pattern:
             d, o = date_pattern.group(1), date_pattern.group(2)
@@ -522,7 +524,6 @@ def get_match_details_robust(driver, match_url):
                 try: data_iso = datetime.strptime(data_ora_full, "%d/%m/%Y").strftime("%Y-%m-%d")
                 except: pass
 
-        # Impianto e Mappa
         imp = soup.find('div', class_='divImpianto')
         if imp: luogo = imp.get_text(strip=True)
         
@@ -531,22 +532,29 @@ def get_match_details_robust(driver, match_url):
         elif luogo != "Impianto non definito": 
             clean_gym = re.sub(r'\s+', ' ', luogo).strip()
             link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
-            
-        # --- ESTRAZIONE PARZIALI (Regex + Wait) ---
+
+        # --- DEBUG PARZIALI ---
         try:
             div_casa = soup.find('div', id='risultatoCasa')
             div_ospite = soup.find('div', id='risultatoOspite')
 
             if div_casa and div_ospite:
+                # DEBUG: Stampa contenuto grezzo
+                print(f"DEBUG CASA HTML: {div_casa.prettify()[:100]}...") 
+                
                 raw_casa = div_casa.find_all('div', class_='parziale')
                 raw_ospite = div_ospite.find_all('div', class_='parziale')
                 
+                print(f"DEBUG: Trovati {len(raw_casa)} div parziali casa")
+
                 sets_list = []
                 for i in range(min(len(raw_casa), len(raw_ospite))):
                     txt_c = raw_casa[i].get_text(strip=True)
                     txt_o = raw_ospite[i].get_text(strip=True)
                     
-                    # Regex per estrarre numeri anche se sporchi
+                    # DEBUG: Cosa legge esattamente?
+                    print(f"DEBUG RAW SET {i+1}: Casa='{txt_c}' Ospite='{txt_o}'")
+                    
                     match_c = re.search(r'\d+', txt_c)
                     match_o = re.search(r'\d+', txt_o)
                     
@@ -554,9 +562,17 @@ def get_match_details_robust(driver, match_url):
                         sets_list.append(f"{match_c.group()}-{match_o.group()}")
                 
                 parziali_str = ",".join(sets_list)
-        except: parziali_str = ""
+                print(f"DEBUG FINALE: {parziali_str}")
+            else:
+                print("DEBUG: Div risultati NON trovati nel DOM")
+                
+        except Exception as e:
+            print(f"DEBUG ERROR: {e}")
+            parziali_str = ""
 
-    except: pass
+    except Exception as e: 
+        print(f"DEBUG CRITICAL: {e}")
+
     return data_ora_full, data_iso, luogo, link_maps, parziali_str
 
 def scrape_data():
