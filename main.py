@@ -18,13 +18,12 @@ TARGET_TEAM_ALIASES = [
     "TODIS C.S. PASTENA VOLLEY"
 ]
 
-# --- NOMI FILE AGGIORNATI PER GESTIRE I FLUSSI SEPARATI ---
-FILE_LANDING = "index.html"
-FILE_MALE = "maschile.html"           # Todis Maschile
-FILE_FEMALE = "femminile.html"        # Todis Femminile
-FILE_GEN_MALE = "generale_m.html"     # Generale Maschile (Nuovo)
-FILE_GEN_FEMALE = "generale_f.html"   # Generale Femminile (Nuovo)
-FILE_SCORE = "segnapunti.html"
+FILE_LANDING = "index.html"      # Pagina Scelta (Hub)
+FILE_MALE = "maschile.html"      # App Maschile
+FILE_FEMALE = "femminile.html"   # App Femminile
+FILE_GEN_MALE = "generale_m.html"     # Generale Maschile
+FILE_GEN_FEMALE = "generale_f.html"   # Generale Femminile
+FILE_SCORE = "segnapunti.html"   # Segnapunti
 
 # URL IMMAGINI
 REPO_URL = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/"
@@ -137,7 +136,6 @@ CSS_BASE = """
     .bg-gray { background-color: #78909c; }
     .partials-container { display: flex; gap: 5px; overflow-x: auto; }
     .small-badge { width: 30px; height: 30px; background-color: #7986cb; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; flex-shrink: 0; }
-
     .toggle-icon { margin-left: 5px; transition: transform 0.3s; cursor: pointer; color: #aaa; font-size:14px; }
     .toggle-icon.rotated { transform: rotate(180deg); }
 
@@ -184,6 +182,20 @@ CSS_BASE = """
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
 
+    // Funzione Smart Back FIXATA: Usa Parametri URL
+    function tornaAlSettore() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const origin = urlParams.get('from');
+        
+        if (origin === 'maschile') {
+            window.location.href = "maschile.html";
+        } else if (origin === 'femminile') {
+            window.location.href = "femminile.html";
+        } else {
+            window.location.href = "index.html"; // Default landing
+        }
+    }
+
     // Toggle Details Function
     function toggleDetails(id) {
         const details = document.getElementById('details-' + id);
@@ -198,10 +210,12 @@ CSS_BASE = """
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+        
         if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
 
+        // Popup solo se siamo in una pagina di dettaglio
         if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -403,7 +417,7 @@ def crea_card_html(r, camp, is_focus_mode=False):
                 bg_c, bg_o = "bg-gray", "bg-gray"
 
             # --- PARZIALI SET ---
-            if r['Parziali'] and str(r['Parziali']) != 'nan':
+            if r['Parziali'] and str(r['Parziali']).strip():
                 unique_id = re.sub(r'\W+', '', r['Squadra Casa'] + r['Giornata'])
                 toggle_onclick = f'onclick="toggleDetails(\'{unique_id}\')"'
                 toggle_icon = f'<span id="icon-{unique_id}" class="toggle-icon">▼</span>'
@@ -502,12 +516,17 @@ def get_match_details_robust(driver, match_url):
             link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
             
         try:
-            p_casa = [div.get_text(strip=True) for div in soup.select('#risultatoCasa .parziale')]
-            p_ospite = [div.get_text(strip=True) for div in soup.select('#risultatoOspite .parziale')]
+            p_casa_raw = [div.get_text(strip=True) for div in soup.select('#risultatoCasa .parziale')]
+            p_ospite_raw = [div.get_text(strip=True) for div in soup.select('#risultatoOspite .parziale')]
+            
+            # Filtro valori vuoti
+            p_casa = [x for x in p_casa_raw if x]
+            p_ospite = [x for x in p_ospite_raw if x]
+            
             sets = []
-            for i in range(len(p_casa)):
-                if p_casa[i] and p_ospite[i]:
-                    sets.append(f"{p_casa[i]}-{p_ospite[i]}")
+            for c, o in zip(p_casa, p_ospite):
+                sets.append(f"{c}-{o}")
+            
             parziali_str = ",".join(sets)
         except: parziali_str = ""
 
@@ -572,7 +591,6 @@ def scrape_data():
 # ================= GENERATORE LANDING PAGE =================
 def genera_landing_page():
     print(f"📄 Generazione Landing Page...")
-    # Solo Segnapunti in alto a destra
     nav_links = f'<a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
     
     html = f"""<!DOCTYPE html>
@@ -636,17 +654,16 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
     
     if "maschile" in filename: 
         page_title = "Settore Maschile"
-        link_gen = FILE_GEN_MALE # Link specifico per il generale maschile
+        origin_param = "maschile"
     elif "femminile" in filename: 
         page_title = "Settore Femminile"
-        link_gen = FILE_GEN_FEMALE # Link specifico per il generale femminile
+        origin_param = "femminile"
     else: 
         page_title = NOME_VISUALIZZATO
-        link_gen = "#"
+        origin_param = ""
     
-    # NAVIGAZIONE INTERNA: Mondo + Segnapunti
     nav_links = f"""
-    <a href="{link_gen}" title="Tutti i risultati"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a>
+    <a href="{FILE_GEN_MALE if origin_param == 'maschile' else FILE_GEN_FEMALE}?from={origin_param}" title="Tutti i risultati"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a>
     <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
     """
 
@@ -727,8 +744,6 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
 def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_link):
     print(f"📄 Generazione {filename} (Mode: GENERAL)...")
     title = "Risultati Completi"
-    
-    # NAVIGAZIONE: Todis (Back link specifico) + Segnapunti
     nav_links = f"""
     <a href="{back_link}" title="Filtro Todis"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>
     <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
