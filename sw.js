@@ -1,5 +1,5 @@
-// Service Worker per Todis Volley App (V3)
-const CACHE_NAME = 'todis-volley-v3'; // Cambiato nome per forzare update
+// Service Worker per Todis Volley App (V4)
+const CACHE_NAME = 'todis-volley-v4'; // Cambiato nome per forzare update
 
 const urlsToCache = [
   './',
@@ -14,7 +14,8 @@ const urlsToCache = [
   'scelta_campionato.jpg',
   'all_result.png',
   'todis_result.png',
-  'tabellone_segnapunti.png'
+  'tabellone_segnapunti.png',
+  'prossimi_appuntamenti.png'
 ];
 
 self.addEventListener('install', function(event) {
