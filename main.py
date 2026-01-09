@@ -12,7 +12,9 @@ import re
 from datetime import datetime, timedelta
 import os
 
-# ================= CONFIGURAZIONE =================
+# ==========================================
+# 1. CONFIGURAZIONE
+# ==========================================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
 
 TARGET_TEAM_ALIASES = [
@@ -21,19 +23,18 @@ TARGET_TEAM_ALIASES = [
     "TODIS C.S. PASTENA VOLLEY"
 ]
 
-FILE_LANDING = "index.html"      
-FILE_MALE = "maschile.html"      
-FILE_FEMALE = "femminile.html"   
+# Nomi File
+FILE_LANDING = "index.html"
+FILE_MALE = "maschile.html"
+FILE_FEMALE = "femminile.html"
 FILE_GEN_MALE = "generale_m.html"
 FILE_GEN_FEMALE = "generale_f.html"
-FILE_SCORE = "segnapunti.html"   
+FILE_SCORE = "segnapunti.html"
 
-# URL IMMAGINI
+# Risorse Grafiche
 REPO_URL = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/"
 URL_LOGO = REPO_URL + "logo.jpg"
 URL_SPLIT_IMG = REPO_URL + "scelta_campionato.jpg"
-
-# BOTTONI
 BTN_ALL_RESULTS = REPO_URL + "all_result.png"
 BTN_TODIS_RESULTS = REPO_URL + "todis_result.png"
 BTN_SCOREBOARD = REPO_URL + "tabellone_segnapunti.png"
@@ -41,7 +42,7 @@ BTN_CALENDAR_EVENTS = REPO_URL + "prossimi_appuntamenti.png"
 
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
-# CAMPIONATI
+# Campionati
 CAMPIONATI_MASCHILI = {
     "Serie D  Maschile Gir.C": "85622",
     "Under 19 Maschile Gir.A": "86865",
@@ -69,25 +70,39 @@ def is_target_team(team_name):
 CSS_BASE = """
 <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
+    
+    /* Header */
     .app-header { background-color: #d32f2f; color: white; padding: 5px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; height: 60px; }
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
     .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
+    
     .nav-buttons { display: flex; gap: 10px; align-items: center; }
     .nav-icon-img { height: 45px; width: auto; transition: transform 0.1s, opacity 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
+    
+    /* Bottone Calendario e Notifica */
     .calendar-container { position: relative; display: inline-block; display: none; }
     .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
-    .calendar-container.has-events::after { content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; }
-    @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    .calendar-container.has-events::after { 
+        content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; 
+        background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; 
+        animation: pulse 2s infinite; pointer-events: none;
+    }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+    /* Tabs */
     .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
     .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
     .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
+
+    /* Classifica */
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
@@ -95,6 +110,8 @@ CSS_BASE = """
     td { padding: 10px 6px; text-align: center; border-bottom: 1px solid #f0f0f0; }
     td:nth-child(2) { text-align: left; min-width: 140px; font-weight: 500; position: sticky; left: 0; background-color: white; border-right: 1px solid #eee; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
+
+    /* Card Partita */
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; transition: max-height 0.3s ease; }
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
@@ -103,6 +120,7 @@ CSS_BASE = """
     .badge-win { background-color: #2e7d32; }
     .badge-loss { background-color: #c62828; }
     .badge-played { background-color: #78909c; } 
+
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; padding-right: 50px; }
     .date-badge { font-weight: bold; color: #d32f2f; display: flex; align-items: center; gap: 4px; }
     .teams { display: flex; flex-direction: column; gap: 6px; font-size: 14px; margin-bottom: 8px; }
@@ -116,9 +134,12 @@ CSS_BASE = """
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
+
+    /* DETTAGLIO SET GRAFICO */
     .sets-details { display: none; margin-top: 10px; background: #f0f4f8; padding: 10px; border-radius: 8px; border: 1px solid #e1e8ed; }
     .sets-details.open { display: block; animation: slideDown 0.3s; }
     @keyframes slideDown { from{opacity:0; transform:translateY(-5px);} to{opacity:1; transform:translateY(0);} }
+
     .score-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
     .score-row:last-child { margin-bottom: 0; }
     .big-badge { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
@@ -129,6 +150,8 @@ CSS_BASE = """
     .small-badge { width: 30px; height: 30px; background-color: #7986cb; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; flex-shrink: 0; }
     .toggle-icon { margin-left: 5px; transition: transform 0.3s; cursor: pointer; color: #aaa; font-size:14px; }
     .toggle-icon.rotated { transform: rotate(180deg); }
+
+    /* Modals & Footer */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .modal-content { background: white; width: 85%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 20px; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
@@ -137,9 +160,13 @@ CSS_BASE = """
     .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
+    
+    /* IOS INSTALL TIP */
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
+
+    /* LANDING PAGE STYLES */
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -392,6 +419,7 @@ def crea_card_html(r, camp, is_focus_mode=False):
                 badge_html = '<span class="result-badge badge-played">FINALE</span>'
                 bg_c, bg_o = "bg-gray", "bg-gray"
 
+            # --- FIX PARZIALI SET (Regex) ---
             if r['Parziali'] and str(r['Parziali']).strip():
                 unique_id = re.sub(r'\W+', '', r['Squadra Casa'] + r['Giornata'])
                 toggle_onclick = f'onclick="toggleDetails(\'{unique_id}\')"'
@@ -463,9 +491,9 @@ def get_match_details_robust(driver, match_url):
     
     try:
         driver.get(match_url)
-        # SMART WAIT: Aspetta max 2s che l'impianto sia visibile, ma anche che i punteggi siano caricati
+        # SMART WAIT (Max 1.5s per elemento Impianto)
         try:
-            WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
+            WebDriverWait(driver, 1.5).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
         except: pass
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -494,37 +522,23 @@ def get_match_details_robust(driver, match_url):
             clean_gym = re.sub(r'\s+', ' ', luogo).strip()
             link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
             
-        # --- FIX SET "BULLDOZER" (V50) ---
+        # --- FIX PARZIALI SET (Regex Cleaner) ---
         try:
             div_casa = soup.find('div', id='risultatoCasa')
             div_ospite = soup.find('div', id='risultatoOspite')
 
             if div_casa and div_ospite:
-                # Estrai tutto il testo dai div parziale
                 raw_casa = div_casa.find_all('div', class_='parziale')
                 raw_ospite = div_ospite.find_all('div', class_='parziale')
                 
-                # Regex "cattiva" che estrae solo numeri interi dai testi sporchi
-                clean_casa = []
-                for div in raw_casa:
-                    txt = div.get_text(strip=True)
-                    match = re.search(r'\d+', txt) # Trova il primo numero nel testo
-                    if match: clean_casa.append(match.group())
-
-                clean_ospite = []
-                for div in raw_ospite:
-                    txt = div.get_text(strip=True)
-                    match = re.search(r'\d+', txt)
-                    if match: clean_ospite.append(match.group())
-                
-                # Accoppia
                 sets_list = []
-                for i in range(min(len(clean_casa), len(clean_ospite))):
-                    sets_list.append(f"{clean_casa[i]}-{clean_ospite[i]}")
-                
+                for i in range(min(len(raw_casa), len(raw_ospite))):
+                    txt_c = re.sub(r'\D', '', raw_casa[i].get_text())
+                    txt_o = re.sub(r'\D', '', raw_ospite[i].get_text())
+                    if txt_c and txt_o:
+                        sets_list.append(f"{txt_c}-{txt_o}")
                 parziali_str = ",".join(sets_list)
-        except Exception as e:
-            parziali_str = ""
+        except: parziali_str = ""
 
     except: pass
     return data_ora_full, data_iso, luogo, link_maps, parziali_str
@@ -562,7 +576,6 @@ def scrape_data():
                     o = o.replace(pt_o, '').strip()
 
                     full_url = urljoin(base_url, el.get('href', ''))
-                    # Chiamata ottimizzata
                     d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, full_url)
                     
                     all_results.append({
@@ -586,7 +599,7 @@ def scrape_data():
     driver.quit()
     return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
 
-# ================= GENERATORE PAGINE =================
+# ================= GENERATORE LANDING PAGE =================
 def genera_landing_page():
     print(f"📄 Generazione Landing Page...")
     nav_links = f'<a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
@@ -633,6 +646,14 @@ def genera_landing_page():
         </div>
         
         <div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"></div>
+        
+        <div id="ios-popup" class="ios-install-popup">
+            <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
+            <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
+            <div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div>
+            <div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div>
+            <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
+        </div>
     </body>
     </html>"""
     with open(FILE_LANDING, "w", encoding="utf-8") as f: f.write(html)
@@ -764,7 +785,6 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
     """
 
     campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
-    
     html += '<div class="tab-bar">'
     for i, camp in enumerate(campionati_disp):
         if "Gir." in camp:
