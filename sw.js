@@ -1,5 +1,5 @@
-// Service Worker aggiornato per Todis Volley App
-const CACHE_NAME = 'todis-volley-v2';
+// Service Worker per Todis Volley App (V3)
+const CACHE_NAME = 'todis-volley-v3'; // Cambiato nome per forzare update
 
 const urlsToCache = [
   './',
@@ -17,24 +17,19 @@ const urlsToCache = [
   'tabellone_segnapunti.png'
 ];
 
-// Installazione: Caching risorse statiche
 self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(function(cache) {
-        console.log('Opened cache');
         return cache.addAll(urlsToCache);
       })
   );
 });
 
-// Fetch: Strategia Network First (Cerca online, se fallisce usa la cache)
-// Questo garantisce che gli utenti vedano sempre i risultati aggiornati se hanno internet
 self.addEventListener('fetch', function(event) {
   event.respondWith(
     fetch(event.request)
       .then(function(response) {
-        // Se la risposta è valida, la cloniamo nella cache per il futuro
         if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
         }
@@ -46,13 +41,11 @@ self.addEventListener('fetch', function(event) {
         return response;
       })
       .catch(function() {
-        // Se siamo offline, cerchiamo nella cache
         return caches.match(event.request);
       })
   );
 });
 
-// Attivazione: Pulizia vecchie cache (Importante per aggiornare dalla v1 alla v2)
 self.addEventListener('activate', function(event) {
   var cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
