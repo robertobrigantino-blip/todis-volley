@@ -136,6 +136,7 @@ CSS_BASE = """
     .bg-gray { background-color: #78909c; }
     .partials-container { display: flex; gap: 5px; overflow-x: auto; }
     .small-badge { width: 30px; height: 30px; background-color: #7986cb; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; flex-shrink: 0; }
+
     .toggle-icon { margin-left: 5px; transition: transform 0.3s; cursor: pointer; color: #aaa; font-size:14px; }
     .toggle-icon.rotated { transform: rotate(180deg); }
 
@@ -488,7 +489,7 @@ def get_match_details_robust(driver, match_url):
     
     try:
         driver.get(match_url)
-        time.sleep(0.3)
+        time.sleep(1.0) # WAIT TIME INCREASED TO 1 SECOND for stability
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
         
@@ -515,19 +516,27 @@ def get_match_details_robust(driver, match_url):
             clean_gym = re.sub(r'\s+', ' ', luogo).strip()
             link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
             
+        # --- ESTRAZIONE SET MIGLIORATA (V39) ---
         try:
-            p_casa_raw = [div.get_text(strip=True) for div in soup.select('#risultatoCasa .parziale')]
-            p_ospite_raw = [div.get_text(strip=True) for div in soup.select('#risultatoOspite .parziale')]
-            
-            # Filtro valori vuoti
-            p_casa = [x for x in p_casa_raw if x]
-            p_ospite = [x for x in p_ospite_raw if x]
-            
-            sets = []
-            for c, o in zip(p_casa, p_ospite):
-                sets.append(f"{c}-{o}")
-            
-            parziali_str = ",".join(sets)
+            div_casa = soup.find('div', id='risultatoCasa')
+            div_ospite = soup.find('div', id='risultatoOspite')
+
+            if div_casa and div_ospite:
+                cols_casa = div_casa.find_all('div', class_='parziale')
+                cols_ospite = div_ospite.find_all('div', class_='parziale')
+                
+                sets_list = []
+                # Prendiamo il minimo tra i due per evitare errori se le lunghezze differiscono
+                limit = min(len(cols_casa), len(cols_ospite))
+                
+                for i in range(limit):
+                    sc = cols_casa[i].get_text(strip=True)
+                    so = cols_ospite[i].get_text(strip=True)
+                    # Aggiunge solo se entrambi i valori esistono e non sono vuoti
+                    if sc and so:
+                        sets_list.append(f"{sc}-{so}")
+                
+                parziali_str = ",".join(sets_list)
         except: parziali_str = ""
 
     except: pass
@@ -745,7 +754,7 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
     print(f"📄 Generazione {filename} (Mode: GENERAL)...")
     title = "Risultati Completi"
     nav_links = f"""
-    <a href="{back_link}" title="Filtro Todis"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>
+    <a href="#" onclick="tornaAlSettore(); return false;" title="Filtro Todis"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>
     <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
     """
 
