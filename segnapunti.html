@@ -1,15 +1,4 @@
-<!DOCTYPE html>
-    <html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <meta name="theme-color" content="#121212">
-        <title>Segnapunti</title>
-        <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
-        <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <link rel="manifest" href="manifest.json">
-        
+<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><meta name="theme-color" content="#121212"><title>Segnapunti</title><link rel="icon" type="image/png" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg"><link rel="apple-touch-icon" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.json">
 <style>
     body { background-color: #121212; color: white; overflow: hidden; margin: 0; padding: 0; }
     .rotate-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; }
@@ -104,39 +93,4 @@
     function stopTimer() { clearInterval(timerInt); timerInt = null; document.getElementById('btnTimer').innerText = "START"; document.getElementById('btnTimer').style.background = "#444"; }
     function updateTimer() { const m = Math.floor(seconds / 60).toString().padStart(2, '0'); const s = (seconds % 60).toString().padStart(2, '0'); document.getElementById('timer').innerText = `${m}:${s}`; }
 </script>
-
-    </head>
-    <body>
-        <div class="sb-container">
-            <div class="team-panel team-home" id="colHome" onclick="addPoint('Home')">
-                <div class="service-ball">🏐</div>
-                <input type="text" class="team-name-input" value="CASA">
-                <div class="score-display" id="scoreHome">0</div>
-                <div class="fine-tune">
-                    <button class="btn-tune" onclick="adjScore('Home', -1); event.stopPropagation()">-</button>
-                    <button class="btn-tune" onclick="adjScore('Home', 1); event.stopPropagation()">+</button>
-                </div>
-            </div>
-            <div class="center-panel">
-                <div class="sets-box"><div class="sets-label">SETS</div><div class="sets-score"><span id="setsHome">0</span> - <span id="setsGuest">0</span></div><div class="current-set-badge" id="setNum">SET 1</div></div>
-                <div class="timer-box"><div class="timer-val" id="timer">00:00</div><button class="btn-timer" onclick="toggleTimer()" id="btnTimer">START</button></div>
-                <div class="controls-bottom">
-                    <button class="btn-ctrl" style="background:#2e7d32;" onclick="setServiceManual()">Battuta</button>
-                    <button class="btn-ctrl btn-fs" onclick="toggleFullScreen()">⛶ Full</button>
-                    <button class="btn-ctrl btn-reset" onclick="resetMatch()">Reset</button>
-                    <a href="index.html" class="btn-ctrl btn-exit">Esci</a>
-                </div>
-            </div>
-            <div class="team-panel team-guest" id="colGuest" onclick="addPoint('Guest')">
-                <div class="service-ball">🏐</div>
-                <input type="text" class="team-name-input" value="OSPITI">
-                <div class="score-display" id="scoreGuest">0</div>
-                <div class="fine-tune">
-                    <button class="btn-tune" onclick="adjScore('Guest', -1); event.stopPropagation()">-</button>
-                    <button class="btn-tune" onclick="adjScore('Guest', 1); event.stopPropagation()">+</button>
-                </div>
-            </div>
-        </div>
-        <div class="rotate-overlay"><div style="font-size: 50px;">🔄</div><h2>Ruota il dispositivo</h2><p>Il segnapunti funziona in orizzontale</p></div>
-    </body>
-    </html>
+</head><body><div class="sb-container"><div class="team-panel team-home" id="colHome" onclick="addPoint('Home')"><div class="service-ball">🏐</div><input type="text" class="team-name-input" value="CASA"><div class="score-display" id="scoreHome">0</div><div class="fine-tune"><button class="btn-tune" onclick="adjScore('Home', -1); event.stopPropagation()">-</button><button class="btn-tune" onclick="adjScore('Home', 1); event.stopPropagation()">+</button></div></div><div class="center-panel"><div class="sets-box"><div class="sets-label">SETS</div><div class="sets-score"><span id="setsHome">0</span> - <span id="setsGuest">0</span></div><div class="current-set-badge" id="setNum">SET 1</div></div><div class="timer-box"><div class="timer-val" id="timer">00:00</div><button class="btn-timer" onclick="toggleTimer()" id="btnTimer">START</button></div><div class="controls-bottom"><button class="btn-ctrl" style="background:#2e7d32;" onclick="setServiceManual()">Battuta</button><button class="btn-ctrl btn-fs" onclick="toggleFullScreen()">⛶ Full</button><button class="btn-ctrl btn-reset" onclick="resetMatch()">Reset</button><a href="index.html" class="btn-ctrl btn-exit">Esci</a></div></div><div class="team-panel team-guest" id="colGuest" onclick="addPoint('Guest')"><div class="service-ball">🏐</div><input type="text" class="team-name-input" value="OSPITI"><div class="score-display" id="scoreGuest">0</div><div class="fine-tune"><button class="btn-tune" onclick="adjScore('Guest', -1); event.stopPropagation()">-</button><button class="btn-tune" onclick="adjScore('Guest', 1); event.stopPropagation()">+</button></div></div></div><div class="rotate-overlay"><div style="font-size: 50px;">🔄</div><h2>Ruota il dispositivo</h2><p>Il segnapunti funziona in orizzontale</p></div></body></html>
