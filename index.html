@@ -33,13 +33,15 @@
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
 
     /* Container Calendario per Notifica */
-    .calendar-container { position: relative; display: inline-block; display: none; }
-    .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
+    .calendar-container { position: relative; display: none; /* Nascosto di default */ }
     
     /* Pallino notifica */
+    .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
+    
     .calendar-container.has-events::after {
-        content: ''; position: absolute; top: 0; right: 0; width: 10px; height: 10px;
+        content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px;
         background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f;
+        z-index: 10;
     }
     @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
@@ -102,6 +104,7 @@
     .bg-gray { background-color: #78909c; }
     .partials-container { display: flex; gap: 5px; overflow-x: auto; }
     .small-badge { width: 30px; height: 30px; background-color: #7986cb; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; flex-shrink: 0; }
+
     .toggle-icon { margin-left: 5px; transition: transform 0.3s; cursor: pointer; color: #aaa; font-size:14px; }
     .toggle-icon.rotated { transform: rotate(180deg); }
 
@@ -148,7 +151,7 @@
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
     function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
-
+    
     function tornaAlSettore() {
         const urlParams = new URLSearchParams(window.location.search);
         const origin = urlParams.get('from');
@@ -208,8 +211,8 @@
                 const calContainer = document.getElementById('cal-container');
                 if(modalBody && calContainer) {
                     modalBody.innerHTML = popupHTML;
-                    calContainer.classList.add('has-events');
                     calContainer.style.display = 'inline-block';
+                    calContainer.classList.add('has-events');
                 }
             }
         }
@@ -218,10 +221,18 @@
 
     </head>
     <body>
+        <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div>
+                <div id="modal-body"></div>
+                <div style="text-align:center; margin-top:15px;"><button onclick="closeModal()" style="background:#d32f2f; color:white; border:none; padding:8px 20px; border-radius:20px;">Chiudi</button></div>
+            </div>
+        </div>
+        
         <div class="app-header">
             <div class="header-left">
                 <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" alt="Logo" class="logo-main">
-                <div><h1>TODIS PASTENA VOLLEY</h1><div class="last-update">09/01 12:59</div></div>
+                <div><h1>TODIS PASTENA VOLLEY</h1><div class="last-update">09/01 13:07</div></div>
             </div>
             <div class="nav-buttons"><a href="segnapunti.html" title="Segnapunti"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div>
         </div>
@@ -238,5 +249,13 @@
         </div>
         
         <div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f" alt="Visite"></div>
+        
+        <div id="ios-popup" class="ios-install-popup">
+            <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
+            <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
+            <div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div>
+            <div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div>
+            <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
+        </div>
     </body>
     </html>
