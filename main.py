@@ -12,7 +12,9 @@ import re
 from datetime import datetime, timedelta
 import os
 
-# ================= CONFIGURAZIONE =================
+# ==========================================
+# 1. CONFIGURAZIONE
+# ==========================================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
 
 TARGET_TEAM_ALIASES = [
@@ -21,19 +23,18 @@ TARGET_TEAM_ALIASES = [
     "TODIS C.S. PASTENA VOLLEY"
 ]
 
-FILE_LANDING = "index.html"      
-FILE_MALE = "maschile.html"      
-FILE_FEMALE = "femminile.html"   
+# Nomi File
+FILE_LANDING = "index.html"
+FILE_MALE = "maschile.html"
+FILE_FEMALE = "femminile.html"
 FILE_GEN_MALE = "generale_m.html"
 FILE_GEN_FEMALE = "generale_f.html"
-FILE_SCORE = "segnapunti.html"   
+FILE_SCORE = "segnapunti.html"
 
-# URL IMMAGINI
+# Risorse Grafiche
 REPO_URL = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/"
 URL_LOGO = REPO_URL + "logo.jpg"
 URL_SPLIT_IMG = REPO_URL + "scelta_campionato.jpg"
-
-# BOTTONI
 BTN_ALL_RESULTS = REPO_URL + "all_result.png"
 BTN_TODIS_RESULTS = REPO_URL + "todis_result.png"
 BTN_SCOREBOARD = REPO_URL + "tabellone_segnapunti.png"
@@ -41,7 +42,7 @@ BTN_CALENDAR_EVENTS = REPO_URL + "prossimi_appuntamenti.png"
 
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
-# CAMPIONATI
+# Campionati
 CAMPIONATI_MASCHILI = {
     "Serie D  Maschile Gir.C": "85622",
     "Under 19 Maschile Gir.A": "86865",
@@ -80,12 +81,11 @@ CSS_BASE = """
     .nav-buttons { display: flex; gap: 10px; align-items: center; }
     .nav-icon-img { height: 45px; width: auto; transition: transform 0.1s, opacity 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
-    
-    /* CALENDARIO NOTIFICA */
-    .calendar-wrapper { position: relative; display: none; } /* Nascosto se non ci sono eventi */
-    .calendar-wrapper.visible { display: block; }
-    .calendar-wrapper.has-events::after { 
-        content: ''; position: absolute; top: 0; right: 0; width: 12px; height: 12px; 
+
+    /* Bottone Calendario e Notifica */
+    .calendar-container { position: relative; display: inline-block; } /* Sempre visibile */
+    .calendar-container.has-events::after { 
+        content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; 
         background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; 
         animation: pulse 2s infinite; pointer-events: none;
     }
@@ -212,7 +212,7 @@ CSS_BASE = """
     }
 
     window.onload = function() {
-        // IOS Popup Logic
+        // iOS Check
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
         if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
@@ -250,14 +250,13 @@ CSS_BASE = """
                 count++;
             }
             
-            // Se ci sono partite, abilita il bottone e inietta l'HTML
+            // Notification Dot Logic
+            const calContainer = document.getElementById('btn-calendar');
             if (count > 0) {
                 const modalBody = document.getElementById('modal-body');
-                const calWrapper = document.getElementById('calendar-wrapper');
-                if(modalBody && calWrapper) {
+                if(modalBody && calContainer) {
                     modalBody.innerHTML = popupHTML;
-                    calWrapper.style.display = 'block';
-                    calWrapper.classList.add('has-events');
+                    calContainer.classList.add('has-events');
                 }
             }
         }
@@ -405,7 +404,6 @@ def crea_card_html(r, camp, is_focus_mode=False):
     if r['Punteggio']:
         try:
             sc, so = int(r['Set Casa']), int(r['Set Ospite'])
-            # Colori Badge
             bg_c = "bg-green" if sc > so else "bg-red"
             bg_o = "bg-green" if so > sc else "bg-red"
             
@@ -421,8 +419,7 @@ def crea_card_html(r, camp, is_focus_mode=False):
                 badge_html = '<span class="result-badge badge-played">FINALE</span>'
                 bg_c, bg_o = "bg-gray", "bg-gray"
 
-            # --- PARZIALI SET (GRAFICA A BLOCCHI) ---
-            if r['Parziali'] and str(r['Parziali']) != 'nan':
+            if r['Parziali'] and str(r['Parziali']).strip():
                 unique_id = re.sub(r'\W+', '', r['Squadra Casa'] + r['Giornata'])
                 toggle_onclick = f'onclick="toggleDetails(\'{unique_id}\')"'
                 toggle_icon = f'<span id="icon-{unique_id}" class="toggle-icon">▼</span>'
@@ -493,7 +490,6 @@ def get_match_details_robust(driver, match_url):
     
     try:
         driver.get(match_url)
-        # SMART WAIT (Max 1.5s per elemento Impianto)
         try:
             WebDriverWait(driver, 1.5).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
         except: pass
@@ -501,7 +497,6 @@ def get_match_details_robust(driver, match_url):
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
         
-        # Data
         date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:\.]\d{2})', clean_text)
         if date_pattern:
             d, o = date_pattern.group(1), date_pattern.group(2)
@@ -524,25 +519,17 @@ def get_match_details_robust(driver, match_url):
             clean_gym = re.sub(r'\s+', ' ', luogo).strip()
             link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
             
-        # --- FIX PARZIALI SET (Regex Cleaner) ---
         try:
             div_casa = soup.find('div', id='risultatoCasa')
             div_ospite = soup.find('div', id='risultatoOspite')
-
             if div_casa and div_ospite:
-                # Estrai tutti i div parziali
                 raw_casa = div_casa.find_all('div', class_='parziale')
                 raw_ospite = div_ospite.find_all('div', class_='parziale')
-                
                 sets_list = []
-                # Pulizia aggressiva con Regex: estrae solo numeri
                 for i in range(min(len(raw_casa), len(raw_ospite))):
                     txt_c = re.sub(r'\D', '', raw_casa[i].get_text())
                     txt_o = re.sub(r'\D', '', raw_ospite[i].get_text())
-                    
-                    if txt_c and txt_o:
-                        sets_list.append(f"{txt_c}-{txt_o}")
-                
+                    if txt_c and txt_o: sets_list.append(f"{txt_c}-{txt_o}")
                 parziali_str = ",".join(sets_list)
         except: parziali_str = ""
 
@@ -582,9 +569,7 @@ def scrape_data():
                     o = o.replace(pt_o, '').strip()
 
                     full_url = urljoin(base_url, el.get('href', ''))
-                    # Chiamata ottimizzata
                     d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, full_url)
-                    
                     all_results.append({
                         'Campionato': nome_camp, 'Giornata': curr_giornata,
                         'Squadra Casa': c, 'Squadra Ospite': o,
@@ -621,7 +606,6 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
         page_title = NOME_VISUALIZZATO
         origin_param = ""
     
-    # Header Icons: Calendario + Mondo + Segnapunti
     nav_links = f"""
     <a href="#" onclick="openModal(); return false;" title="Prossimi Appuntamenti"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR_EVENTS}" class="nav-icon-img"></span></a>
     <a href="{FILE_GEN_MALE if origin_param == 'maschile' else FILE_GEN_FEMALE}?from={origin_param}" title="Tutti i risultati"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a>
@@ -734,7 +718,7 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
         </div>
     """
 
-    campionati_disp = df_class['Campionato'].unique()
+    campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
     html += '<div class="tab-bar">'
     for i, camp in enumerate(campionati_disp):
         if "Gir." in camp:
@@ -772,64 +756,6 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
 
     html += "</body></html>"
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
-
-def genera_landing_page():
-    print(f"📄 Generazione Landing Page...")
-    nav_links = f'<a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
-    
-    html = f"""<!DOCTYPE html>
-    <html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <meta name="theme-color" content="#d32f2f">
-        <title>{NOME_VISUALIZZATO}</title>
-        <link rel="icon" type="image/png" href="{URL_LOGO}">
-        <link rel="apple-touch-icon" href="{URL_LOGO}">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <link rel="manifest" href="manifest.json">
-        {CSS_BASE}
-    </head>
-    <body>
-        <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
-            <div class="modal-content" onclick="event.stopPropagation()">
-                <div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div>
-                <div id="modal-body"></div>
-                <div style="text-align:center; margin-top:15px;"><button onclick="closeModal()" style="background:#d32f2f; color:white; border:none; padding:8px 20px; border-radius:20px;">Chiudi</button></div>
-            </div>
-        </div>
-        
-        <div class="app-header">
-            <div class="header-left">
-                <img src="{URL_LOGO}" alt="Logo" class="logo-main">
-                <div><h1>{NOME_VISUALIZZATO}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
-            </div>
-            <div class="nav-buttons">{nav_links}</div>
-        </div>
-        
-        <div class="landing-container">
-            <div class="instruction-text">Seleziona il settore:</div>
-            <div class="choice-card">
-                <img src="{URL_SPLIT_IMG}" alt="Scelta Campionato" class="choice-img">
-                <div class="click-overlay">
-                    <a href="{FILE_MALE}" class="click-area"></a>
-                    <a href="{FILE_FEMALE}" class="click-area"></a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"></div>
-        
-        <div id="ios-popup" class="ios-install-popup">
-            <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
-            <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
-            <div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div>
-            <div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div>
-            <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
-        </div>
-    </body>
-    </html>"""
-    with open(FILE_LANDING, "w", encoding="utf-8") as f: f.write(html)
 
 def genera_segnapunti():
     print(f"📄 Generazione Segnapunti...")
