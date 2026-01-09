@@ -37,7 +37,7 @@ URL_SPLIT_IMG = REPO_URL + "scelta_campionato.jpg"
 BTN_ALL_RESULTS = REPO_URL + "all_result.png"
 BTN_TODIS_RESULTS = REPO_URL + "todis_result.png"
 BTN_SCOREBOARD = REPO_URL + "tabellone_segnapunti.png"
-BTN_CALENDAR_EVENTS = REPO_URL + "prossimi_appuntamenti.png" # ICONA CALENDARIO RIPRISTINATA
+BTN_CALENDAR = REPO_URL + "prossimi_appuntamenti.png" # NUOVA IMMAGINE CARICATA
 
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
@@ -90,13 +90,15 @@ CSS_BASE = """
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
 
     /* Container Calendario per Notifica */
-    .calendar-container { position: relative; display: inline-block; display: none; }
-    .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
+    .calendar-container { position: relative; display: none; /* Nascosto di default */ }
     
     /* Pallino notifica */
+    .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
+    
     .calendar-container.has-events::after {
-        content: ''; position: absolute; top: 0; right: 0; width: 10px; height: 10px;
+        content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px;
         background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f;
+        z-index: 10;
     }
     @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
@@ -159,6 +161,7 @@ CSS_BASE = """
     .bg-gray { background-color: #78909c; }
     .partials-container { display: flex; gap: 5px; overflow-x: auto; }
     .small-badge { width: 30px; height: 30px; background-color: #7986cb; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; flex-shrink: 0; }
+
     .toggle-icon { margin-left: 5px; transition: transform 0.3s; cursor: pointer; color: #aaa; font-size:14px; }
     .toggle-icon.rotated { transform: rotate(180deg); }
 
@@ -205,7 +208,7 @@ CSS_BASE = """
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
     function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
-
+    
     function tornaAlSettore() {
         const urlParams = new URLSearchParams(window.location.search);
         const origin = urlParams.get('from');
@@ -265,8 +268,8 @@ CSS_BASE = """
                 const calContainer = document.getElementById('cal-container');
                 if(modalBody && calContainer) {
                     modalBody.innerHTML = popupHTML;
-                    calContainer.classList.add('has-events');
                     calContainer.style.display = 'inline-block';
+                    calContainer.classList.add('has-events');
                 }
             }
         }
@@ -500,6 +503,7 @@ def get_match_details_robust(driver, match_url):
     
     try:
         driver.get(match_url)
+        # SMART WAIT (Max 1.5s per elemento Impianto)
         try:
             WebDriverWait(driver, 1.5).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
         except: pass
@@ -507,6 +511,7 @@ def get_match_details_robust(driver, match_url):
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
         
+        # Data
         date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:\.]\d{2})', clean_text)
         if date_pattern:
             d, o = date_pattern.group(1), date_pattern.group(2)
@@ -524,12 +529,12 @@ def get_match_details_robust(driver, match_url):
         if imp: luogo = imp.get_text(strip=True)
         
         a_map = soup.find('a', href=lambda x: x and ('google.com/maps' in x or 'maps.google' in x))
-        if a_map: 
-            link_maps = a_map['href']
+        if a_map: link_maps = a_map['href']
         elif luogo != "Impianto non definito": 
             clean_gym = re.sub(r'\s+', ' ', luogo).strip()
             link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
             
+        # --- FIX PARZIALI SET (Index Based) ---
         try:
             div_casa = soup.find('div', id='risultatoCasa')
             div_ospite = soup.find('div', id='risultatoOspite')
@@ -583,6 +588,7 @@ def scrape_data():
 
                     full_url = urljoin(base_url, el.get('href', ''))
                     d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, full_url)
+                    
                     all_results.append({
                         'Campionato': nome_camp, 'Giornata': curr_giornata,
                         'Squadra Casa': c, 'Squadra Ospite': o,
@@ -607,7 +613,6 @@ def scrape_data():
 # ================= GENERATORE LANDING PAGE =================
 def genera_landing_page():
     print(f"📄 Generazione Landing Page...")
-    # Solo segnapunti nell'header, bottone calendario assente qui
     nav_links = f'<a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
     
     html = f"""<!DOCTYPE html>
@@ -624,6 +629,14 @@ def genera_landing_page():
         {CSS_BASE}
     </head>
     <body>
+        <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div>
+                <div id="modal-body"></div>
+                <div style="text-align:center; margin-top:15px;"><button onclick="closeModal()" style="background:#d32f2f; color:white; border:none; padding:8px 20px; border-radius:20px;">Chiudi</button></div>
+            </div>
+        </div>
+        
         <div class="app-header">
             <div class="header-left">
                 <img src="{URL_LOGO}" alt="Logo" class="logo-main">
@@ -644,9 +657,18 @@ def genera_landing_page():
         </div>
         
         <div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"></div>
+        
+        <div id="ios-popup" class="ios-install-popup">
+            <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
+            <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
+            <div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div>
+            <div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div>
+            <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
+        </div>
     </body>
     </html>"""
     with open(FILE_LANDING, "w", encoding="utf-8") as f: f.write(html)
+
 def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP"):
     print(f"📄 Generazione {filename} (Mode: {mode})...")
     is_app = True
@@ -662,7 +684,7 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
         origin_param = ""
     
     nav_links = f"""
-    <a href="#" onclick="openModal(); return false;" title="Prossimi Appuntamenti"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR_EVENTS}" class="nav-icon-img"></span></a>
+    <a href="#" onclick="openModal(); return false;" title="Prossimi Appuntamenti"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR}" class="nav-icon-img"></span></a>
     <a href="{FILE_GEN_MALE if origin_param == 'maschile' else FILE_GEN_FEMALE}?from={origin_param}" title="Tutti i risultati"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a>
     <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
     """
