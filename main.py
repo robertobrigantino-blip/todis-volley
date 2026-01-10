@@ -1,3 +1,8 @@
+# ==============================================================================
+# SOFTWARE VERSION: V55
+# RELEASE NOTE: Fix Parsing Set (Regex), Filtri Generali Separati, UI Ottimizzata
+# ==============================================================================
+
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -12,9 +17,7 @@ import re
 from datetime import datetime, timedelta
 import os
 
-# ==========================================
-# 1. CONFIGURAZIONE
-# ==========================================
+# ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
 
 TARGET_TEAM_ALIASES = [
@@ -23,18 +26,19 @@ TARGET_TEAM_ALIASES = [
     "TODIS C.S. PASTENA VOLLEY"
 ]
 
-# Nomi File
-FILE_LANDING = "index.html"
-FILE_MALE = "maschile.html"
-FILE_FEMALE = "femminile.html"
+FILE_LANDING = "index.html"      
+FILE_MALE = "maschile.html"      
+FILE_FEMALE = "femminile.html"   
 FILE_GEN_MALE = "generale_m.html"
 FILE_GEN_FEMALE = "generale_f.html"
-FILE_SCORE = "segnapunti.html"
+FILE_SCORE = "segnapunti.html"   
 
-# Risorse Grafiche
+# URL IMMAGINI
 REPO_URL = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/"
 URL_LOGO = REPO_URL + "logo.jpg"
 URL_SPLIT_IMG = REPO_URL + "scelta_campionato.jpg"
+
+# BOTTONI
 BTN_ALL_RESULTS = REPO_URL + "all_result.png"
 BTN_TODIS_RESULTS = REPO_URL + "todis_result.png"
 BTN_SCOREBOARD = REPO_URL + "tabellone_segnapunti.png"
@@ -42,7 +46,7 @@ BTN_CALENDAR_EVENTS = REPO_URL + "prossimi_appuntamenti.png"
 
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
-# Campionati
+# CAMPIONATI
 CAMPIONATI_MASCHILI = {
     "Serie D  Maschile Gir.C": "85622",
     "Under 19 Maschile Gir.A": "86865",
@@ -82,8 +86,8 @@ CSS_BASE = """
     .nav-icon-img { height: 45px; width: auto; transition: transform 0.1s, opacity 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
     
-    /* Bottone Calendario e Notifica */
-    .calendar-container { position: relative; display: inline-block; display: none; }
+    /* CALENDARIO NOTIFICA */
+    .calendar-container { position: relative; display: inline-block; display: none; } /* Nascosto di default, mostrato da JS se servono notifiche */
     .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
     .calendar-container.has-events::after { 
         content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; 
@@ -250,13 +254,14 @@ CSS_BASE = """
                 count++;
             }
             
+            // Se ci sono partite, abilita il bottone e inietta l'HTML
             if (count > 0) {
                 const modalBody = document.getElementById('modal-body');
                 const calContainer = document.getElementById('btn-calendar');
                 if(modalBody && calContainer) {
                     modalBody.innerHTML = popupHTML;
+                    calContainer.style.display = 'inline-block'; // Renderlo visibile
                     calContainer.classList.add('has-events');
-                    calContainer.style.display = 'inline-block';
                 }
             }
         }
@@ -386,7 +391,7 @@ def create_whatsapp_link(row):
         text = f"📅 *Gara {row['Campionato']}*\n{row['Data']}\n📍 {row['Impianto']}\n{row['Squadra Casa']} vs {row['Squadra Ospite']}"
     return f"https://wa.me/?text={quote(text)}"
 
-# ================= GENERATORE HTML CARD (FIXED) =================
+# ================= GENERATORE HTML CARD =================
 def crea_card_html(r, camp, is_focus_mode=False):
     is_home = is_target_team(r['Squadra Casa'])
     is_away = is_target_team(r['Squadra Ospite'])
@@ -401,19 +406,9 @@ def crea_card_html(r, camp, is_focus_mode=False):
     toggle_icon = ""
     sets_html = ""
     
-    # Gestione Punteggio
-    punteggio_valido = False
-    if pd.notna(r['Punteggio']) and str(r['Punteggio']).strip() != "":
-        punteggio_valido = True
-
-    if punteggio_valido:
+    if r['Punteggio']:
         try:
-            # Estrae i set totali (es. 3-0)
-            pts = str(r['Punteggio']).split('-')
-            sc = int(pts[0])
-            so = int(pts[1])
-            
-            # Colori Badge
+            sc, so = int(r['Set Casa']), int(r['Set Ospite'])
             bg_c = "bg-green" if sc > so else "bg-red"
             bg_o = "bg-green" if so > sc else "bg-red"
             
@@ -429,49 +424,42 @@ def crea_card_html(r, camp, is_focus_mode=False):
                 badge_html = '<span class="result-badge badge-played">FINALE</span>'
                 bg_c, bg_o = "bg-gray", "bg-gray"
 
-            # --- FIX VISUALIZZAZIONE PARZIALI ---
-            # Converte in stringa sicura e rimuove spazi
-            raw_parziali = str(r.get('Parziali', '')).strip()
-            
-            # Se la stringa contiene almeno un numero e non è 'nan'
-            if raw_parziali and raw_parziali.lower() != 'nan' and re.search(r'\d', raw_parziali):
-                unique_id = re.sub(r'\W+', '', str(r['Squadra Casa']) + str(r['Giornata']))
+            if r['Parziali'] and str(r['Parziali']).strip():
+                unique_id = re.sub(r'\W+', '', r['Squadra Casa'] + r['Giornata'])
                 toggle_onclick = f'onclick="toggleDetails(\'{unique_id}\')"'
                 toggle_icon = f'<span id="icon-{unique_id}" class="toggle-icon">▼</span>'
                 
-                parziali_list = raw_parziali.split(',')
-                html_c_row = ""
-                html_o_row = ""
+                parziali_list = r['Parziali'].split(',')
+                p_c_list = []
+                p_o_list = []
                 
                 for p in parziali_list:
                     try:
                         pts = p.strip().split('-')
-                        if len(pts) == 2:
-                            html_c_row += f'<div class="small-badge">{pts[0]}</div>'
-                            html_o_row += f'<div class="small-badge">{pts[1]}</div>'
+                        p_c_list.append(f'<div class="small-badge">{pts[0]}</div>')
+                        p_o_list.append(f'<div class="small-badge">{pts[1]}</div>')
                     except: pass
                 
-                if html_c_row: # Crea il blocco solo se abbiamo dati
-                    sets_html = f"""
-                    <div id="details-{unique_id}" class="sets-details">
-                        <div class="score-row">
-                            <div class="big-badge {bg_c}">{sc}</div>
-                            <div class="partials-container">{html_c_row}</div>
-                        </div>
-                        <div class="score-row">
-                            <div class="big-badge {bg_o}">{so}</div>
-                            <div class="partials-container">{html_o_row}</div>
-                        </div>
+                html_c_row = "".join(p_c_list)
+                html_o_row = "".join(p_o_list)
+
+                sets_html = f"""
+                <div id="details-{unique_id}" class="sets-details">
+                    <div class="score-row">
+                        <div class="big-badge {bg_c}">{sc}</div>
+                        <div class="partials-container">{html_c_row}</div>
                     </div>
-                    """
-        except Exception as e: 
-            print(f"Errore generazione card: {e}")
-            status_class = "played"
+                    <div class="score-row">
+                        <div class="big-badge {bg_o}">{so}</div>
+                        <div class="partials-container">{html_o_row}</div>
+                    </div>
+                </div>
+                """
+        except: status_class = "played"
     
-    # Link
     lnk_wa = create_whatsapp_link(r)
-    lnk_cal = create_google_calendar_link(r) if not punteggio_valido else ""
-    lnk_map = r['Maps'] if pd.notna(r['Maps']) else ""
+    lnk_cal = create_google_calendar_link(r) if not r['Punteggio'] else ""
+    lnk_map = r['Maps']
     
     btns_html = ""
     if lnk_map: btns_html += f'<a href="{lnk_map}" target="_blank" class="btn btn-map">📍 Mappa</a>'
@@ -500,33 +488,20 @@ def crea_card_html(r, camp, is_focus_mode=False):
     </div>
     """
 
-# ================= SCRAPING DEBUG VERSION =================
+# ================= SCRAPING =================
 def get_match_details_robust(driver, match_url):
     data_ora_full, data_iso, luogo, link_maps = "Data da definire", "", "Impianto non definito", ""
     parziali_str = ""
     
-    # DEBUG: Stampa URL
-    print(f"DEBUG: Analisi URL: {match_url}")
-
     try:
         driver.get(match_url)
-        
-        # SMART WAIT
         try:
-            WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
+            WebDriverWait(driver, 1.5).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
         except: pass
-        
-        try:
-            # Aspetta che appaiano i risultati
-            WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, "risultatoCasa")))
-            time.sleep(0.5) 
-        except: 
-            print("DEBUG: Timeout attesa #risultatoCasa")
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
         
-        # ... (Codice Data e Impianto invariato) ...
         date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:\.]\d{2})', clean_text)
         if date_pattern:
             d, o = date_pattern.group(1), date_pattern.group(2)
@@ -548,47 +523,24 @@ def get_match_details_robust(driver, match_url):
         elif luogo != "Impianto non definito": 
             clean_gym = re.sub(r'\s+', ' ', luogo).strip()
             link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
-
-        # --- DEBUG PARZIALI ---
+            
         try:
             div_casa = soup.find('div', id='risultatoCasa')
             div_ospite = soup.find('div', id='risultatoOspite')
 
             if div_casa and div_ospite:
-                # DEBUG: Stampa contenuto grezzo
-                print(f"DEBUG CASA HTML: {div_casa.prettify()[:100]}...") 
-                
                 raw_casa = div_casa.find_all('div', class_='parziale')
                 raw_ospite = div_ospite.find_all('div', class_='parziale')
-                
-                print(f"DEBUG: Trovati {len(raw_casa)} div parziali casa")
-
                 sets_list = []
                 for i in range(min(len(raw_casa), len(raw_ospite))):
-                    txt_c = raw_casa[i].get_text(strip=True)
-                    txt_o = raw_ospite[i].get_text(strip=True)
-                    
-                    # DEBUG: Cosa legge esattamente?
-                    print(f"DEBUG RAW SET {i+1}: Casa='{txt_c}' Ospite='{txt_o}'")
-                    
-                    match_c = re.search(r'\d+', txt_c)
-                    match_o = re.search(r'\d+', txt_o)
-                    
-                    if match_c and match_o:
-                        sets_list.append(f"{match_c.group()}-{match_o.group()}")
-                
+                    txt_c = re.sub(r'\D', '', raw_casa[i].get_text())
+                    txt_o = re.sub(r'\D', '', raw_ospite[i].get_text())
+                    if txt_c and txt_o:
+                        sets_list.append(f"{txt_c}-{txt_o}")
                 parziali_str = ",".join(sets_list)
-                print(f"DEBUG FINALE: {parziali_str}")
-            else:
-                print("DEBUG: Div risultati NON trovati nel DOM")
-                
-        except Exception as e:
-            print(f"DEBUG ERROR: {e}")
-            parziali_str = ""
+        except: parziali_str = ""
 
-    except Exception as e: 
-        print(f"DEBUG CRITICAL: {e}")
-
+    except: pass
     return data_ora_full, data_iso, luogo, link_maps, parziali_str
 
 def scrape_data():
@@ -625,7 +577,6 @@ def scrape_data():
 
                     full_url = urljoin(base_url, el.get('href', ''))
                     d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, full_url)
-                    
                     all_results.append({
                         'Campionato': nome_camp, 'Giornata': curr_giornata,
                         'Squadra Casa': c, 'Squadra Ospite': o,
