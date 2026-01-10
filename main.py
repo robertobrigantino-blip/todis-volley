@@ -12,7 +12,9 @@ import re
 from datetime import datetime, timedelta
 import os
 
-# ================= CONFIGURAZIONE =================
+# ==========================================
+# 1. CONFIGURAZIONE
+# ==========================================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
 
 TARGET_TEAM_ALIASES = [
@@ -21,19 +23,18 @@ TARGET_TEAM_ALIASES = [
     "TODIS C.S. PASTENA VOLLEY"
 ]
 
-FILE_LANDING = "index.html"      
-FILE_MALE = "maschile.html"      
-FILE_FEMALE = "femminile.html"   
+# Nomi File
+FILE_LANDING = "index.html"
+FILE_MALE = "maschile.html"
+FILE_FEMALE = "femminile.html"
 FILE_GEN_MALE = "generale_m.html"
 FILE_GEN_FEMALE = "generale_f.html"
-FILE_SCORE = "segnapunti.html"   
+FILE_SCORE = "segnapunti.html"
 
-# URL IMMAGINI
+# Risorse Grafiche
 REPO_URL = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/"
 URL_LOGO = REPO_URL + "logo.jpg"
 URL_SPLIT_IMG = REPO_URL + "scelta_campionato.jpg"
-
-# BOTTONI
 BTN_ALL_RESULTS = REPO_URL + "all_result.png"
 BTN_TODIS_RESULTS = REPO_URL + "todis_result.png"
 BTN_SCOREBOARD = REPO_URL + "tabellone_segnapunti.png"
@@ -41,7 +42,7 @@ BTN_CALENDAR_EVENTS = REPO_URL + "prossimi_appuntamenti.png"
 
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
-# CAMPIONATI
+# Campionati
 CAMPIONATI_MASCHILI = {
     "Serie D  Maschile Gir.C": "85622",
     "Under 19 Maschile Gir.A": "86865",
@@ -76,20 +77,32 @@ CSS_BASE = """
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
     .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
+    
     .nav-buttons { display: flex; gap: 10px; align-items: center; }
     .nav-icon-img { height: 45px; width: auto; transition: transform 0.1s, opacity 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
+    
+    /* Bottone Calendario e Notifica */
     .calendar-container { position: relative; display: inline-block; display: none; }
     .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
-    .calendar-container.has-events::after { content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; }
-    @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    .calendar-container.has-events::after { 
+        content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; 
+        background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; 
+        animation: pulse 2s infinite; pointer-events: none;
+    }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+    /* Tabs */
     .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
     .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
     .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
+
+    /* Classifica */
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
@@ -97,6 +110,8 @@ CSS_BASE = """
     td { padding: 10px 6px; text-align: center; border-bottom: 1px solid #f0f0f0; }
     td:nth-child(2) { text-align: left; min-width: 140px; font-weight: 500; position: sticky; left: 0; background-color: white; border-right: 1px solid #eee; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
+
+    /* Card Partita */
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; transition: max-height 0.3s ease; }
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
@@ -105,6 +120,7 @@ CSS_BASE = """
     .badge-win { background-color: #2e7d32; }
     .badge-loss { background-color: #c62828; }
     .badge-played { background-color: #78909c; } 
+
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; padding-right: 50px; }
     .date-badge { font-weight: bold; color: #d32f2f; display: flex; align-items: center; gap: 4px; }
     .teams { display: flex; flex-direction: column; gap: 6px; font-size: 14px; margin-bottom: 8px; }
@@ -118,9 +134,12 @@ CSS_BASE = """
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
+
+    /* DETTAGLIO SET GRAFICO */
     .sets-details { display: none; margin-top: 10px; background: #f0f4f8; padding: 10px; border-radius: 8px; border: 1px solid #e1e8ed; }
     .sets-details.open { display: block; animation: slideDown 0.3s; }
     @keyframes slideDown { from{opacity:0; transform:translateY(-5px);} to{opacity:1; transform:translateY(0);} }
+
     .score-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
     .score-row:last-child { margin-bottom: 0; }
     .big-badge { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
@@ -131,6 +150,8 @@ CSS_BASE = """
     .small-badge { width: 30px; height: 30px; background-color: #7986cb; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; flex-shrink: 0; }
     .toggle-icon { margin-left: 5px; transition: transform 0.3s; cursor: pointer; color: #aaa; font-size:14px; }
     .toggle-icon.rotated { transform: rotate(180deg); }
+
+    /* Modals & Footer */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .modal-content { background: white; width: 85%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 20px; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
@@ -139,9 +160,13 @@ CSS_BASE = """
     .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
+    
+    /* IOS INSTALL TIP */
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
+
+    /* LANDING PAGE STYLES */
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -361,7 +386,7 @@ def create_whatsapp_link(row):
         text = f"📅 *Gara {row['Campionato']}*\n{row['Data']}\n📍 {row['Impianto']}\n{row['Squadra Casa']} vs {row['Squadra Ospite']}"
     return f"https://wa.me/?text={quote(text)}"
 
-# ================= GENERATORE HTML CARD =================
+# ================= GENERATORE HTML CARD (FIXED) =================
 def crea_card_html(r, camp, is_focus_mode=False):
     is_home = is_target_team(r['Squadra Casa'])
     is_away = is_target_team(r['Squadra Ospite'])
@@ -376,9 +401,18 @@ def crea_card_html(r, camp, is_focus_mode=False):
     toggle_icon = ""
     sets_html = ""
     
-    if r['Punteggio']:
+    # Gestione Punteggio
+    punteggio_valido = False
+    if pd.notna(r['Punteggio']) and str(r['Punteggio']).strip() != "":
+        punteggio_valido = True
+
+    if punteggio_valido:
         try:
-            sc, so = int(r['Set Casa']), int(r['Set Ospite'])
+            # Estrae i set totali (es. 3-0)
+            pts = str(r['Punteggio']).split('-')
+            sc = int(pts[0])
+            so = int(pts[1])
+            
             # Colori Badge
             bg_c = "bg-green" if sc > so else "bg-red"
             bg_o = "bg-green" if so > sc else "bg-red"
@@ -395,11 +429,12 @@ def crea_card_html(r, camp, is_focus_mode=False):
                 badge_html = '<span class="result-badge badge-played">FINALE</span>'
                 bg_c, bg_o = "bg-gray", "bg-gray"
 
-            # --- PARZIALI SET (GRAFICA A BLOCCHI) ---
-            # Parsing "cattivo" per forzare la lettura
+            # --- FIX VISUALIZZAZIONE PARZIALI ---
+            # Converte in stringa sicura e rimuove spazi
             raw_parziali = str(r.get('Parziali', '')).strip()
             
-            if raw_parziali and raw_parziali.lower() != 'nan':
+            # Se la stringa contiene almeno un numero e non è 'nan'
+            if raw_parziali and raw_parziali.lower() != 'nan' and re.search(r'\d', raw_parziali):
                 unique_id = re.sub(r'\W+', '', str(r['Squadra Casa']) + str(r['Giornata']))
                 toggle_onclick = f'onclick="toggleDetails(\'{unique_id}\')"'
                 toggle_icon = f'<span id="icon-{unique_id}" class="toggle-icon">▼</span>'
@@ -409,13 +444,14 @@ def crea_card_html(r, camp, is_focus_mode=False):
                 html_o_row = ""
                 
                 for p in parziali_list:
-                    if '-' in p:
+                    try:
                         pts = p.strip().split('-')
                         if len(pts) == 2:
                             html_c_row += f'<div class="small-badge">{pts[0]}</div>'
                             html_o_row += f'<div class="small-badge">{pts[1]}</div>'
+                    except: pass
                 
-                if html_c_row:
+                if html_c_row: # Crea il blocco solo se abbiamo dati
                     sets_html = f"""
                     <div id="details-{unique_id}" class="sets-details">
                         <div class="score-row">
@@ -429,12 +465,13 @@ def crea_card_html(r, camp, is_focus_mode=False):
                     </div>
                     """
         except Exception as e: 
-            print(f"Errore card: {e}")
+            print(f"Errore generazione card: {e}")
             status_class = "played"
     
+    # Link
     lnk_wa = create_whatsapp_link(r)
-    lnk_cal = create_google_calendar_link(r) if not r['Punteggio'] else ""
-    lnk_map = r['Maps']
+    lnk_cal = create_google_calendar_link(r) if not punteggio_valido else ""
+    lnk_map = r['Maps'] if pd.notna(r['Maps']) else ""
     
     btns_html = ""
     if lnk_map: btns_html += f'<a href="{lnk_map}" target="_blank" class="btn btn-map">📍 Mappa</a>'
@@ -463,22 +500,33 @@ def crea_card_html(r, camp, is_focus_mode=False):
     </div>
     """
 
-# ================= SCRAPING =================
+# ================= SCRAPING DEBUG VERSION =================
 def get_match_details_robust(driver, match_url):
     data_ora_full, data_iso, luogo, link_maps = "Data da definire", "", "Impianto non definito", ""
     parziali_str = ""
     
+    # DEBUG: Stampa URL
+    print(f"DEBUG: Analisi URL: {match_url}")
+
     try:
         driver.get(match_url)
-        # SMART WAIT: Aspetta i risultati (Max 5 sec)
+        
+        # SMART WAIT
         try:
-            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "risultatoCasa")))
+            WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
         except: pass
+        
+        try:
+            # Aspetta che appaiano i risultati
+            WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.ID, "risultatoCasa")))
+            time.sleep(0.5) 
+        except: 
+            print("DEBUG: Timeout attesa #risultatoCasa")
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
         
-        # Data
+        # ... (Codice Data e Impianto invariato) ...
         date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:\.]\d{2})', clean_text)
         if date_pattern:
             d, o = date_pattern.group(1), date_pattern.group(2)
@@ -500,28 +548,47 @@ def get_match_details_robust(driver, match_url):
         elif luogo != "Impianto non definito": 
             clean_gym = re.sub(r'\s+', ' ', luogo).strip()
             link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
-            
-        # --- FIX PARZIALI SET (Regex Cleaner) ---
+
+        # --- DEBUG PARZIALI ---
         try:
             div_casa = soup.find('div', id='risultatoCasa')
             div_ospite = soup.find('div', id='risultatoOspite')
 
             if div_casa and div_ospite:
+                # DEBUG: Stampa contenuto grezzo
+                print(f"DEBUG CASA HTML: {div_casa.prettify()[:100]}...") 
+                
                 raw_casa = div_casa.find_all('div', class_='parziale')
                 raw_ospite = div_ospite.find_all('div', class_='parziale')
                 
+                print(f"DEBUG: Trovati {len(raw_casa)} div parziali casa")
+
                 sets_list = []
                 for i in range(min(len(raw_casa), len(raw_ospite))):
-                    txt_c = re.sub(r'\D', '', raw_casa[i].get_text())
-                    txt_o = re.sub(r'\D', '', raw_ospite[i].get_text())
+                    txt_c = raw_casa[i].get_text(strip=True)
+                    txt_o = raw_ospite[i].get_text(strip=True)
                     
-                    if txt_c and txt_o:
-                        sets_list.append(f"{txt_c}-{txt_o}")
+                    # DEBUG: Cosa legge esattamente?
+                    print(f"DEBUG RAW SET {i+1}: Casa='{txt_c}' Ospite='{txt_o}'")
+                    
+                    match_c = re.search(r'\d+', txt_c)
+                    match_o = re.search(r'\d+', txt_o)
+                    
+                    if match_c and match_o:
+                        sets_list.append(f"{match_c.group()}-{match_o.group()}")
                 
                 parziali_str = ",".join(sets_list)
-        except: parziali_str = ""
+                print(f"DEBUG FINALE: {parziali_str}")
+            else:
+                print("DEBUG: Div risultati NON trovati nel DOM")
+                
+        except Exception as e:
+            print(f"DEBUG ERROR: {e}")
+            parziali_str = ""
 
-    except: pass
+    except Exception as e: 
+        print(f"DEBUG CRITICAL: {e}")
+
     return data_ora_full, data_iso, luogo, link_maps, parziali_str
 
 def scrape_data():
@@ -569,7 +636,7 @@ def scrape_data():
                     })
         try:
             driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
-            time.sleep(0.5) 
+            time.sleep(1) 
             tabs = pd.read_html(StringIO(driver.page_source))
             if tabs:
                 df_s = tabs[0]
@@ -578,13 +645,67 @@ def scrape_data():
         except: pass
 
     driver.quit()
-    df_res = pd.DataFrame(all_results)
-    # Garanzia colonna Parziali
-    if 'Parziali' not in df_res.columns: df_res['Parziali'] = ""
-    
-    return df_res, pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
+    return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
 
-# ================= GENERATORE PAGINE APP =================
+# ================= GENERATORE LANDING PAGE =================
+def genera_landing_page():
+    print(f"📄 Generazione Landing Page...")
+    nav_links = f'<a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
+    
+    html = f"""<!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="theme-color" content="#d32f2f">
+        <title>{NOME_VISUALIZZATO}</title>
+        <link rel="icon" type="image/png" href="{URL_LOGO}">
+        <link rel="apple-touch-icon" href="{URL_LOGO}">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="manifest" href="manifest.json">
+        {CSS_BASE}
+    </head>
+    <body>
+        <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div>
+                <div id="modal-body"></div>
+                <div style="text-align:center; margin-top:15px;"><button onclick="closeModal()" style="background:#d32f2f; color:white; border:none; padding:8px 20px; border-radius:20px;">Chiudi</button></div>
+            </div>
+        </div>
+        
+        <div class="app-header">
+            <div class="header-left">
+                <img src="{URL_LOGO}" alt="Logo" class="logo-main">
+                <div><h1>{NOME_VISUALIZZATO}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
+            </div>
+            <div class="nav-buttons">{nav_links}</div>
+        </div>
+        
+        <div class="landing-container">
+            <div class="instruction-text">Seleziona il settore:</div>
+            <div class="choice-card">
+                <img src="{URL_SPLIT_IMG}" alt="Scelta Campionato" class="choice-img">
+                <div class="click-overlay">
+                    <a href="{FILE_MALE}" class="click-area"></a>
+                    <a href="{FILE_FEMALE}" class="click-area"></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"></div>
+        
+        <div id="ios-popup" class="ios-install-popup">
+            <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
+            <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
+            <div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div>
+            <div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div>
+            <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
+        </div>
+    </body>
+    </html>"""
+    with open(FILE_LANDING, "w", encoding="utf-8") as f: f.write(html)
+
 def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP"):
     print(f"📄 Generazione {filename} (Mode: {mode})...")
     is_app = True
@@ -712,7 +833,6 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
     """
 
     campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
-    
     html += '<div class="tab-bar">'
     for i, camp in enumerate(campionati_disp):
         if "Gir." in camp:
