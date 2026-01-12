@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: V55
-# RELEASE NOTE: Fix Parsing Set (Regex), Filtri Generali Separati, UI Ottimizzata
+# SOFTWARE VERSION: V56
+# RELEASE NOTE: Rcrittura totale logica visualizzazione Set (Pattern Matching)
 # ==============================================================================
 
 import pandas as pd
@@ -75,7 +75,7 @@ CSS_BASE = """
 <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
     
-    /* Header */
+    /* Header */   
     .app-header { background-color: #d32f2f; color: white; padding: 5px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; height: 60px; }
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
@@ -115,7 +115,7 @@ CSS_BASE = """
     td:nth-child(2) { text-align: left; min-width: 140px; font-weight: 500; position: sticky; left: 0; background-color: white; border-right: 1px solid #eee; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
 
-    /* Card Partita */
+    /* Classifica */
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; transition: max-height 0.3s ease; }
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
@@ -139,7 +139,7 @@ CSS_BASE = """
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
 
-    /* DETTAGLIO SET GRAFICO */
+                               
     .sets-details { display: none; margin-top: 10px; background: #f0f4f8; padding: 10px; border-radius: 8px; border: 1px solid #e1e8ed; }
     .sets-details.open { display: block; animation: slideDown 0.3s; }
     @keyframes slideDown { from{opacity:0; transform:translateY(-5px);} to{opacity:1; transform:translateY(0);} }
@@ -165,12 +165,12 @@ CSS_BASE = """
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
     
-    /* IOS INSTALL TIP */
+    /* IOS INSTALL TIP */              
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
 
-    /* LANDING PAGE STYLES */
+    /* LANDING PAGE STYLES */                
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -223,7 +223,7 @@ CSS_BASE = """
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
 
-        // Logic for Upcoming Matches Notification
+        // Logic for Upcoming Matches Notification                              
         if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -254,14 +254,15 @@ CSS_BASE = """
                 count++;
             }
             
-            // Se ci sono partite, abilita il bottone e inietta l'HTML
+            // Se ci sono partite, abilita il bottone e inietta l'HTML                                             
             if (count > 0) {
                 const modalBody = document.getElementById('modal-body');
                 const calContainer = document.getElementById('btn-calendar');
                 if(modalBody && calContainer) {
                     modalBody.innerHTML = popupHTML;
-                    calContainer.style.display = 'inline-block'; // Renderlo visibile
+                                                                                     
                     calContainer.classList.add('has-events');
+                    calContainer.style.display = 'inline-block';
                 }
             }
         }
@@ -424,37 +425,44 @@ def crea_card_html(r, camp, is_focus_mode=False):
                 badge_html = '<span class="result-badge badge-played">FINALE</span>'
                 bg_c, bg_o = "bg-gray", "bg-gray"
 
+            # --- RENDERING SET "A TAPPEZZERIA" (V56) ---
             if r['Parziali'] and str(r['Parziali']).strip():
-                unique_id = re.sub(r'\W+', '', r['Squadra Casa'] + r['Giornata'])
+                unique_id = re.sub(r'\W+', '', str(r['Squadra Casa']) + str(r['Giornata']))
                 toggle_onclick = f'onclick="toggleDetails(\'{unique_id}\')"'
                 toggle_icon = f'<span id="icon-{unique_id}" class="toggle-icon">▼</span>'
                 
-                parziali_list = r['Parziali'].split(',')
-                p_c_list = []
-                p_o_list = []
+                                                        
+                             
+                             
                 
-                for p in parziali_list:
-                    try:
-                        pts = p.strip().split('-')
-                        p_c_list.append(f'<div class="small-badge">{pts[0]}</div>')
-                        p_o_list.append(f'<div class="small-badge">{pts[1]}</div>')
-                    except: pass
+                # Regex per trovare tutte le coppie num-num (es. 25-20)
+                # Questo ignora eventuali virgole, spazi, stili o errori
+                matches = re.findall(r'(\d+)\s*-\s*(\d+)', str(r['Parziali']))
+                                                                                   
+                                                                                   
+                                
                 
-                html_c_row = "".join(p_c_list)
-                html_o_row = "".join(p_o_list)
-
-                sets_html = f"""
-                <div id="details-{unique_id}" class="sets-details">
-                    <div class="score-row">
-                        <div class="big-badge {bg_c}">{sc}</div>
-                        <div class="partials-container">{html_c_row}</div>
+                if matches:
+                    html_c_row = ""
+                    html_o_row = ""
+                    
+                    for p_casa, p_ospite in matches:
+                        html_c_row += f'<div class="small-badge">{p_casa}</div>'
+                        html_o_row += f'<div class="small-badge">{p_ospite}</div>'
+                    
+                    sets_html = f"""
+                    <div id="details-{unique_id}" class="sets-details">
+                        <div class="score-row">
+                            <div class="big-badge {bg_c}">{sc}</div>
+                            <div class="partials-container">{html_c_row}</div>
+                        </div>
+                        <div class="score-row">
+                            <div class="big-badge {bg_o}">{so}</div>
+                            <div class="partials-container">{html_o_row}</div>
+                        </div>
                     </div>
-                    <div class="score-row">
-                        <div class="big-badge {bg_o}">{so}</div>
-                        <div class="partials-container">{html_o_row}</div>
-                    </div>
-                </div>
-                """
+                      
+                    """
         except: status_class = "played"
     
     lnk_wa = create_whatsapp_link(r)
@@ -495,13 +503,20 @@ def get_match_details_robust(driver, match_url):
     
     try:
         driver.get(match_url)
+        # SMART WAIT
         try:
-            WebDriverWait(driver, 1.5).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
+            WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
+        except: pass
+        
+        # Attesa per i risultati (se ci sono)
+        try:
+            WebDriverWait(driver, 1.5).until(EC.presence_of_element_located((By.ID, "risultatoCasa")))
         except: pass
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
         
+        # Data
         date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:\.]\d{2})', clean_text)
         if date_pattern:
             d, o = date_pattern.group(1), date_pattern.group(2)
@@ -524,19 +539,26 @@ def get_match_details_robust(driver, match_url):
             clean_gym = re.sub(r'\s+', ' ', luogo).strip()
             link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
             
+        # --- ESTRAZIONE SET AGGRESSIVA ---
         try:
             div_casa = soup.find('div', id='risultatoCasa')
             div_ospite = soup.find('div', id='risultatoOspite')
 
             if div_casa and div_ospite:
+                # Estrai tutto il testo grezzo dai div parziale
+                # Ignora stili, classi o attributi strani
                 raw_casa = div_casa.find_all('div', class_='parziale')
                 raw_ospite = div_ospite.find_all('div', class_='parziale')
+                
                 sets_list = []
                 for i in range(min(len(raw_casa), len(raw_ospite))):
-                    txt_c = re.sub(r'\D', '', raw_casa[i].get_text())
-                    txt_o = re.sub(r'\D', '', raw_ospite[i].get_text())
-                    if txt_c and txt_o:
-                        sets_list.append(f"{txt_c}-{txt_o}")
+                    # Cerca il PRIMO numero presente nel testo del div
+                    match_c = re.search(r'\d+', raw_casa[i].get_text())
+                    match_o = re.search(r'\d+', raw_ospite[i].get_text())
+                    
+                    if match_c and match_o:
+                        sets_list.append(f"{match_c.group()}-{match_o.group()}")
+                
                 parziali_str = ",".join(sets_list)
         except: parziali_str = ""
 
@@ -544,7 +566,7 @@ def get_match_details_robust(driver, match_url):
     return data_ora_full, data_iso, luogo, link_maps, parziali_str
 
 def scrape_data():
-    print("🚀 Avvio scraping TOTALE (Turbo Mode)...")
+    print("🚀 Avvio scraping TOTALE...")
     chrome_options = Options()
     chrome_options.add_argument("--headless") 
     chrome_options.add_argument("--disable-gpu")
@@ -577,6 +599,7 @@ def scrape_data():
 
                     full_url = urljoin(base_url, el.get('href', ''))
                     d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, full_url)
+                    
                     all_results.append({
                         'Campionato': nome_camp, 'Giornata': curr_giornata,
                         'Squadra Casa': c, 'Squadra Ospite': o,
@@ -587,7 +610,7 @@ def scrape_data():
                     })
         try:
             driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
-            time.sleep(1) 
+            time.sleep(0.5) 
             tabs = pd.read_html(StringIO(driver.page_source))
             if tabs:
                 df_s = tabs[0]
