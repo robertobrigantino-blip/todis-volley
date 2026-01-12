@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v59.0
-# RELEASE NOTE: Layout Set su Riga Unica per Squadra
+# SOFTWARE VERSION: v60.0
+# RELEASE NOTE: Swap layout Set (Parziali a sx, Totale a dx), Versioning Footer
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v59.0"          
+APP_VERSION = "v60.0"
 
 TARGET_TEAM_ALIASES = [
     "TODIS PASTENA VOLLEY",
@@ -76,7 +76,7 @@ CSS_BASE = """
 <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
     
-    /* Header */ 
+    /* Header */
     .app-header { background-color: #d32f2f; color: white; padding: 5px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; height: 60px; }
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
@@ -91,7 +91,7 @@ CSS_BASE = """
     .calendar-container.has-events::after { content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; }
     @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-    /* Tabs */        
+    /* Tabs */
     .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
     .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
@@ -101,7 +101,7 @@ CSS_BASE = """
     
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
 
-    /* Classifica */          
+    /* Classifica */
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
@@ -110,77 +110,22 @@ CSS_BASE = """
     td:nth-child(2) { text-align: left; min-width: 140px; font-weight: 500; position: sticky; left: 0; background-color: white; border-right: 1px solid #eee; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
 
-    /* Card Partita */           
+    /* Card Partita */
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; transition: max-height 0.3s ease; }
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
+    .result-badge { position: absolute; top: 0; right: 0; font-size: 9px; padding: 3px 6px; border-bottom-left-radius: 6px; font-weight: bold; color: white; z-index: 10; text-transform: uppercase; }
+    .badge-win { background-color: #2e7d32; }
+    .badge-loss { background-color: #c62828; }
+    .badge-played { background-color: #78909c; } 
 
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; padding-right: 50px; }
     .date-badge { font-weight: bold; color: #d32f2f; display: flex; align-items: center; gap: 4px; }
-    
-    /* NUOVO LAYOUT TEAM ROW */
-    .teams { display: flex; flex-direction: column; gap: 8px; font-size: 14px; margin-bottom: 8px; }
-    
-    .team-row { 
-        display: flex; 
-        align-items: center; 
-        justify-content: space-between; 
-    }
-    
-    .team-info {
-        flex-grow: 1;
-        font-weight: 500;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-right: 10px;
-    }
+    .teams { display: flex; flex-direction: column; gap: 6px; font-size: 14px; margin-bottom: 8px; }
+    .team-row { display: flex; justify-content: space-between; align-items: center; }
     .my-team-text { color: #d32f2f; font-weight: 700; }
-
-    /* CONTENITORE PUNTEGGI */
-    .scores-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    /* BADGE SET TOTALE */
-    .set-total {
-        width: 28px;
-        height: 28px;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-        font-size: 16px;
-        flex-shrink: 0;
-    }
-    .bg-green { background-color: #2e7d32; } 
-    .bg-red { background-color: #c62828; }
-    .bg-gray { background-color: #78909c; }
-
-    /* PARZIALI IN LINEA */
-    .partials-inline {
-        display: flex;
-        gap: 3px;
-    }
-    .partial-badge {
-        width: 24px;
-        height: 24px;
-        background-color: #7986cb; /* Blu */
-        color: white;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 11px;
-        flex-shrink: 0;
-    }
-
+    .team-score { font-weight: bold; background: #eee; padding: 2px 8px; border-radius: 4px; min-width: 25px; text-align: center; }
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
     .gym-name { font-size: 11px; color: #666; width: 100%; display: block; margin-bottom: 5px; }
     .action-buttons { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
@@ -189,6 +134,26 @@ CSS_BASE = """
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
 
+    /* LAYOUT SET E PUNTEGGIO */
+    .scores-wrapper { display: flex; align-items: center; gap: 8px; justify-content: flex-end; width: 100%; }
+    
+    .set-total {
+        width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
+        color: white; font-weight: bold; font-size: 16px; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .bg-green { background-color: #2e7d32; } 
+    .bg-red { background-color: #c62828; }
+    .bg-gray { background-color: #78909c; }
+
+    .partials-inline { display: flex; gap: 3px; overflow-x: auto; max-width: 150px; }
+    .partial-badge {
+        width: 24px; height: 24px; background-color: #7986cb; color: white; border-radius: 4px;
+        display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; flex-shrink: 0;
+    }
+
+    .team-info { flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Modals & Footer */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .modal-content { background: white; width: 85%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 20px; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
@@ -197,6 +162,8 @@ CSS_BASE = """
     .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
+    .version-text { font-size: 10px; color: #999; margin-top: 5px; display: block; font-family: monospace; }
+    
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
@@ -243,7 +210,7 @@ CSS_BASE = """
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
 
-        // Logic for Upcoming Matches Notification                                                                          
+        // Logic for Upcoming Matches Notification
         if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -453,22 +420,21 @@ def crea_card_html(r, camp, is_focus_mode=False):
                         partials_c += f'<div class="partial-badge">{p_casa}</div>'
                         partials_o += f'<div class="partial-badge">{p_ospite}</div>'
                     
-                    # Sostituiamo i valori semplici con i blocchi completi
+                    # SWAP: Prima parziali, poi totale
                     sc_val = f"""
                     <div class="scores-wrapper">
-                        <div class="set-total {bg_c}">{sc}</div>
                         <div class="partials-inline">{partials_c}</div>
+                        <div class="set-total {bg_c}">{sc}</div>
                     </div>
                     """
                     so_val = f"""
                     <div class="scores-wrapper">
-                        <div class="set-total {bg_o}">{so}</div>
                         <div class="partials-inline">{partials_o}</div>
+                        <div class="set-total {bg_o}">{so}</div>
                     </div>
                     """
         except: status_class = "played"
     
-    # Link
     lnk_wa = create_whatsapp_link(r)
     lnk_cal = create_google_calendar_link(r) if not r['Punteggio'] else ""
     lnk_map = r['Maps']
@@ -661,6 +627,7 @@ def genera_landing_page():
             <img src="{URL_COUNTER}" alt="Visite"><br>
             <span class="version-text">{APP_VERSION}</span>
         </div>
+        
         <div id="ios-popup" class="ios-install-popup">
             <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
             <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
