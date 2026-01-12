@@ -13,7 +13,7 @@
 <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
     
-    /* Header */           
+    /* Header */
     .app-header { background-color: #d32f2f; color: white; padding: 5px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; height: 60px; }
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
@@ -23,18 +23,13 @@
     .nav-buttons { display: flex; gap: 10px; align-items: center; }
     .nav-icon-img { height: 45px; width: auto; transition: transform 0.1s, opacity 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
-    
     /* CALENDARIO NOTIFICA */
     .calendar-container { position: relative; display: inline-block; display: none; }
     .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
-                                            
     .calendar-container.has-events::after { content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; }
-                                                                            
-                                                           
-     
     @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-    /* Tabs */     
+    /* Tabs */
     .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
     .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
@@ -44,7 +39,7 @@
     
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
 
-    /* Classifica */        
+    /* Classifica */
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
@@ -53,8 +48,8 @@
     td:nth-child(2) { text-align: left; min-width: 140px; font-weight: 500; position: sticky; left: 0; background-color: white; border-right: 1px solid #eee; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
 
-    /* Classifica */            
-    .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; }
+    /* Card Partita */
+    .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; transition: max-height 0.3s ease; }
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
@@ -84,36 +79,53 @@
         gap: 5px;
         margin-top: 10px;
         justify-content: center;
-        padding-top: 5px;
+        padding-top: 8px;
         border-top: 1px dashed #eee;
     }
-    .set-badge-simple {
-        background-color: #f5f5f5;
-        color: #555;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 2px 6px;
-        font-size: 11px;
-        font-weight: 500;
-        white-space: nowrap;
+    
+    /* STILE SET MIGLIORATO */
+    .set-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-right: 2px;
     }
-
+    .sb-val {
+        width: 32px; 
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+        font-size: 14px;
+        margin-bottom: 2px;
+        border-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                        
                          
+                            
+    }
+    
+    /* Colori Set */
+    .sb-win { background-color: #2e7d32; } /* Verde */
+    .sb-loss { background-color: #c62828; } /* Rosso */
+    .sb-neutral { background-color: #78909c; } /* Grigio */
+
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .modal-content { background: white; width: 85%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 20px; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
     .modal-title { font-size: 18px; font-weight: bold; color: #d32f2f; }
     .close-btn { background: #eee; border: none; font-size: 24px; padding: 0 10px; border-radius: 5px; color: #555; cursor: pointer; }
     .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
+    
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
+    .version-text { font-size: 10px; color: #999; margin-top: 5px; display: block; font-family: monospace; }
     
-                                       
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
-
-                                             
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -150,15 +162,6 @@
         else window.location.href = "index.html";
     }
 
-                                
-                                                                 
-                                                           
-                      
-                                             
-                                                      
-         
-     
-
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
@@ -166,7 +169,7 @@
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
 
-        // Logic for Upcoming Matches Notification
+        // Logic for Upcoming Matches Notification                                       
         if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -197,7 +200,6 @@
                 count++;
             }
             
-                                                                                                                   
             if (count > 0) {
                 const modalBody = document.getElementById('modal-body');
                 const calContainer = document.getElementById('btn-calendar');
@@ -224,7 +226,7 @@
         <div class="app-header">
             <div class="header-left" onclick="window.location.href='index.html'">
                 <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" alt="Logo" class="logo-main">
-                <div><h1>Settore Maschile</h1><div class="last-update">12/01 11:19</div></div>
+                <div><h1>Settore Maschile</h1><div class="last-update">12/01 11:40</div></div>
             </div>
             <div class="nav-buttons">
     <a href="#" onclick="openModal(); return false;" title="Prossimi Appuntamenti"><span id="btn-calendar" class="calendar-container"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/prossimi_appuntamenti.png" class="nav-icon-img"></span></a>
@@ -242,7 +244,22 @@
             <div class="team-row"><span class="team-name">U.S. SALERNO OFFICIAL-MINERVA</span><span class="team-score">3</span></div>
             <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">0</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-19</div><div class="set-badge-simple">25-17</div><div class="set-badge-simple">26-24</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">19</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">17</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">26</div>
+                            <div class="sb-val sb-loss">24</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALAPITTONI SANT' ARCANGELO di Cava de' Tirreni CAVA DE' TIRRENI SAVIA IDO LONGO</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.69733720,14.69712620&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0AU.S.%20SALERNO%20OFFICIAL-MINERVA%203%20-%200%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
@@ -258,7 +275,32 @@
             <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">3</span></div>
             <div class="team-row"><span class="team-name">MURATE VOLLEY</span><span class="team-score">2</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-21</div><div class="set-badge-simple">18-25</div><div class="set-badge-simple">25-20</div><div class="set-badge-simple">21-25</div><div class="set-badge-simple">15-8</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">21</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">18</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">20</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">21</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">15</div>
+                            <div class="sb-val sb-loss">8</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%203%20-%202%20MURATE%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
@@ -274,7 +316,32 @@
             <div class="team-row"><span class="team-name">NOCERA VOLLEY</span><span class="team-score">3</span></div>
             <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">2</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">22-25</div><div class="set-badge-simple">19-25</div><div class="set-badge-simple">25-23</div><div class="set-badge-simple">25-22</div><div class="set-badge-simple">15-8</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">22</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">19</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">23</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">22</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">15</div>
+                            <div class="sb-val sb-loss">8</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALASPORT COSCIONI NOCERA INFERIORE SAViale San Francesco</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.74587140,14.65204840&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ANOCERA%20VOLLEY%203%20-%202%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
@@ -290,7 +357,22 @@
             <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">3</span></div>
             <div class="team-row"><span class="team-name">ZETA VOLLEY STRIANO</span><span class="team-score">0</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">27-25</div><div class="set-badge-simple">28-26</div><div class="set-badge-simple">25-21</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">27</div>
+                            <div class="sb-val sb-loss">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">28</div>
+                            <div class="sb-val sb-loss">26</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">21</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%203%20-%200%20ZETA%20VOLLEY%20STRIANO" target="_blank" class="btn btn-wa">💬</a></div>
@@ -306,7 +388,27 @@
             <div class="team-row"><span class="team-name">POLISPORTIVA SPORT FOR LIFE</span><span class="team-score">3</span></div>
             <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">1</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-17</div><div class="set-badge-simple">25-15</div><div class="set-badge-simple">16-25</div><div class="set-badge-simple">25-21</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">17</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">15</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">16</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">21</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALAZZETTO PIGNOLA PZSTRADA COMUNALE DEL PANTANO</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.58213060,15.77015110&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0APOLISPORTIVA%20SPORT%20FOR%20LIFE%203%20-%201%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
@@ -322,7 +424,32 @@
             <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">2</span></div>
             <div class="team-row"><span class="team-name">NUOVA GS OLIMPICA</span><span class="team-score">3</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-15</div><div class="set-badge-simple">19-25</div><div class="set-badge-simple">26-24</div><div class="set-badge-simple">15-25</div><div class="set-badge-simple">13-15</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">15</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">19</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">26</div>
+                            <div class="sb-val sb-loss">24</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">15</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">13</div>
+                            <div class="sb-val sb-win">15</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%202%20-%203%20NUOVA%20GS%20OLIMPICA" target="_blank" class="btn btn-wa">💬</a></div>
@@ -338,7 +465,22 @@
             <div class="team-row"><span class="team-name">ISV PRIMA COLTA</span><span class="team-score">3</span></div>
             <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">0</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-19</div><div class="set-badge-simple">25-23</div><div class="set-badge-simple">25-16</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">19</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">23</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">16</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALESTRA COMUNALE CESINALI AVVIA VALLE</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.89768930,14.82822910&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0AISV%20PRIMA%20COLTA%203%20-%200%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
@@ -354,7 +496,27 @@
             <div class="team-row"><span class="team-name">ASD ACCA VOLLEY EBOLI</span><span class="team-score">1</span></div>
             <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">3</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">19-25</div><div class="set-badge-simple">18-25</div><div class="set-badge-simple">25-22</div><div class="set-badge-simple">21-25</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">19</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">18</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">22</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">21</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ SMS PIETRO DA EBOLI EBOLI SAVia Caduti di Bruxelles</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.61482750,15.04864840&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0AASD%20ACCA%20VOLLEY%20EBOLI%201%20-%203%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
@@ -370,7 +532,32 @@
             <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">3</span></div>
             <div class="team-row"><span class="team-name">PALL BATTIPAGLIA</span><span class="team-score">2</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-17</div><div class="set-badge-simple">25-19</div><div class="set-badge-simple">11-25</div><div class="set-badge-simple">27-29</div><div class="set-badge-simple">15-11</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">17</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">19</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">11</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">27</div>
+                            <div class="sb-val sb-win">29</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">15</div>
+                            <div class="sb-val sb-loss">11</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%203%20-%202%20PALL%20BATTIPAGLIA" target="_blank" class="btn btn-wa">💬</a></div>
@@ -386,7 +573,27 @@
             <div class="team-row"><span class="team-name my-team-text">TODIS CS PASTENA VOLLEY</span><span class="team-score">1</span></div>
             <div class="team-row"><span class="team-name">U.S. SALERNO OFFICIAL-MINERVA</span><span class="team-score">3</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-23</div><div class="set-badge-simple">14-25</div><div class="set-badge-simple">22-25</div><div class="set-badge-simple">22-25</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">23</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">14</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">22</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">22</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20D%20%20Maschile%20Gir.C%2A%0ATODIS%20CS%20PASTENA%20VOLLEY%201%20-%203%20U.S.%20SALERNO%20OFFICIAL-MINERVA" target="_blank" class="btn btn-wa">💬</a></div>
@@ -530,7 +737,27 @@
             <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">3</span></div>
             <div class="team-row"><span class="team-name">INDOMITA</span><span class="team-score">1</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-19</div><div class="set-badge-simple">25-22</div><div class="set-badge-simple">21-25</div><div class="set-badge-simple">25-22</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">19</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">22</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">21</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">22</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2019%20Maschile%20Gir.A%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%201%20INDOMITA" target="_blank" class="btn btn-wa">💬</a></div>
@@ -546,7 +773,22 @@
             <div class="team-row"><span class="team-name">ASD INTRAMONTES</span><span class="team-score">0</span></div>
             <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">3</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">9-25</div><div class="set-badge-simple">16-25</div><div class="set-badge-simple">13-25</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">9</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">16</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">13</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ Palazzetto dello Sport TRAMONTI SAVia Acconciagioco 8</span>
             <div class="action-buttons"><a href="http://maps.google.it/maps?q=TRAMONTI+SA%0D%0AVia+Acconciagioco+8&hl=it" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2019%20Maschile%20Gir.A%2A%0AASD%20INTRAMONTES%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
@@ -562,7 +804,22 @@
             <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">3</span></div>
             <div class="team-row"><span class="team-name">ANNALISA VOLLEY SAN MARZANO</span><span class="team-score">0</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-20</div><div class="set-badge-simple">25-19</div><div class="set-badge-simple">25-15</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">20</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">19</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">15</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2019%20Maschile%20Gir.A%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20ANNALISA%20VOLLEY%20SAN%20MARZANO" target="_blank" class="btn btn-wa">💬</a></div>
@@ -578,7 +835,22 @@
             <div class="team-row"><span class="team-name">POLISPORTIVA PESSY</span><span class="team-score">3</span></div>
             <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">0</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-17</div><div class="set-badge-simple">25-15</div><div class="set-badge-simple">25-20</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">17</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">15</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">20</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ IMPIANTO POLIVALENTE GIANCARLO SIANI BIVIO PRATOLE MONTECORVINO PUGLIANO SAVIA MONTETERMINILLO</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.62575000,14.92946000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2019%20Maschile%20Gir.A%2A%0APOLISPORTIVA%20PESSY%203%20-%200%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
@@ -594,7 +866,27 @@
             <div class="team-row"><span class="team-name">INDOMITA</span><span class="team-score">3</span></div>
             <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">1</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-23</div><div class="set-badge-simple">20-25</div><div class="set-badge-simple">25-18</div><div class="set-badge-simple">25-22</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">23</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">20</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">18</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">22</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALESTRA I.C. ALFANO -QUASIMODO  SALERNO SAVIA DEI MILLE- INGRESSO PROL VIALE KENNEDY DI FRONTE POLIAMBULATORIO DI PASTENA</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.68244080,14.76809610&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2019%20Maschile%20Gir.A%2A%0AINDOMITA%203%20-%201%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
@@ -658,7 +950,22 @@
             <div class="team-row"><span class="team-name">ASD VOLLEY SALERNO OFFICIAL</span><span class="team-score">3</span></div>
             <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">0</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-12</div><div class="set-badge-simple">25-9</div><div class="set-badge-simple">25-10</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">12</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">9</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">10</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALESTRA I.C. ALFANO -QUASIMODO  SALERNO SAVIA DEI MILLE- INGRESSO PROL VIALE KENNEDY DI FRONTE POLIAMBULATORIO DI PASTENA</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.68244080,14.76809610&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2017%20Maschile%20Gir.B%2A%0AASD%20VOLLEY%20SALERNO%20OFFICIAL%203%20-%200%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
@@ -690,7 +997,22 @@
             <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">0</span></div>
             <div class="team-row"><span class="team-name">DMB PALLAVOLO VILLA D'AGRI</span><span class="team-score">3</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">18-25</div><div class="set-badge-simple">27-29</div><div class="set-badge-simple">18-25</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">18</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">27</div>
+                            <div class="sb-val sb-win">29</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">18</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2017%20Maschile%20Gir.B%2A%0ATODIS%20PASTENA%20VOLLEY%200%20-%203%20DMB%20PALLAVOLO%20VILLA%20D%27AGRI" target="_blank" class="btn btn-wa">💬</a></div>
@@ -706,7 +1028,22 @@
             <div class="team-row"><span class="team-name">MURATE</span><span class="team-score">3</span></div>
             <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">0</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-19</div><div class="set-badge-simple">25-22</div><div class="set-badge-simple">25-15</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">19</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">22</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">15</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALESTRA LUIGI LA VISTA POTENZA PZVIA E. TOTI</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63370980,15.80881810&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2017%20Maschile%20Gir.B%2A%0AMURATE%203%20-%200%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
@@ -722,7 +1059,22 @@
             <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">3</span></div>
             <div class="team-row"><span class="team-name">XENIA SCAFATI</span><span class="team-score">0</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-16</div><div class="set-badge-simple">25-16</div><div class="set-badge-simple">25-17</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">16</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">16</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">17</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2017%20Maschile%20Gir.B%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20XENIA%20SCAFATI" target="_blank" class="btn btn-wa">💬</a></div>
@@ -738,7 +1090,27 @@
             <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">1</span></div>
             <div class="team-row"><span class="team-name">ASD VOLLEY SALERNO OFFICIAL</span><span class="team-score">3</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-22</div><div class="set-badge-simple">12-25</div><div class="set-badge-simple">19-25</div><div class="set-badge-simple">22-25</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">22</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">12</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">19</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">22</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ LICEO CLASSICO GINNASIO FRANCESCO DE SANCTIS SALERNO SAVIA U. STANZIONE,3</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.67427000,14.79298000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2017%20Maschile%20Gir.B%2A%0ATODIS%20PASTENA%20VOLLEY%201%20-%203%20ASD%20VOLLEY%20SALERNO%20OFFICIAL" target="_blank" class="btn btn-wa">💬</a></div>
@@ -818,7 +1190,27 @@
             <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">1</span></div>
             <div class="team-row"><span class="team-name">INDOMITA</span><span class="team-score">3</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">21-25</div><div class="set-badge-simple">25-14</div><div class="set-badge-simple">17-25</div><div class="set-badge-simple">19-25</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">21</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">14</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">17</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">19</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ SMS Giovanni XXIII-MERCATELLO  SALERNO SAVia Parmenide</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.65583900,14.80636530&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2015%20Maschile%20Gir.B%2A%0ATODIS%20PASTENA%20VOLLEY%201%20-%203%20INDOMITA" target="_blank" class="btn btn-wa">💬</a></div>
@@ -834,7 +1226,32 @@
             <div class="team-row"><span class="team-name">NOCERA VOLLEY</span><span class="team-score">2</span></div>
             <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">3</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">10-25</div><div class="set-badge-simple">25-22</div><div class="set-badge-simple">25-23</div><div class="set-badge-simple">10-25</div><div class="set-badge-simple">7-15</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">10</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">22</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">23</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">10</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">7</div>
+                            <div class="sb-val sb-win">15</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ SMS FRESA - PASCOLI NOCERA SUPERIORE SAViale Europa</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.74589260,14.67372320&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2015%20Maschile%20Gir.B%2A%0ANOCERA%20VOLLEY%202%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
@@ -850,7 +1267,22 @@
             <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">0</span></div>
             <div class="team-row"><span class="team-name">RINASCITA LAGONEGRO</span><span class="team-score">3</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">16-25</div><div class="set-badge-simple">15-25</div><div class="set-badge-simple">19-25</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">16</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">15</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">19</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ SMS Giovanni XXIII-MERCATELLO  SALERNO SAVia Parmenide</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.65583900,14.80636530&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2015%20Maschile%20Gir.B%2A%0ATODIS%20PASTENA%20VOLLEY%200%20-%203%20RINASCITA%20LAGONEGRO" target="_blank" class="btn btn-wa">💬</a></div>
@@ -866,7 +1298,27 @@
             <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">1</span></div>
             <div class="team-row"><span class="team-name">MURATE</span><span class="team-score">3</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">22-25</div><div class="set-badge-simple">22-25</div><div class="set-badge-simple">25-17</div><div class="set-badge-simple">26-28</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">22</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">22</div>
+                            <div class="sb-val sb-win">25</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">17</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-loss">26</div>
+                            <div class="sb-val sb-win">28</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ SMS Giovanni XXIII-MERCATELLO  SALERNO SAVia Parmenide</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.65583900,14.80636530&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2015%20Maschile%20Gir.B%2A%0ATODIS%20PASTENA%20VOLLEY%201%20-%203%20MURATE" target="_blank" class="btn btn-wa">💬</a></div>
@@ -882,7 +1334,22 @@
             <div class="team-row"><span class="team-name my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score">3</span></div>
             <div class="team-row"><span class="team-name">VOLLEY MONTECORVINO</span><span class="team-score">0</span></div>
         </div>
-        <div class="sets-simple-bar"><div class="set-badge-simple">25-12</div><div class="set-badge-simple">25-21</div><div class="set-badge-simple">25-12</div></div>
+        <div class="sets-simple-bar">
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">12</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">21</div>
+                        </div>
+                        
+                        <div class="set-box">
+                            <div class="sb-val sb-win">25</div>
+                            <div class="sb-val sb-loss">12</div>
+                        </div>
+                        </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ SMS Giovanni XXIII-MERCATELLO  SALERNO SAVia Parmenide</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.65583900,14.80636530&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2015%20Maschile%20Gir.B%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20VOLLEY%20MONTECORVINO" target="_blank" class="btn btn-wa">💬</a></div>
