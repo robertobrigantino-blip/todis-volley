@@ -1,5 +1,5 @@
 # ==============================================================================
-# SOFTWARE VERSION: v61.0
+# SOFTWARE VERSION: v62.0
 # RELEASE NOTE: Fix Offline Mode (Robust Service Worker Registration)
 # ==============================================================================
 
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v61.0 (Offline Ready)"
+APP_VERSION = "v62.0 (Offline Ready)"
 
 TARGET_TEAM_ALIASES = [
     "TODIS PASTENA VOLLEY",
@@ -85,20 +85,23 @@ CSS_BASE = """
     .nav-buttons { display: flex; gap: 10px; align-items: center; }
     .nav-icon-img { height: 45px; width: auto; transition: transform 0.1s, opacity 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
-    /* CALENDARIO NOTIFICA */                     
+    /* CALENDARIO NOTIFICA */
     .calendar-container { position: relative; display: inline-block; display: none; }
     .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
     .calendar-container.has-events::after { content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; }
     @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-   /* Tabs */
+
+    /* Tabs */
     .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
     .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
     .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
-    /* Classifica */         
+
+    /* Classifica */
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
@@ -106,7 +109,8 @@ CSS_BASE = """
     td { padding: 10px 6px; text-align: center; border-bottom: 1px solid #f0f0f0; }
     td:nth-child(2) { text-align: left; min-width: 140px; font-weight: 500; position: sticky; left: 0; background-color: white; border-right: 1px solid #eee; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
-   /* Card Partita */               
+
+    /* Card Partita */
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; transition: max-height 0.3s ease; }
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
@@ -115,6 +119,7 @@ CSS_BASE = """
     .badge-win { background-color: #2e7d32; }
     .badge-loss { background-color: #c62828; }
     .badge-played { background-color: #78909c; } 
+
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; padding-right: 50px; }
     .date-badge { font-weight: bold; color: #d32f2f; display: flex; align-items: center; gap: 4px; }
     .teams { display: flex; flex-direction: column; gap: 6px; font-size: 14px; margin-bottom: 8px; }
@@ -128,20 +133,28 @@ CSS_BASE = """
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
-    .sets-details { display: none; margin-top: 10px; background: #f0f4f8; padding: 10px; border-radius: 8px; border: 1px solid #e1e8ed; }
-    .sets-details.open { display: block; animation: slideDown 0.3s; }
-    @keyframes slideDown { from{opacity:0; transform:translateY(-5px);} to{opacity:1; transform:translateY(0);} }
-    .score-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-    .score-row:last-child { margin-bottom: 0; }
-    .big-badge { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+    /* LAYOUT SET E PUNTEGGIO */
+																												 
+    .scores-wrapper { display: flex; align-items: center; gap: 8px; justify-content: flex-end; width: 100%; }
+    
+    .set-total {
+        width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
+        color: white; font-weight: bold; font-size: 16px; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
     .bg-green { background-color: #2e7d32; } 
     .bg-red { background-color: #c62828; }
     .bg-gray { background-color: #78909c; }
-    .partials-container { display: flex; gap: 5px; overflow-x: auto; }
-    .small-badge { width: 30px; height: 30px; background-color: #7986cb; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; flex-shrink: 0; }
-    .toggle-icon { margin-left: 5px; transition: transform 0.3s; cursor: pointer; color: #aaa; font-size:14px; }
-    .toggle-icon.rotated { transform: rotate(180deg); }
-    /* Modals & Footer */          
+
+    .partials-inline { display: flex; gap: 3px; overflow-x: auto; max-width: 150px; }
+    .partial-badge {
+        width: 24px; height: 24px; background-color: #7986cb; color: white; border-radius: 4px;
+        display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; flex-shrink: 0;
+    }
+
+    .team-info { flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Modals & Footer */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .modal-content { background: white; width: 85%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 20px; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
@@ -151,6 +164,7 @@ CSS_BASE = """
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
     .version-text { font-size: 10px; color: #999; margin-top: 5px; display: block; font-family: monospace; }
+    
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
@@ -222,7 +236,7 @@ CSS_BASE = """
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
 
-        // Logic for Upcoming Matches Notification     
+        // Logic for Upcoming Matches Notification
         if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -395,51 +409,62 @@ def crea_card_html(r, camp, is_focus_mode=False):
     is_away = is_target_team(r['Squadra Ospite'])
     is_my_match = is_home or is_away
     
-    cs = 'class="team-name my-team-text"' if is_home else 'class="team-name"'
-    os = 'class="team-name my-team-text"' if is_away else 'class="team-name"'
+    cs = 'class="team-info my-team-text"' if is_home else 'class="team-info"'
+    os = 'class="team-info my-team-text"' if is_away else 'class="team-info"'
     
     status_class = "upcoming"
     badge_html = ""
-    toggle_onclick = ""
-    toggle_icon = ""
-    sets_html = ""
+					   
+					
+    scores_html = ""
     
+    # Valori di default
+    sc_val = r['Set Casa'] if r['Set Casa'] else "-"
+    so_val = r['Set Ospite'] if r['Set Ospite'] else "-"
+
     if r['Punteggio']:
         try:
             sc, so = int(r['Set Casa']), int(r['Set Ospite'])
-            # Colori Badge
+						  
             bg_c = "bg-green" if sc > so else "bg-red"
             bg_o = "bg-green" if so > sc else "bg-red"
             
+            # Badge Vittoria/Sconfitta (solo per la mia squadra)
             if is_my_match:
                 if (is_home and sc > so) or (is_away and so > sc):
                     status_class = "win"
-                    badge_html = '<span class="result-badge badge-win">VINTA</span>'
+																					
                 else:
                     status_class = "loss"
-                    badge_html = '<span class="result-badge badge-loss">PERSA</span>'
+																					 
             else:
                 status_class = "played"
-                badge_html = '<span class="result-badge badge-played">FINALE</span>'
+																					
                 bg_c, bg_o = "bg-gray", "bg-gray"
 
-            # --- PARZIALI SET (GRAFICA A BLOCCHI) ---
+            # Costruzione Riga Set Parziali
             if r['Parziali'] and str(r['Parziali']).strip():
                 matches = re.findall(r'(\d+)\s*-\s*(\d+)', str(r['Parziali']))
                 if matches:
-                    badges = ""
+                    partials_c = ""
+                    partials_o = ""
                     for p_casa, p_ospite in matches:
-                        p_c_int, p_o_int = int(p_casa), int(p_ospite)
-                        cls_c = "sb-win" if p_c_int > p_o_int else "sb-loss"
-                        cls_o = "sb-win" if p_o_int > p_c_int else "sb-loss"
-                        
-                        badges += f"""
-                        <div class="set-box">
-                            <div class="sb-val {cls_c}">{p_casa}</div>
-                            <div class="sb-val {cls_o}">{p_ospite}</div>
-                        </div>
-                        """
-                    sets_html = f'<div class="sets-simple-bar">{badges}</div>'
+                        partials_c += f'<div class="partial-badge">{p_casa}</div>'
+                        partials_o += f'<div class="partial-badge">{p_ospite}</div>'
+                    
+                    # SWAP: Prima parziali, poi totale
+                    sc_val = f"""
+                    <div class="scores-wrapper">
+                        <div class="partials-inline">{partials_c}</div>
+                        <div class="set-total {bg_c}">{sc}</div>
+                    </div>
+                    """
+                    so_val = f"""
+                    <div class="scores-wrapper">
+                        <div class="partials-inline">{partials_o}</div>
+                        <div class="set-total {bg_o}">{so}</div>
+                    </div>
+                    """
         except: status_class = "played"
     
     lnk_wa = create_whatsapp_link(r)
@@ -462,25 +487,25 @@ def crea_card_html(r, camp, is_focus_mode=False):
         <div class="teams">
             <div class="team-row">
                 <span {cs}>{r['Squadra Casa']}</span>
-                <span class="team-score-wrapper">
-                    <div class="scores-wrapper">
-                        {sets_html if is_home else ""} <!-- Se casa, metti parziali a sinistra se vuoi, o lasciali sotto -->
-                        <div class="set-total {bg_c if r['Punteggio'] else ''}">{r['Set Casa'] if r['Punteggio'] else '-'}</div>
-                    </div>
-                </span>
+                <span class="team-score-wrapper">{sc_val}</span>
+												
+																															
+																																
+						  
+					   
             </div>
             <div class="team-row">
                 <span {os}>{r['Squadra Ospite']}</span>
-                <span class="team-score-wrapper">
-                    <div class="scores-wrapper">
-                        <div class="set-total {bg_o if r['Punteggio'] else ''}">{r['Set Ospite'] if r['Punteggio'] else '-'}</div>
-                    </div>
-                </span>
+                <span class="team-score-wrapper">{so_val}</span>
+												
+																																  
+						  
+					   
             </div>
         </div>
-        {sets_html if not is_home else ""} <!-- Opzione alternativa per visualizzazione -->
-        <!-- RESET LAYOUT CLASSICO PER I PARZIALI SOTTO -->
-         {sets_html}
+																						   
+														   
+					
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ {r['Impianto']}</span>
             <div class="action-buttons">{btns_html}</div>
@@ -498,10 +523,10 @@ def get_match_details_robust(driver, match_url):
         try:
             WebDriverWait(driver, 1.5).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
         except: pass
-        
-        try:
-            WebDriverWait(driver, 1.5).until(EC.presence_of_element_located((By.ID, "risultatoCasa")))
-        except: pass
+		
+			
+																									  
+					
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
@@ -788,7 +813,7 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
         </div>
     """
 
-    campionati_disp = df_class['Campionato'].unique()
+    campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
     html += '<div class="tab-bar">'
     for i, camp in enumerate(campionati_disp):
         if "Gir." in camp:
