@@ -19,6 +19,7 @@
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
     .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
+    
     .nav-buttons { display: flex; gap: 10px; align-items: center; }
     .nav-icon-img { height: 45px; width: auto; transition: transform 0.1s, opacity 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
@@ -72,7 +73,6 @@
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
 
     /* LAYOUT SET E PUNTEGGIO */
-																												 
     .scores-wrapper { display: flex; align-items: center; gap: 8px; justify-content: flex-end; width: 100%; }
     
     .set-total {
@@ -105,6 +105,7 @@
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
+
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -230,7 +231,7 @@
         <div class="app-header">
             <div class="header-left">
                 <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" alt="Logo" class="logo-main">
-                <div><h1>TODIS PASTENA VOLLEY</h1><div class="last-update">13/01 11:40</div></div>
+                <div><h1>TODIS PASTENA VOLLEY</h1><div class="last-update">13/01 11:50</div></div>
             </div>
             <div class="nav-buttons"><a href="segnapunti.html" title="Segnapunti"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div>
         </div>
@@ -248,7 +249,7 @@
         
         <div class="footer-counter">
             <img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f" alt="Visite"><br>
-            <span class="version-text">v62.0 (Offline Ready)</span>
+            <span class="version-text">v1.0 Stable</span>
         </div>
         
         <div id="ios-popup" class="ios-install-popup">
