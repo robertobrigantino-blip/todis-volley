@@ -1,7 +1,7 @@
-// Service Worker per Todis Volley App (V4)
-const CACHE_NAME = 'todis-volley-v4'; // Cambiato nome per forzare update
+const CACHE_NAME = 'todis-volley-offline-v5'; // Cambio nome per forzare l'aggiornamento su tutti i telefoni
 
-const urlsToCache = [
+// Elenco COMPLETO di tutto ciò che serve all'app per funzionare senza internet
+const ASSETS_TO_CACHE = [
   './',
   'index.html',
   'maschile.html',
@@ -18,46 +18,58 @@ const urlsToCache = [
   'prossimi_appuntamenti.png'
 ];
 
-self.addEventListener('install', function(event) {
+// 1. INSTALLAZIONE: Scarica subito tutto nella pancia del telefono
+self.addEventListener('install', (event) => {
+  self.skipWaiting(); // Forza l'attivazione immediata
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[Service Worker] Caching all assets');
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
   );
 });
 
-self.addEventListener('fetch', function(event) {
+// 2. ATTIVAZIONE: Cancella le vecchie versioni per risparmiare spazio
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keyList) => {
+      return Promise.all(keyList.map((key) => {
+        if (key !== CACHE_NAME) {
+          console.log('[Service Worker] Removing old cache', key);
+          return caches.delete(key);
+        }
+      }));
+    })
+  );
+  self.clients.claim();
+});
+
+// 3. RECUPERO DATI (FETCH): Strategia "Network First, falling back to Cache"
+self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
-      .then(function(response) {
+      .then((response) => {
+        // Se la rete funziona, restituisci il dato fresco E aggiorna la cache
         if (!response || response.status !== 200 || response.type !== 'basic') {
-          return response;
+            return response;
         }
-        var responseToCache = response.clone();
-        caches.open(CACHE_NAME)
-          .then(function(cache) {
-            cache.put(event.request, responseToCache);
-          });
+        const responseToCache = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
+        });
         return response;
       })
-      .catch(function() {
-        return caches.match(event.request);
+      .catch(() => {
+        // Se la rete fallisce (OFFLINE), restituisci la versione salvata
+        console.log('[Service Worker] Network failed, serving from cache');
+        return caches.match(event.request).then((cachedResponse) => {
+            if (cachedResponse) {
+                return cachedResponse;
+            }
+            // Se non c'è nemmeno in cache (caso raro se installato bene), mostra error o index
+            // Qui potremmo reindirizzare alla home se una pagina specifica manca
+            return caches.match('index.html'); 
+        });
       })
-  );
-});
-
-self.addEventListener('activate', function(event) {
-  var cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then(function(cacheNames) {
-      return Promise.all(
-        cacheNames.map(function(cacheName) {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
   );
 });
