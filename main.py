@@ -21,6 +21,9 @@ import os
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
 APP_VERSION = "v1.0 Stable"
 
+# MESSAGGIO PERSONALIZZATO FOOTER
+FOOTER_MSG = "👨‍💻 Non sparate sul programmatore (né sul libero 🏐)"    
+                                                     
 TARGET_TEAM_ALIASES = [
     "TODIS PASTENA VOLLEY",
     "TODIS CS PASTENA VOLLEY",
@@ -164,11 +167,14 @@ CSS_BASE = """
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
     .version-text { font-size: 10px; color: #999; margin-top: 5px; display: block; font-family: monospace; }
+    .footer-msg { font-size: 11px; color: #777; margin-top: 4px; font-style: italic; opacity: 0.8; }                                                                                   
     
+    /* IOS INSTALL TIP */            
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
 
+    /* LANDING PAGE STYLES */         
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -664,6 +670,7 @@ def genera_landing_page():
         <div class="footer-counter">
             <img src="{URL_COUNTER}" alt="Visite"><br>
             <span class="version-text">{APP_VERSION}</span>
+            <div class="footer-msg">{FOOTER_MSG}</div>
         </div>
         
         <div id="ios-popup" class="ios-install-popup">
@@ -706,7 +713,13 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
             </div>
         </div>"""
     
-    footer_html = f'<div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"><br><span class="version-text">{APP_VERSION}</span></div>'
+    footer_html = f'''
+    <div class="footer-counter">
+        <img src="{URL_COUNTER}" alt="Visite"><br>
+        <span class="version-text">{APP_VERSION}</span>
+        <div class="footer-msg">{FOOTER_MSG}</div>
+    </div>
+    '''
 
     html = f"""<!DOCTYPE html>
     <html lang="it">
@@ -768,7 +781,8 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
             for _, r in df_r.iterrows(): html += crea_card_html(r, camp, is_focus_mode=True)
         html += '</div>'
 
-    html += '<div style="height:20px;"></div></body></html>'
+    html += footer_html
+    html += "</body></html>"
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
 
 def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_link):
