@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v62.0
-# RELEASE NOTE: Fix Offline Mode (Robust Service Worker Registration)
+# SOFTWARE VERSION: v1.0 (Release Candidate)
+# RELEASE NOTE: Versione Stabile Completa
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v62.0 (Offline Ready)"
+APP_VERSION = "v1.0 Stable"
 
 TARGET_TEAM_ALIASES = [
     "TODIS PASTENA VOLLEY",
@@ -82,6 +82,7 @@ CSS_BASE = """
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
     .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
+    
     .nav-buttons { display: flex; gap: 10px; align-items: center; }
     .nav-icon-img { height: 45px; width: auto; transition: transform 0.1s, opacity 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
@@ -135,7 +136,6 @@ CSS_BASE = """
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
 
     /* LAYOUT SET E PUNTEGGIO */
-																												 
     .scores-wrapper { display: flex; align-items: center; gap: 8px; justify-content: flex-end; width: 100%; }
     
     .set-total {
@@ -168,6 +168,7 @@ CSS_BASE = """
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
+
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -414,9 +415,7 @@ def crea_card_html(r, camp, is_focus_mode=False):
     
     status_class = "upcoming"
     badge_html = ""
-					   
-					
-    scores_html = ""
+    sets_html = ""
     
     # Valori di default
     sc_val = r['Set Casa'] if r['Set Casa'] else "-"
@@ -425,7 +424,6 @@ def crea_card_html(r, camp, is_focus_mode=False):
     if r['Punteggio']:
         try:
             sc, so = int(r['Set Casa']), int(r['Set Ospite'])
-						  
             bg_c = "bg-green" if sc > so else "bg-red"
             bg_o = "bg-green" if so > sc else "bg-red"
             
@@ -433,13 +431,10 @@ def crea_card_html(r, camp, is_focus_mode=False):
             if is_my_match:
                 if (is_home and sc > so) or (is_away and so > sc):
                     status_class = "win"
-																					
                 else:
                     status_class = "loss"
-																					 
             else:
                 status_class = "played"
-																					
                 bg_c, bg_o = "bg-gray", "bg-gray"
 
             # Costruzione Riga Set Parziali
@@ -488,24 +483,12 @@ def crea_card_html(r, camp, is_focus_mode=False):
             <div class="team-row">
                 <span {cs}>{r['Squadra Casa']}</span>
                 <span class="team-score-wrapper">{sc_val}</span>
-												
-																															
-																																
-						  
-					   
             </div>
             <div class="team-row">
                 <span {os}>{r['Squadra Ospite']}</span>
                 <span class="team-score-wrapper">{so_val}</span>
-												
-																																  
-						  
-					   
             </div>
         </div>
-																						   
-														   
-					
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ {r['Impianto']}</span>
             <div class="action-buttons">{btns_html}</div>
@@ -520,17 +503,15 @@ def get_match_details_robust(driver, match_url):
     
     try:
         driver.get(match_url)
+        # SMART WAIT
         try:
             WebDriverWait(driver, 1.5).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
         except: pass
-		
-			
-																									  
-					
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
         
+        # Data
         date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:\.]\d{2})', clean_text)
         if date_pattern:
             d, o = date_pattern.group(1), date_pattern.group(2)
@@ -553,17 +534,24 @@ def get_match_details_robust(driver, match_url):
             clean_gym = re.sub(r'\s+', ' ', luogo).strip()
             link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
             
+        # --- FIX PARZIALI SET (Index Based) ---
         try:
             div_casa = soup.find('div', id='risultatoCasa')
             div_ospite = soup.find('div', id='risultatoOspite')
+
             if div_casa and div_ospite:
+                # Trova tutti i div parziale
                 raw_casa = div_casa.find_all('div', class_='parziale')
                 raw_ospite = div_ospite.find_all('div', class_='parziale')
+                
                 sets_list = []
+                # Itera per indice (0-4) e controlla se entrambi esistono e sono numeri
                 for i in range(min(len(raw_casa), len(raw_ospite))):
                     txt_c = re.sub(r'\D', '', raw_casa[i].get_text())
                     txt_o = re.sub(r'\D', '', raw_ospite[i].get_text())
-                    if txt_c and txt_o: sets_list.append(f"{txt_c}-{txt_o}")
+                    if txt_c and txt_o:
+                        sets_list.append(f"{txt_c}-{txt_o}")
+                
                 parziali_str = ",".join(sets_list)
         except: parziali_str = ""
 
@@ -603,7 +591,9 @@ def scrape_data():
                     o = o.replace(pt_o, '').strip()
 
                     full_url = urljoin(base_url, el.get('href', ''))
+                    # Chiamata ottimizzata
                     d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, full_url)
+                    
                     all_results.append({
                         'Campionato': nome_camp, 'Giornata': curr_giornata,
                         'Squadra Casa': c, 'Squadra Ospite': o,
