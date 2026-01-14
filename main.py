@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v1.0 (Release Candidate)
-# RELEASE NOTE: Versione Stabile Completa
+# SOFTWARE VERSION: v65.0
+# RELEASE NOTE: Sorting per Data/Giornata, Stampa PDF ottimizzata
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v1.0 Stable"
+APP_VERSION = "v2.0 Stable"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "👨‍💻 Non sparate sul programmatore (né sul libero 🏐)"    
@@ -89,6 +89,7 @@ CSS_BASE = """
     .nav-buttons { display: flex; gap: 10px; align-items: center; }
     .nav-icon-img { height: 45px; width: auto; transition: transform 0.1s, opacity 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
+    
     /* CALENDARIO NOTIFICA */
     .calendar-container { position: relative; display: inline-block; display: none; }
     .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
@@ -104,6 +105,17 @@ CSS_BASE = """
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
+
+    /* Controls Bar (Sort/Print) */
+    .calendar-controls { display: flex; gap: 10px; margin-bottom: 15px; justify-content: flex-end; align-items: center; }
+    .btn-tool { 
+        font-size: 11px; padding: 6px 12px; background: #f0f2f5; 
+        border: 1px solid #ccc; border-radius: 20px; cursor: pointer; 
+        color: #555; font-weight: bold; display: flex; align-items: center; gap: 5px; 
+        transition: background 0.2s;
+    }
+    .btn-tool:hover { background: #e0e0e0; }
+    .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
 
     /* Classifica */
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
@@ -141,19 +153,19 @@ CSS_BASE = """
     /* LAYOUT SET E PUNTEGGIO */
     .scores-wrapper { display: flex; align-items: center; gap: 8px; justify-content: flex-end; width: 100%; }
     
-    .set-total {
-        width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
-        color: white; font-weight: bold; font-size: 16px; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
+                
+    .set-total { width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                                                                                                                
+     
     .bg-green { background-color: #2e7d32; } 
     .bg-red { background-color: #c62828; }
     .bg-gray { background-color: #78909c; }
 
     .partials-inline { display: flex; gap: 3px; overflow-x: auto; max-width: 150px; }
-    .partial-badge {
-        width: 24px; height: 24px; background-color: #7986cb; color: white; border-radius: 4px;
-        display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; flex-shrink: 0;
-    }
+                    
+                                                                                               
+    .partial-badge { width: 24px; height: 24px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; flex-shrink: 0; }
+     
 
     .team-info { flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
@@ -167,14 +179,14 @@ CSS_BASE = """
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
     .version-text { font-size: 10px; color: #999; margin-top: 5px; display: block; font-family: monospace; }
-    .footer-msg { font-size: 11px; color: #777; margin-top: 4px; font-style: italic; opacity: 0.8; }                                                                                   
+    .footer-msg { font-size: 11px; color: #777; margin-top: 4px; font-style: italic; opacity: 0.8; }
     
-    /* IOS INSTALL TIP */            
+    /* IOS INSTALL TIP */
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
 
-    /* LANDING PAGE STYLES */         
+                                      
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -182,6 +194,19 @@ CSS_BASE = """
     .click-area { width: 50%; height: 100%; cursor: pointer; }
     .click-area:active { background: rgba(255,255,255,0.1); }
     .instruction-text { margin-bottom: 15px; font-weight: 500; color: #555; font-size: 14px; }
+    
+    /* PRINT STYLES */
+    @media print {
+        .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup { display: none !important; }
+        body { background: white; color: black; padding: 0; margin: 0; }
+        .match-card { border: 1px solid #ccc; break-inside: avoid; box-shadow: none; margin-bottom: 10px; }
+        .tab-content { display: block !important; }
+        h2 { color: black; border-left: none; border-bottom: 2px solid #000; padding: 0; margin-top: 20px; }
+        .team-info { color: black; }
+        .result-badge { border: 1px solid #000; color: black; background: transparent !important; }
+        .bg-green, .bg-red, .bg-gray { background-color: #ddd !important; color: black !important; border: 1px solid #999; }
+        .partial-badge { background-color: white !important; color: black !important; border: 1px solid #ccc; }
+    }
 </style>
 <script>
     if ('serviceWorker' in navigator) {
@@ -227,6 +252,7 @@ CSS_BASE = """
         else window.location.href = "index.html";
     }
 
+    // Toggle Details Function
     function toggleDetails(id) {
         const details = document.getElementById('details-' + id);
         const icon = document.getElementById('icon-' + id);
@@ -234,6 +260,52 @@ CSS_BASE = """
             details.classList.toggle('open');
             if(icon) icon.classList.toggle('rotated');
         }
+    }
+    
+    // Sort & Print Logic
+    var originalOrder = {};
+    
+    function toggleSort(tabId) {
+        const container = document.getElementById('calendar-container-' + tabId);
+        const btn = document.getElementById('btn-sort-' + tabId);
+        const isSorted = btn.getAttribute('data-sorted') === 'true';
+        
+        if (!originalOrder[tabId]) {
+            originalOrder[tabId] = container.innerHTML;
+        }
+        
+        if (!isSorted) {
+            // Sort by Date
+            const cards = Array.from(container.querySelectorAll('.match-card'));
+            
+            // Nascondi gli header delle giornate
+            const headers = container.querySelectorAll('h3');
+            headers.forEach(h => h.style.display = 'none');
+            
+            cards.sort((a, b) => {
+                const da = a.getAttribute('data-date-iso') || '9999-99-99';
+                const db = b.getAttribute('data-date-iso') || '9999-99-99';
+                return da.localeCompare(db);
+            });
+            
+            // Re-append sorted cards (without headers)
+            container.innerHTML = "";
+            cards.forEach(card => container.appendChild(card));
+            
+            btn.innerHTML = "🔢 Ordina per Giornata";
+            btn.setAttribute('data-sorted', 'true');
+            btn.classList.add('active');
+        } else {
+            // Restore Original
+            container.innerHTML = originalOrder[tabId];
+            btn.innerHTML = "📅 Ordina per Data";
+            btn.setAttribute('data-sorted', 'false');
+            btn.classList.remove('active');
+        }
+    }
+    
+    function printCalendar() {
+        window.print();
     }
 
     window.onload = function() {
@@ -511,7 +583,12 @@ def get_match_details_robust(driver, match_url):
         driver.get(match_url)
         # SMART WAIT
         try:
-            WebDriverWait(driver, 1.5).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
+            WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
+        except: pass
+        
+        # Attesa specifica per i risultati
+        try:
+            WebDriverWait(driver, 1.5).until(EC.presence_of_element_located((By.ID, "risultatoCasa")))
         except: pass
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -540,23 +617,32 @@ def get_match_details_robust(driver, match_url):
             clean_gym = re.sub(r'\s+', ' ', luogo).strip()
             link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
             
-        # --- FIX PARZIALI SET (Index Based) ---
+        # --- FIX PARZIALI SET (Regex) ---
         try:
             div_casa = soup.find('div', id='risultatoCasa')
             div_ospite = soup.find('div', id='risultatoOspite')
 
             if div_casa and div_ospite:
-                # Trova tutti i div parziale
-                raw_casa = div_casa.find_all('div', class_='parziale')
-                raw_ospite = div_ospite.find_all('div', class_='parziale')
+                # Estrai tutti i numeri dai box parziale, ignorando lo sporco
+                nums_casa = []
+                for div in div_casa.find_all('div', class_='parziale'):
+                    txt = div.get_text(strip=True)
+                    match = re.search(r'\d+', txt)
+                    if match: nums_casa.append(match.group())
+                
+                nums_ospite = []
+                for div in div_ospite.find_all('div', class_='parziale'):
+                    txt = div.get_text(strip=True)
+                    match = re.search(r'\d+', txt)
+                    if match: nums_ospite.append(match.group())
                 
                 sets_list = []
-                # Itera per indice (0-4) e controlla se entrambi esistono e sono numeri
-                for i in range(min(len(raw_casa), len(raw_ospite))):
-                    txt_c = re.sub(r'\D', '', raw_casa[i].get_text())
-                    txt_o = re.sub(r'\D', '', raw_ospite[i].get_text())
-                    if txt_c and txt_o:
-                        sets_list.append(f"{txt_c}-{txt_o}")
+                                                                                       
+                for i in range(min(len(nums_casa), len(nums_ospite))):
+                    sets_list.append(f"{nums_casa[i]}-{nums_ospite[i]}")
+                                                                       
+                                       
+                                                            
                 
                 parziali_str = ",".join(sets_list)
         except: parziali_str = ""
@@ -597,7 +683,7 @@ def scrape_data():
                     o = o.replace(pt_o, '').strip()
 
                     full_url = urljoin(base_url, el.get('href', ''))
-                    # Chiamata ottimizzata
+                                          
                     d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, full_url)
                     
                     all_results.append({
@@ -781,8 +867,8 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
             for _, r in df_r.iterrows(): html += crea_card_html(r, camp, is_focus_mode=True)
         html += '</div>'
 
-    html += footer_html
-    html += "</body></html>"
+    html += '<div style="height:20px;"></div></body></html>'
+                            
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
 
 def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_link):
@@ -792,7 +878,10 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
     <a href="#" onclick="tornaAlSettore(); return false;" title="Filtro Todis"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>
     <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
     """
-
+    
+    # PULSANTI ORDINAMENTO (Header Aggiuntivo)
+    # Generiamo ID univoci per i TAB in modo che lo script sappia quale container ordinare
+    
     html = f"""<!DOCTYPE html>
     <html lang="it">
     <head>
@@ -842,6 +931,16 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
         html += '</tbody></table></div></div>'
 
         html += f"<h2>📅 Calendario</h2>"
+        
+        # BARRA STRUMENTI: Ordina / Stampa
+        html += f"""
+        <div class="calendar-controls">
+            <button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button>
+            <button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button>
+        </div>
+        <div id="calendar-container-{i}">
+        """
+        
         df_r = df_ris[df_ris['Campionato'] == camp]
         
         if df_r.empty:
@@ -851,9 +950,10 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
             for g in giornate:
                 html += f'<h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">{g}</h3>'
                 for _, r in df_r[df_r['Giornata'] == g].iterrows(): html += crea_card_html(r, camp, is_focus_mode=False)
-        html += '</div>'
+        html += '</div></div>' # Chiude container e tab
 
     html += "</body></html>"
+    
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
 
 def genera_segnapunti():
