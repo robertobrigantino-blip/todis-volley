@@ -51,17 +51,17 @@ URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg
 
 # CAMPIONATI
 CAMPIONATI_MASCHILI = {
-    "Serie D  Maschile Gir.C": "85622",
-    "Under 19 Maschile Gir.A": "86865",
-    "Under 17 Maschile Gir.B": "86864",
-    "Under 15 Maschile Gir.B": "86848",
+    "Serie D Gir.C": "85622",
+    "Under 19 Gir.A": "86865",
+    "Under 17 Gir.B": "86864",
+    "Under 15 Gir.B": "86848",
 }
 
 CAMPIONATI_FEMMINILI = {
-    "Serie C  Femminile Gir.A": "85471",
-    "Under 18 Femminile Gir.B": "86850",
-    "Under 16 Femminile Gir.A": "86853",
-    "Under 14 Femminile Gir.C": "86860",
+    "Serie C Gir.A": "85471",
+    "Under 18 Gir.B": "86850",
+    "Under 16 Gir.A": "86853",
+    "Under 14 Gir.C": "86860",
 }
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
@@ -725,4 +725,5 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
+
 
