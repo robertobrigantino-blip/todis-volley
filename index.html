@@ -1,15 +1,4 @@
-<!DOCTYPE html>
-    <html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <meta name="theme-color" content="#d32f2f">
-        <title>TODIS PASTENA VOLLEY</title>
-        <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
-        <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <link rel="manifest" href="manifest.json">
-        
+<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>TODIS PASTENA VOLLEY</title>
 <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
     
@@ -65,17 +54,12 @@
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
-    .result-badge { position: absolute; top: 0; right: 0; font-size: 9px; padding: 3px 6px; border-bottom-left-radius: 6px; font-weight: bold; color: white; z-index: 10; text-transform: uppercase; }
-    .badge-win { background-color: #2e7d32; }
-    .badge-loss { background-color: #c62828; }
-    .badge-played { background-color: #78909c; } 
 
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; padding-right: 50px; }
     .date-badge { font-weight: bold; color: #d32f2f; display: flex; align-items: center; gap: 4px; }
     .teams { display: flex; flex-direction: column; gap: 6px; font-size: 14px; margin-bottom: 8px; }
     .team-row { display: flex; justify-content: space-between; align-items: center; }
     .my-team-text { color: #d32f2f; font-weight: 700; }
-    .team-score { font-weight: bold; background: #eee; padding: 2px 8px; border-radius: 4px; min-width: 25px; text-align: center; }
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
     .gym-name { font-size: 11px; color: #666; width: 100%; display: block; margin-bottom: 5px; }
     .action-buttons { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
@@ -100,9 +84,7 @@
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
     .modal-title { font-size: 18px; font-weight: bold; color: #d32f2f; }
     .close-btn { background: #eee; border: none; font-size: 24px; padding: 0 10px; border-radius: 5px; color: #555; cursor: pointer; }
-    .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
-    .footer-counter img { height: 20px; vertical-align: middle; }
     .version-text { font-size: 10px; color: #999; margin-top: 5px; display: block; font-family: monospace; }
     .footer-msg { font-size: 11px; color: #777; margin-top: 4px; font-style: italic; opacity: 0.8; }
     
@@ -115,44 +97,17 @@
     .choice-img { width: 100%; display: block; height: auto; }
     .click-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; }
     .click-area { width: 50%; height: 100%; cursor: pointer; }
-    .click-area:active { background: rgba(255,255,255,0.1); }
     .instruction-text { margin-bottom: 15px; font-weight: 500; color: #555; font-size: 14px; }
     
-    /* PRINT STYLES */
     @media print {
         .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup { display: none !important; }
         body { background: white; color: black; padding: 0; margin: 0; }
         .match-card { border: 1px solid #ccc; break-inside: avoid; box-shadow: none; margin-bottom: 10px; }
         .tab-content { display: block !important; }
         h2 { color: black; border-left: none; border-bottom: 2px solid #000; padding: 0; margin-top: 20px; }
-        .team-info { color: black; }
-        .result-badge { border: 1px solid #000; color: black; background: transparent !important; }
-        .bg-green, .bg-red, .bg-gray { background-color: #ddd !important; color: black !important; border: 1px solid #999; }
-        .partial-badge { background-color: white !important; color: black !important; border: 1px solid #ccc; }
     }
 </style>
 <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-            .then(registration => {
-                registration.onupdatefound = () => {
-                    const installingWorker = registration.installing;
-                    installingWorker.onstatechange = () => {
-                        if (installingWorker.state === 'installed') {
-                            if (navigator.serviceWorker.controller) {
-                                console.log('New content available; please refresh.');
-                            } else {
-                                console.log('Content is cached for offline use.');
-                            }
-                        }
-                    };
-                };
-            })
-            .catch(err => console.log('SW registration failed: ', err));
-        });
-    }
-
     function openTab(tabIndex) {
         var contents = document.getElementsByClassName("tab-content");
         for (var i = 0; i < contents.length; i++) contents[i].classList.remove("active");
@@ -174,42 +129,19 @@
         else window.location.href = "index.html";
     }
 
-    // Toggle Details Function
-    function toggleDetails(id) {
-        const details = document.getElementById('details-' + id);
-        const icon = document.getElementById('icon-' + id);
-        if (details) {
-            details.classList.toggle('open');
-            if(icon) icon.classList.toggle('rotated');
-        }
-    }
-    
-    // Sort & Print Logic
     var originalOrder = {};
-    
     function toggleSort(tabId) {
         const container = document.getElementById('calendar-container-' + tabId);
         const btn = document.getElementById('btn-sort-' + tabId);
         const isSorted = btn.getAttribute('data-sorted') === 'true';
-        
-        if (!originalOrder[tabId]) {
-            originalOrder[tabId] = container.innerHTML;
-        }
+        if (!originalOrder[tabId]) originalOrder[tabId] = container.innerHTML;
         
         if (!isSorted) {
             const cards = Array.from(container.querySelectorAll('.match-card'));
-            const headers = container.querySelectorAll('h3');
-            headers.forEach(h => h.style.display = 'none');
-            
-            cards.sort((a, b) => {
-                const da = a.getAttribute('data-date-iso') || '9999-99-99';
-                const db = b.getAttribute('data-date-iso') || '9999-99-99';
-                return da.localeCompare(db);
-            });
-            
+            container.querySelectorAll('h3').forEach(h => h.style.display = 'none');
+            cards.sort((a, b) => (a.getAttribute('data-date-iso') || '9999').localeCompare(b.getAttribute('data-date-iso') || '9999'));
             container.innerHTML = "";
             cards.forEach(card => container.appendChild(card));
-            
             btn.innerHTML = "🔢 Ordina per Giornata";
             btn.setAttribute('data-sorted', 'true');
             btn.classList.add('active');
@@ -220,10 +152,7 @@
             btn.classList.remove('active');
         }
     }
-    
-    function printCalendar() {
-        window.print();
-    }
+    function printCalendar() { window.print(); }
 
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
@@ -231,85 +160,6 @@
         if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
-
-        if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            let nextMatches = {};
-            
-            document.querySelectorAll('.match-card.upcoming').forEach(card => {
-                const isMyTeam = card.getAttribute('data-my-team');
-                if(isMyTeam === 'true') {
-                    const dateStr = card.getAttribute('data-date-iso');
-                    const campName = card.getAttribute('data-camp');
-                    if (dateStr && campName) {
-                        const parts = dateStr.split('-');
-                        const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
-                        if (matchDate >= today) {
-                            if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
-                                nextMatches[campName] = { date: matchDate, html: card.outerHTML };
-                            }
-                        }
-                    }
-                }
-            });
-            
-            let popupHTML = "";
-            let count = 0;
-            for (const [camp, data] of Object.entries(nextMatches)) {
-                popupHTML += `<h3>🏆 ${camp}</h3>`;
-                popupHTML += data.html;
-                count++;
-            }
-            
-            if (count > 0) {
-                const modalBody = document.getElementById('modal-body');
-                const calContainer = document.getElementById('btn-calendar');
-                if(modalBody && calContainer) {
-                    modalBody.innerHTML = popupHTML;
-                    calContainer.classList.add('has-events');
-                    calContainer.style.display = 'inline-block';
-                }
-            }
-        }
     };
 </script>
-
-    </head>
-    <body>
-        <div class="app-header">
-            <div class="header-left">
-                <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" alt="Logo" class="logo-main">
-                <div><h1>TODIS PASTENA VOLLEY</h1></div>
-            </div>
-            <div class="nav-buttons">
-                <a href="segnapunti.html" title="Segnapunti"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a>
-            </div>
-        </div>
-        
-        <div class="landing-container">
-            <div class="instruction-text">Seleziona il settore:</div>
-            <div class="choice-card">
-                <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/scelta_campionato.jpg" alt="Scelta Campionato" class="choice-img">
-                <div class="click-overlay">
-                    <a href="maschile.html" class="click-area"></a>
-                    <a href="femminile.html" class="click-area"></a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="footer-counter">
-            <img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f" alt="Visite"><br>
-            <span class="version-text">v2.0 (Global Sort & Print)</span>
-            <div class="footer-msg">👨‍💻 Non sparate sul programmatore (né sul libero 🏐)</div>
-        </div>
-        
-        <div id="ios-popup" class="ios-install-popup">
-            <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
-            <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
-            <div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div>
-            <div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div>
-            <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
-        </div>
-    </body>
-    </html>
+</head><body><div class="app-header"><div class="header-left"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" class="logo-main"><h1>TODIS PASTENA VOLLEY</h1></div><div class="nav-buttons"><a href="segnapunti.html"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div></div><div class="landing-container"><div class="instruction-text">Seleziona il settore:</div><div class="choice-card"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/scelta_campionato.jpg" class="choice-img"><div class="click-overlay" style="display:flex; position:absolute; top:0; width:100%; height:100%;"><a href="maschile.html" style="width:50%;"></a><a href="femminile.html" style="width:50%;"></a></div></div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v67.0 (Short Tabs & Print)</span><div class="footer-msg">👨‍💻 Non sparate sul programmatore (né sul libero 🏐)</div></div><div id="ios-popup" class="ios-install-popup"><div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div><button onclick="closeIosPopup()">Chiudi</button></div></body></html>

@@ -54,17 +54,12 @@
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
-    .result-badge { position: absolute; top: 0; right: 0; font-size: 9px; padding: 3px 6px; border-bottom-left-radius: 6px; font-weight: bold; color: white; z-index: 10; text-transform: uppercase; }
-    .badge-win { background-color: #2e7d32; }
-    .badge-loss { background-color: #c62828; }
-    .badge-played { background-color: #78909c; } 
 
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; padding-right: 50px; }
     .date-badge { font-weight: bold; color: #d32f2f; display: flex; align-items: center; gap: 4px; }
     .teams { display: flex; flex-direction: column; gap: 6px; font-size: 14px; margin-bottom: 8px; }
     .team-row { display: flex; justify-content: space-between; align-items: center; }
     .my-team-text { color: #d32f2f; font-weight: 700; }
-    .team-score { font-weight: bold; background: #eee; padding: 2px 8px; border-radius: 4px; min-width: 25px; text-align: center; }
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
     .gym-name { font-size: 11px; color: #666; width: 100%; display: block; margin-bottom: 5px; }
     .action-buttons { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
@@ -89,9 +84,7 @@
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
     .modal-title { font-size: 18px; font-weight: bold; color: #d32f2f; }
     .close-btn { background: #eee; border: none; font-size: 24px; padding: 0 10px; border-radius: 5px; color: #555; cursor: pointer; }
-    .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
-    .footer-counter img { height: 20px; vertical-align: middle; }
     .version-text { font-size: 10px; color: #999; margin-top: 5px; display: block; font-family: monospace; }
     .footer-msg { font-size: 11px; color: #777; margin-top: 4px; font-style: italic; opacity: 0.8; }
     
@@ -104,44 +97,17 @@
     .choice-img { width: 100%; display: block; height: auto; }
     .click-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; }
     .click-area { width: 50%; height: 100%; cursor: pointer; }
-    .click-area:active { background: rgba(255,255,255,0.1); }
     .instruction-text { margin-bottom: 15px; font-weight: 500; color: #555; font-size: 14px; }
     
-    /* PRINT STYLES */
     @media print {
         .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup { display: none !important; }
         body { background: white; color: black; padding: 0; margin: 0; }
         .match-card { border: 1px solid #ccc; break-inside: avoid; box-shadow: none; margin-bottom: 10px; }
         .tab-content { display: block !important; }
         h2 { color: black; border-left: none; border-bottom: 2px solid #000; padding: 0; margin-top: 20px; }
-        .team-info { color: black; }
-        .result-badge { border: 1px solid #000; color: black; background: transparent !important; }
-        .bg-green, .bg-red, .bg-gray { background-color: #ddd !important; color: black !important; border: 1px solid #999; }
-        .partial-badge { background-color: white !important; color: black !important; border: 1px solid #ccc; }
     }
 </style>
 <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-            .then(registration => {
-                registration.onupdatefound = () => {
-                    const installingWorker = registration.installing;
-                    installingWorker.onstatechange = () => {
-                        if (installingWorker.state === 'installed') {
-                            if (navigator.serviceWorker.controller) {
-                                console.log('New content available; please refresh.');
-                            } else {
-                                console.log('Content is cached for offline use.');
-                            }
-                        }
-                    };
-                };
-            })
-            .catch(err => console.log('SW registration failed: ', err));
-        });
-    }
-
     function openTab(tabIndex) {
         var contents = document.getElementsByClassName("tab-content");
         for (var i = 0; i < contents.length; i++) contents[i].classList.remove("active");
@@ -163,42 +129,19 @@
         else window.location.href = "index.html";
     }
 
-    // Toggle Details Function
-    function toggleDetails(id) {
-        const details = document.getElementById('details-' + id);
-        const icon = document.getElementById('icon-' + id);
-        if (details) {
-            details.classList.toggle('open');
-            if(icon) icon.classList.toggle('rotated');
-        }
-    }
-    
-    // Sort & Print Logic
     var originalOrder = {};
-    
     function toggleSort(tabId) {
         const container = document.getElementById('calendar-container-' + tabId);
         const btn = document.getElementById('btn-sort-' + tabId);
         const isSorted = btn.getAttribute('data-sorted') === 'true';
-        
-        if (!originalOrder[tabId]) {
-            originalOrder[tabId] = container.innerHTML;
-        }
+        if (!originalOrder[tabId]) originalOrder[tabId] = container.innerHTML;
         
         if (!isSorted) {
             const cards = Array.from(container.querySelectorAll('.match-card'));
-            const headers = container.querySelectorAll('h3');
-            headers.forEach(h => h.style.display = 'none');
-            
-            cards.sort((a, b) => {
-                const da = a.getAttribute('data-date-iso') || '9999-99-99';
-                const db = b.getAttribute('data-date-iso') || '9999-99-99';
-                return da.localeCompare(db);
-            });
-            
+            container.querySelectorAll('h3').forEach(h => h.style.display = 'none');
+            cards.sort((a, b) => (a.getAttribute('data-date-iso') || '9999').localeCompare(b.getAttribute('data-date-iso') || '9999'));
             container.innerHTML = "";
             cards.forEach(card => container.appendChild(card));
-            
             btn.innerHTML = "🔢 Ordina per Giornata";
             btn.setAttribute('data-sorted', 'true');
             btn.classList.add('active');
@@ -209,10 +152,7 @@
             btn.classList.remove('active');
         }
     }
-    
-    function printCalendar() {
-        window.print();
-    }
+    function printCalendar() { window.print(); }
 
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
@@ -220,775 +160,370 @@
         if (isIos && !isInStandaloneMode && document.getElementById('ios-popup')) {
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
-
-        if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            let nextMatches = {};
-            
-            document.querySelectorAll('.match-card.upcoming').forEach(card => {
-                const isMyTeam = card.getAttribute('data-my-team');
-                if(isMyTeam === 'true') {
-                    const dateStr = card.getAttribute('data-date-iso');
-                    const campName = card.getAttribute('data-camp');
-                    if (dateStr && campName) {
-                        const parts = dateStr.split('-');
-                        const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
-                        if (matchDate >= today) {
-                            if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
-                                nextMatches[campName] = { date: matchDate, html: card.outerHTML };
-                            }
-                        }
-                    }
-                }
-            });
-            
-            let popupHTML = "";
-            let count = 0;
-            for (const [camp, data] of Object.entries(nextMatches)) {
-                popupHTML += `<h3>🏆 ${camp}</h3>`;
-                popupHTML += data.html;
-                count++;
-            }
-            
-            if (count > 0) {
-                const modalBody = document.getElementById('modal-body');
-                const calContainer = document.getElementById('btn-calendar');
-                if(modalBody && calContainer) {
-                    modalBody.innerHTML = popupHTML;
-                    calContainer.classList.add('has-events');
-                    calContainer.style.display = 'inline-block';
-                }
-            }
-        }
     };
 </script>
-</head><body><div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div><div id="modal-body"></div></div></div><div class="app-header"><div class="header-left" onclick="window.location.href='index.html'"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" class="logo-main"><div><h1>Settore Femminile</h1><div class="last-update">14/01 14:58</div></div></div><div class="nav-buttons"><a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/prossimi_appuntamenti.png" class="nav-icon-img"></span></a><a href="generale_f.html?from=femminile"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/all_result.png" class="nav-icon-img"></a><a href="segnapunti.html"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div></div><div class="tab-bar"><button id="btn-0" class="tab-btn active" onclick="openTab(0)">Serie C  Femminile</button><button id="btn-1" class="tab-btn " onclick="openTab(1)">Under 18 Femminile</button><button id="btn-2" class="tab-btn " onclick="openTab(2)">Under 16 Femminile</button><button id="btn-3" class="tab-btn " onclick="openTab(3)">Under 14 Femminile</button></div><div id="content-0" class="tab-content active"><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>CUCC VOLLEY</td><td><b>23</b></td><td>9</td><td>8</td><td>1</td><td>24</td><td>5</td></tr><tr ><td>2</td><td>ASD VOLLEY VOLLA</td><td><b>20</b></td><td>9</td><td>7</td><td>2</td><td>22</td><td>10</td></tr><tr ><td>3</td><td>ANCIS VILLARICCA</td><td><b>19</b></td><td>9</td><td>6</td><td>3</td><td>21</td><td>11</td></tr><tr ><td>4</td><td>VOLLEYTIME</td><td><b>18</b></td><td>9</td><td>6</td><td>3</td><td>20</td><td>12</td></tr><tr ><td>5</td><td>APD LIBERTAS SORRENTO</td><td><b>17</b></td><td>9</td><td>6</td><td>3</td><td>22</td><td>16</td></tr><tr ><td>6</td><td>VITOLO VOLLEY</td><td><b>9</b></td><td>9</td><td>3</td><td>6</td><td>13</td><td>21</td></tr><tr class="my-team-row"><td>7</td><td>TODIS PASTENA VOLLEY</td><td><b>8</b></td><td>9</td><td>3</td><td>6</td><td>13</td><td>22</td></tr><tr ><td>8</td><td>CARBAT MATESE</td><td><b>3</b></td><td>8</td><td>1</td><td>7</td><td>6</td><td>23</td></tr><tr ><td>9</td><td>SMILERS SAN LORENZO</td><td><b>3</b></td><td>9</td><td>0</td><td>9</td><td>6</td><td>27</td></tr></tbody></table></div></div><h2>📅 Calendario TODIS</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-0" data-sorted="false" onclick="toggleSort(0)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-0">
-    <div class="match-card loss" data-date-iso="2025-10-26" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 26/10/2025 ⏰ 17:30</span> <span>|</span> <span>Giornata 1</span>
-        </div>
+</head><body><div class="app-header"><div class="header-left" onclick="window.location.href='index.html'"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" class="logo-main"><h1>Settore Femminile</h1></div><div class="nav-buttons"><a href="generale_f.html?from=femminile"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/all_result.png" class="nav-icon-img"></a><a href="segnapunti.html"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div></div><div class="tab-bar"><button id="btn-0" class="tab-btn active" onclick="openTab(0)">Serie C  Gir.A</button><button id="btn-1" class="tab-btn " onclick="openTab(1)">Under 18 Gir.B</button><button id="btn-2" class="tab-btn " onclick="openTab(2)">Under 16 Gir.A</button><button id="btn-3" class="tab-btn " onclick="openTab(3)">Under 14 Gir.C</button></div><div id="content-0" class="tab-content active"><h2>🏆 Classifica</h2><div class="table-card"><table><tr ><td>1</td><td>CUCC VOLLEY</td><td>23</td></tr><tr ><td>2</td><td>ASD VOLLEY VOLLA</td><td>20</td></tr><tr ><td>3</td><td>ANCIS VILLARICCA</td><td>19</td></tr><tr ><td>4</td><td>VOLLEYTIME</td><td>18</td></tr><tr ><td>5</td><td>APD LIBERTAS SORRENTO</td><td>17</td></tr><tr ><td>6</td><td>VITOLO VOLLEY</td><td>9</td></tr><tr style="background:#fff3e0; font-weight:bold;"><td>7</td><td>TODIS PASTENA VOLLEY</td><td>8</td></tr><tr ><td>8</td><td>CARBAT MATESE</td><td>3</td></tr><tr ><td>9</td><td>SMILERS SAN LORENZO</td><td>3</td></tr></table></div><h2>📅 Calendario TODIS</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-0" data-sorted="false" onclick="toggleSort(0)">📅 Ordina Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-0"><div class="match-card loss" data-date-iso="2025-10-26">
+        <div class="match-header"><span class="date-badge">📅 26/10/2025</span> | Giornata 1</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">20</div><div class="partial-badge">17</div><div class="partial-badge">22</div></div><div class="set-total bg-red">0</div></div></span></div>
-            <div class="team-row"><span class="team-info">ANCIS VILLARICCA</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-red">0</div></div>
+            <div class="team-row"><span class="team-info">ANCIS VILLARICCA</span><div class="set-total bg-green">3</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20C%20%20Femminile%20Gir.A%2A%0ATODIS%20PASTENA%20VOLLEY%200%20-%203%20ANCIS%20VILLARICCA" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card win" data-date-iso="2025-11-02" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 02/11/2025 ⏰ 11:30</span> <span>|</span> <span>Giornata 2</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0ATODIS%20PASTENA%20VOLLEY%200%20-%203%20ANCIS%20VILLARICCA" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card win" data-date-iso="2025-11-02">
+        <div class="match-header"><span class="date-badge">📅 02/11/2025</span> | Giornata 2</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">VITOLO VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">15</div><div class="partial-badge">25</div><div class="partial-badge">23</div><div class="partial-badge">25</div><div class="partial-badge">11</div></div><div class="set-total bg-red">2</div></div></span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">22</div><div class="partial-badge">25</div><div class="partial-badge">8</div><div class="partial-badge">15</div></div><div class="set-total bg-green">3</div></div></span></div>
+            <div class="team-row"><span class="team-info">VITOLO VOLLEY</span><div class="set-total bg-red">2</div></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALASPORT COSCIONI NOCERA INFERIORE SAViale San Francesco</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.74587140,14.65204840&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20C%20%20Femminile%20Gir.A%2A%0AVITOLO%20VOLLEY%202%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card loss" data-date-iso="2025-11-09" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 09/11/2025 ⏰ 17:30</span> <span>|</span> <span>Giornata 3</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALASPORT COSCIONI NOCERA INFERIORE SAViale San Francesco</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALASPORT%20COSCIONI%C2%A0NOCERA%20INFERIORE%20SAViale%20San%20Francesco" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0AVITOLO%20VOLLEY%202%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card loss" data-date-iso="2025-11-09">
+        <div class="match-header"><span class="date-badge">📅 09/11/2025</span> | Giornata 3</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">20</div><div class="partial-badge">23</div><div class="partial-badge">9</div></div><div class="set-total bg-red">2</div></div></span></div>
-            <div class="team-row"><span class="team-info">APD LIBERTAS SORRENTO</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">18</div><div class="partial-badge">20</div><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">15</div></div><div class="set-total bg-green">3</div></div></span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-red">2</div></div>
+            <div class="team-row"><span class="team-info">APD LIBERTAS SORRENTO</span><div class="set-total bg-green">3</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20C%20%20Femminile%20Gir.A%2A%0ATODIS%20PASTENA%20VOLLEY%202%20-%203%20APD%20LIBERTAS%20SORRENTO" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card loss" data-date-iso="2025-11-16" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 16/11/2025 ⏰ 16:30</span> <span>|</span> <span>Giornata 4</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0ATODIS%20PASTENA%20VOLLEY%202%20-%203%20APD%20LIBERTAS%20SORRENTO" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card loss" data-date-iso="2025-11-16">
+        <div class="match-header"><span class="date-badge">📅 16/11/2025</span> | Giornata 4</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">CUCC VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">16</div><div class="partial-badge">11</div><div class="partial-badge">14</div></div><div class="set-total bg-red">0</div></div></span></div>
+            <div class="team-row"><span class="team-info">CUCC VOLLEY</span><div class="set-total bg-green">3</div></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-red">0</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ TENSOSTRUTTURA DOTT. CARLO SALLI META NAVIALE PRIVATO LE QUERCE</span>
-            <div class="action-buttons"><a href="http://maps.google.it/maps?q=META+NA%0D%0AVIALE+PRIVATO+LE+QUERCE+&hl=it" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20C%20%20Femminile%20Gir.A%2A%0ACUCC%20VOLLEY%203%20-%200%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card win" data-date-iso="2025-11-21" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 21/11/2025 ⏰ 20:30</span> <span>|</span> <span>Giornata 5</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ TENSOSTRUTTURA DOTT. CARLO SALLI META NAVIALE PRIVATO LE QUERCE</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=TENSOSTRUTTURA%20DOTT.%20CARLO%20SALLI%C2%A0META%20NAVIALE%20PRIVATO%20LE%20QUERCE" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0ACUCC%20VOLLEY%203%20-%200%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card win" data-date-iso="2025-11-21">
+        <div class="match-header"><span class="date-badge">📅 21/11/2025</span> | Giornata 5</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">SMILERS SAN LORENZO</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">19</div><div class="partial-badge">25</div><div class="partial-badge">28</div><div class="partial-badge">17</div><div class="partial-badge">13</div></div><div class="set-total bg-red">2</div></div></span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">18</div><div class="partial-badge">26</div><div class="partial-badge">25</div><div class="partial-badge">15</div></div><div class="set-total bg-green">3</div></div></span></div>
+            <div class="team-row"><span class="team-info">SMILERS SAN LORENZO</span><div class="set-total bg-red">2</div></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA CENTRO SPORTIVO SAN LORENZO MERCATO SAN SEVERINO SAVIA S.LORENZO 1</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.77512920,14.71194450&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20C%20%20Femminile%20Gir.A%2A%0ASMILERS%20SAN%20LORENZO%202%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card loss" data-date-iso="2025-11-30" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 30/11/2025 ⏰ 17:30</span> <span>|</span> <span>Giornata 6</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA CENTRO SPORTIVO SAN LORENZO MERCATO SAN SEVERINO SAVIA S.LORENZO 1</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20CENTRO%20SPORTIVO%20SAN%20LORENZO%C2%A0MERCATO%20SAN%20SEVERINO%20SAVIA%20S.LORENZO%201" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0ASMILERS%20SAN%20LORENZO%202%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card loss" data-date-iso="2025-11-30">
+        <div class="match-header"><span class="date-badge">📅 30/11/2025</span> | Giornata 6</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">23</div><div class="partial-badge">21</div><div class="partial-badge">11</div></div><div class="set-total bg-red">1</div></div></span></div>
-            <div class="team-row"><span class="team-info">VOLLEYTIME</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">17</div><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-red">1</div></div>
+            <div class="team-row"><span class="team-info">VOLLEYTIME</span><div class="set-total bg-green">3</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20C%20%20Femminile%20Gir.A%2A%0ATODIS%20PASTENA%20VOLLEY%201%20-%203%20VOLLEYTIME" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card win" data-date-iso="2025-12-07" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 07/12/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 7</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0ATODIS%20PASTENA%20VOLLEY%201%20-%203%20VOLLEYTIME" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card win" data-date-iso="2025-12-07">
+        <div class="match-header"><span class="date-badge">📅 07/12/2025</span> | Giornata 7</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">CARBAT MATESE</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">22</div><div class="partial-badge">19</div><div class="partial-badge">23</div></div><div class="set-total bg-red">0</div></div></span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
+            <div class="team-row"><span class="team-info">CARBAT MATESE</span><div class="set-total bg-red">0</div></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALAMATESE PIEDIMONTE MATESE CEVIA BADEN POWELL</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=41.35475320,14.37045140&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20C%20%20Femminile%20Gir.A%2A%0ACARBAT%20MATESE%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card loss" data-date-iso="2025-12-21" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 21/12/2025 ⏰ 17:00</span> <span>|</span> <span>Giornata 9</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALAMATESE PIEDIMONTE MATESE CEVIA BADEN POWELL</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALAMATESE%C2%A0PIEDIMONTE%20MATESE%20CEVIA%20BADEN%20POWELL" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0ACARBAT%20MATESE%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card loss" data-date-iso="2025-12-21">
+        <div class="match-header"><span class="date-badge">📅 21/12/2025</span> | Giornata 9</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">ASD VOLLEY VOLLA</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">21</div><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">21</div><div class="partial-badge">11</div><div class="partial-badge">21</div></div><div class="set-total bg-red">1</div></div></span></div>
+            <div class="team-row"><span class="team-info">ASD VOLLEY VOLLA</span><div class="set-total bg-green">3</div></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-red">1</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA I.C. "V. DE SICA" VOLLA NAVIA FILICHITO INCROCIO VIA MONTEOLIVETO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.88410410,14.34966110&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20C%20%20Femminile%20Gir.A%2A%0AASD%20VOLLEY%20VOLLA%203%20-%201%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card loss" data-date-iso="2026-01-11" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 11/01/2026 ⏰ 17:00</span> <span>|</span> <span>Giornata 10</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA I.C. "V. DE SICA" VOLLA NAVIA FILICHITO INCROCIO VIA MONTEOLIVETO</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20I.C.%20%22V.%20DE%20SICA%22%C2%A0VOLLA%20NAVIA%20FILICHITO%20INCROCIO%20VIA%20MONTEOLIVETO" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0AASD%20VOLLEY%20VOLLA%203%20-%201%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card loss" data-date-iso="2026-01-11">
+        <div class="match-header"><span class="date-badge">📅 11/01/2026</span> | Giornata 10</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">ANCIS VILLARICCA</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">19</div><div class="partial-badge">23</div><div class="partial-badge">18</div></div><div class="set-total bg-red">0</div></div></span></div>
+            <div class="team-row"><span class="team-info">ANCIS VILLARICCA</span><div class="set-total bg-green">3</div></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-red">0</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA SCUOLA RODARI - VILLARICCA GIUGLIANO IN CAMPANIA NAVIA MARCHESELLA, 160</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.92391440,14.17947430&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Serie%20C%20%20Femminile%20Gir.A%2A%0AANCIS%20VILLARICCA%203%20-%200%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-01-18" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 18/01/2026 ⏰ 17:30</span> <span>|</span> <span>Giornata 11</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA SCUOLA RODARI - VILLARICCA GIUGLIANO IN CAMPANIA NAVIA MARCHESELLA, 160</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20SCUOLA%20RODARI%20-%20VILLARICCA%C2%A0GIUGLIANO%20IN%20CAMPANIA%20NAVIA%20MARCHESELLA%2C%20160" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0AANCIS%20VILLARICCA%203%20-%200%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-01-18">
+        <div class="match-header"><span class="date-badge">📅 18/01/2026</span> | Giornata 11</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">VITOLO VOLLEY</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">VITOLO VOLLEY</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20VITOLO%20VOLLEY&dates=20260118T173000/20260118T193000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Serie%20C%20%20Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20C%20%20Femminile%20Gir.A%2A%0A18/01/2026%20%E2%8F%B0%2017%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20VITOLO%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-01-25" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 25/01/2026 ⏰ 19:00</span> <span>|</span> <span>Giornata 12</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20VITOLO%20VOLLEY&dates=20260118T120000/20260118T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A18/01/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20VITOLO%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-01-25">
+        <div class="match-header"><span class="date-badge">📅 25/01/2026</span> | Giornata 12</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">APD LIBERTAS SORRENTO</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info">APD LIBERTAS SORRENTO</span>-</div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALASPORT SORRENTO SORRENTO NAVIA ATIGLIANA</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.62018640,14.38028180&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20APD%20LIBERTAS%20SORRENTO%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260125T190000/20260125T210000&location=PALASPORT%20SORRENTO%C2%A0SORRENTO%20NAVIA%20ATIGLIANA&details=Campionato+Serie%20C%20%20Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20C%20%20Femminile%20Gir.A%2A%0A25/01/2026%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20PALASPORT%20SORRENTO%C2%A0SORRENTO%20NAVIA%20ATIGLIANA%0AAPD%20LIBERTAS%20SORRENTO%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-01" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 01/02/2026 ⏰ 17:30</span> <span>|</span> <span>Giornata 13</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALASPORT SORRENTO SORRENTO NAVIA ATIGLIANA</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALASPORT%20SORRENTO%C2%A0SORRENTO%20NAVIA%20ATIGLIANA" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20APD%20LIBERTAS%20SORRENTO%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260125T120000/20260125T140000&location=PALASPORT%20SORRENTO%C2%A0SORRENTO%20NAVIA%20ATIGLIANA" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A25/01/2026%0AAPD%20LIBERTAS%20SORRENTO%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-01">
+        <div class="match-header"><span class="date-badge">📅 01/02/2026</span> | Giornata 13</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">CUCC VOLLEY</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">CUCC VOLLEY</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20CUCC%20VOLLEY&dates=20260201T173000/20260201T193000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Serie%20C%20%20Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20C%20%20Femminile%20Gir.A%2A%0A01/02/2026%20%E2%8F%B0%2017%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20CUCC%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-08" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 08/02/2026 ⏰ 17:30</span> <span>|</span> <span>Giornata 14</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20CUCC%20VOLLEY&dates=20260201T120000/20260201T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A01/02/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20CUCC%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-08">
+        <div class="match-header"><span class="date-badge">📅 08/02/2026</span> | Giornata 14</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">SMILERS SAN LORENZO</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">SMILERS SAN LORENZO</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20SMILERS%20SAN%20LORENZO&dates=20260208T173000/20260208T193000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Serie%20C%20%20Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20C%20%20Femminile%20Gir.A%2A%0A08/02/2026%20%E2%8F%B0%2017%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20SMILERS%20SAN%20LORENZO" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-15" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 15/02/2026 ⏰ 18:30</span> <span>|</span> <span>Giornata 15</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20SMILERS%20SAN%20LORENZO&dates=20260208T120000/20260208T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A08/02/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20SMILERS%20SAN%20LORENZO" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-15">
+        <div class="match-header"><span class="date-badge">📅 15/02/2026</span> | Giornata 15</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">VOLLEYTIME</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info">VOLLEYTIME</span>-</div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA SMS PASCOLI CASAGIOVE CEVIA TRENTO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=41.07482150,14.31381390&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEYTIME%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260215T183000/20260215T203000&location=PALESTRA%20SMS%20PASCOLI%C2%A0CASAGIOVE%20CEVIA%20TRENTO&details=Campionato+Serie%20C%20%20Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20C%20%20Femminile%20Gir.A%2A%0A15/02/2026%20%E2%8F%B0%2018%3A30%0A%F0%9F%93%8D%20PALESTRA%20SMS%20PASCOLI%C2%A0CASAGIOVE%20CEVIA%20TRENTO%0AVOLLEYTIME%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-22" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 22/02/2026 ⏰ 17:30</span> <span>|</span> <span>Giornata 16</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA SMS PASCOLI CASAGIOVE CEVIA TRENTO</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20SMS%20PASCOLI%C2%A0CASAGIOVE%20CEVIA%20TRENTO" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEYTIME%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260215T120000/20260215T140000&location=PALESTRA%20SMS%20PASCOLI%C2%A0CASAGIOVE%20CEVIA%20TRENTO" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A15/02/2026%0AVOLLEYTIME%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-22">
+        <div class="match-header"><span class="date-badge">📅 22/02/2026</span> | Giornata 16</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">CARBAT MATESE</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">CARBAT MATESE</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20CARBAT%20MATESE&dates=20260222T173000/20260222T193000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Serie%20C%20%20Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20C%20%20Femminile%20Gir.A%2A%0A22/02/2026%20%E2%8F%B0%2017%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20CARBAT%20MATESE" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-03-08" data-camp="Serie C  Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 08/03/2026 ⏰ 17:30</span> <span>|</span> <span>Giornata 18</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20CARBAT%20MATESE&dates=20260222T120000/20260222T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A22/02/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20CARBAT%20MATESE" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-03-08">
+        <div class="match-header"><span class="date-badge">📅 08/03/2026</span> | Giornata 18</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">ASD VOLLEY VOLLA</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">ASD VOLLEY VOLLA</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASD%20VOLLEY%20VOLLA&dates=20260308T173000/20260308T193000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Serie%20C%20%20Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20C%20%20Femminile%20Gir.A%2A%0A08/03/2026%20%E2%8F%B0%2017%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASD%20VOLLEY%20VOLLA" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    </div></div><div id="content-1" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr class="my-team-row"><td>1</td><td>TODIS PASTENA VOLLEY</td><td><b>15</b></td><td>5</td><td>5</td><td>0</td><td>15</td><td>1</td></tr><tr ><td>2</td><td>MINERVA CAVA DE TIRRENI</td><td><b>12</b></td><td>5</td><td>4</td><td>1</td><td>13</td><td>4</td></tr><tr ><td>3</td><td>SALERNO GUISCARDS</td><td><b>9</b></td><td>5</td><td>3</td><td>2</td><td>9</td><td>8</td></tr><tr ><td>4</td><td>INDOMITA</td><td><b>7</b></td><td>6</td><td>2</td><td>4</td><td>8</td><td>12</td></tr><tr ><td>5</td><td>VITOLO VOLLEY</td><td><b>6</b></td><td>6</td><td>2</td><td>4</td><td>8</td><td>12</td></tr><tr ><td>6</td><td>ASD PALLAVOLO SCAFATI</td><td><b>5</b></td><td>5</td><td>2</td><td>3</td><td>7</td><td>12</td></tr><tr ><td>7</td><td>ASD CSI CAVA SPORTS</td><td><b>3</b></td><td>6</td><td>1</td><td>5</td><td>4</td><td>15</td></tr></tbody></table></div></div><h2>📅 Calendario TODIS</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-1" data-sorted="false" onclick="toggleSort(1)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-1">
-    <div class="match-card win" data-date-iso="2025-11-18" data-camp="Under 18 Femminile Gir.B" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 18/11/2025 ⏰ 19:30</span> <span>|</span> <span>Giornata 1</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASD%20VOLLEY%20VOLLA&dates=20260308T120000/20260308T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A08/03/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASD%20VOLLEY%20VOLLA" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div></div></div><div id="content-1" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><table><tr style="background:#fff3e0; font-weight:bold;"><td>1</td><td>TODIS PASTENA VOLLEY</td><td>15</td></tr><tr ><td>2</td><td>MINERVA CAVA DE TIRRENI</td><td>12</td></tr><tr ><td>3</td><td>SALERNO GUISCARDS</td><td>9</td></tr><tr ><td>4</td><td>INDOMITA</td><td>7</td></tr><tr ><td>5</td><td>VITOLO VOLLEY</td><td>6</td></tr><tr ><td>6</td><td>ASD PALLAVOLO SCAFATI</td><td>5</td></tr><tr ><td>7</td><td>ASD CSI CAVA SPORTS</td><td>3</td></tr></table></div><h2>📅 Calendario TODIS</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-1" data-sorted="false" onclick="toggleSort(1)">📅 Ordina Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-1"><div class="match-card win" data-date-iso="2025-11-18">
+        <div class="match-header"><span class="date-badge">📅 18/11/2025</span> | Giornata 1</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
-            <div class="team-row"><span class="team-info">VITOLO VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">18</div><div class="partial-badge">13</div><div class="partial-badge">18</div></div><div class="set-total bg-red">0</div></div></span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
+            <div class="team-row"><span class="team-info">VITOLO VOLLEY</span><div class="set-total bg-red">0</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2018%20Femminile%20Gir.B%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20VITOLO%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card win" data-date-iso="2025-12-03" data-camp="Under 18 Femminile Gir.B" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 03/12/2025 ⏰ 19:00</span> <span>|</span> <span>Giornata 3</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20VITOLO%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card win" data-date-iso="2025-12-03">
+        <div class="match-header"><span class="date-badge">📅 03/12/2025</span> | Giornata 3</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">INDOMITA</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">16</div><div class="partial-badge">19</div><div class="partial-badge">16</div></div><div class="set-total bg-red">0</div></div></span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
+            <div class="team-row"><span class="team-info">INDOMITA</span><div class="set-total bg-red">0</div></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA I.C. ALFANO -QUASIMODO  SALERNO SAVIA DEI MILLE- INGRESSO PROL VIALE KENNEDY DI FRONTE POLIAMBULATORIO DI PASTENA</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.68244080,14.76809610&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2018%20Femminile%20Gir.B%2A%0AINDOMITA%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card win" data-date-iso="2025-12-09" data-camp="Under 18 Femminile Gir.B" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 09/12/2025 ⏰ 19:30</span> <span>|</span> <span>Giornata 4</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA I.C. ALFANO -QUASIMODO  SALERNO SAVIA DEI MILLE- INGRESSO PROL VIALE KENNEDY DI FRONTE POLIAMBULATORIO DI PASTENA</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20I.C.%20ALFANO%20-QUASIMODO%20%C2%A0SALERNO%20SAVIA%20DEI%20MILLE-%20INGRESSO%20PROL%20VIALE%20KENNEDY%20DI%20FRONTE%20POLIAMBULATORIO%20DI%20PASTENA" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0AINDOMITA%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card win" data-date-iso="2025-12-09">
+        <div class="match-header"><span class="date-badge">📅 09/12/2025</span> | Giornata 4</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">26</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
-            <div class="team-row"><span class="team-info">SALERNO GUISCARDS</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">11</div><div class="partial-badge">24</div><div class="partial-badge">22</div></div><div class="set-total bg-red">0</div></div></span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
+            <div class="team-row"><span class="team-info">SALERNO GUISCARDS</span><div class="set-total bg-red">0</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2018%20Femminile%20Gir.B%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20SALERNO%20GUISCARDS" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card win" data-date-iso="2025-12-17" data-camp="Under 18 Femminile Gir.B" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 17/12/2025 ⏰ 17:00</span> <span>|</span> <span>Giornata 5</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20SALERNO%20GUISCARDS" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card win" data-date-iso="2025-12-17">
+        <div class="match-header"><span class="date-badge">📅 17/12/2025</span> | Giornata 5</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">MINERVA CAVA DE TIRRENI</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">19</div><div class="partial-badge">18</div><div class="partial-badge">19</div></div><div class="set-total bg-red">1</div></div></span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">22</div><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
+            <div class="team-row"><span class="team-info">MINERVA CAVA DE TIRRENI</span><div class="set-total bg-red">1</div></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALAPITTONI SANT' ARCANGELO di Cava de' Tirreni CAVA DE' TIRRENI SAVIA IDO LONGO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.69733720,14.69712620&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2018%20Femminile%20Gir.B%2A%0AMINERVA%20CAVA%20DE%20TIRRENI%201%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-01-15" data-camp="Under 18 Femminile Gir.B" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 15/01/2026 ⏰ 19:30</span> <span>|</span> <span>Giornata 6</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALAPITTONI SANT' ARCANGELO di Cava de' Tirreni CAVA DE' TIRRENI SAVIA IDO LONGO</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALAPITTONI%C2%A0SANT%27%20ARCANGELO%20di%20Cava%20de%27%20Tirreni%20CAVA%20DE%27%20TIRRENI%20SAVIA%20IDO%20LONGO" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0AMINERVA%20CAVA%20DE%20TIRRENI%201%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-01-15">
+        <div class="match-header"><span class="date-badge">📅 15/01/2026</span> | Giornata 6</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">ASD PALLAVOLO SCAFATI</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">ASD PALLAVOLO SCAFATI</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASD%20PALLAVOLO%20SCAFATI&dates=20260115T193000/20260115T213000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Under%2018%20Femminile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2018%20Femminile%20Gir.B%2A%0A15/01/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASD%20PALLAVOLO%20SCAFATI" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card win" data-date-iso="2026-01-12" data-camp="Under 18 Femminile Gir.B" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 12/01/2026 ⏰ 20:00</span> <span>|</span> <span>Giornata 7</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASD%20PALLAVOLO%20SCAFATI&dates=20260115T120000/20260115T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A15/01/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASD%20PALLAVOLO%20SCAFATI" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card win" data-date-iso="2026-01-12">
+        <div class="match-header"><span class="date-badge">📅 12/01/2026</span> | Giornata 7</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">ASD CSI CAVA SPORTS</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">16</div><div class="partial-badge">13</div><div class="partial-badge">22</div></div><div class="set-total bg-red">0</div></div></span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
+            <div class="team-row"><span class="team-info">ASD CSI CAVA SPORTS</span><div class="set-total bg-red">0</div></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ LICEO CLASSICO MARCO GALDI CAVA DE' TIRRENI SAVIA ROSARIO SENATORE 64</span>
-            <div class="action-buttons"><a href="http://maps.google.it/maps?q=CAVA+DE%27+TIRRENI+SA%0D%0AVIA+ROSARIO+SENATORE+64&hl=it" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2018%20Femminile%20Gir.B%2A%0AASD%20CSI%20CAVA%20SPORTS%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-01-22" data-camp="Under 18 Femminile Gir.B" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 22/01/2026 ⏰ 20:00</span> <span>|</span> <span>Giornata 8</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ LICEO CLASSICO MARCO GALDI CAVA DE' TIRRENI SAVIA ROSARIO SENATORE 64</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=LICEO%20CLASSICO%20MARCO%20GALDI%C2%A0CAVA%20DE%27%20TIRRENI%20SAVIA%20ROSARIO%20SENATORE%2064" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0AASD%20CSI%20CAVA%20SPORTS%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-01-22">
+        <div class="match-header"><span class="date-badge">📅 22/01/2026</span> | Giornata 8</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">VITOLO VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info">VITOLO VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ SMS FRESA - PASCOLI NOCERA SUPERIORE SAViale Europa</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.74589260,14.67372320&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VITOLO%20VOLLEY%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260122T200000/20260122T220000&location=SMS%20FRESA%20-%20PASCOLI%C2%A0NOCERA%20SUPERIORE%20SAViale%20Europa&details=Campionato+Under%2018%20Femminile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2018%20Femminile%20Gir.B%2A%0A22/01/2026%20%E2%8F%B0%2020%3A00%0A%F0%9F%93%8D%20SMS%20FRESA%20-%20PASCOLI%C2%A0NOCERA%20SUPERIORE%20SAViale%20Europa%0AVITOLO%20VOLLEY%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-03" data-camp="Under 18 Femminile Gir.B" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 03/02/2026 ⏰ 19:30</span> <span>|</span> <span>Giornata 10</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ SMS FRESA - PASCOLI NOCERA SUPERIORE SAViale Europa</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=SMS%20FRESA%20-%20PASCOLI%C2%A0NOCERA%20SUPERIORE%20SAViale%20Europa" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VITOLO%20VOLLEY%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260122T120000/20260122T140000&location=SMS%20FRESA%20-%20PASCOLI%C2%A0NOCERA%20SUPERIORE%20SAViale%20Europa" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A22/01/2026%0AVITOLO%20VOLLEY%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-03">
+        <div class="match-header"><span class="date-badge">📅 03/02/2026</span> | Giornata 10</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">INDOMITA</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">INDOMITA</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20INDOMITA&dates=20260203T193000/20260203T213000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Under%2018%20Femminile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2018%20Femminile%20Gir.B%2A%0A03/02/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20INDOMITA" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-11" data-camp="Under 18 Femminile Gir.B" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 11/02/2026 ⏰ 21:00</span> <span>|</span> <span>Giornata 11</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20INDOMITA&dates=20260203T120000/20260203T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A03/02/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20INDOMITA" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-11">
+        <div class="match-header"><span class="date-badge">📅 11/02/2026</span> | Giornata 11</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">SALERNO GUISCARDS</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info">SALERNO GUISCARDS</span>-</div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA SMS POSIDONIA-LANZALONE XX SETTEMBRE  TORRIONE SALERNO SAVIA XX SETTEMBRE</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66966980,14.78715550&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20SALERNO%20GUISCARDS%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260211T210000/20260211T230000&location=PALESTRA%20SMS%20POSIDONIA-LANZALONE%20XX%20SETTEMBRE%20%C2%A0TORRIONE%20SALERNO%20SAVIA%20XX%20SETTEMBRE&details=Campionato+Under%2018%20Femminile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2018%20Femminile%20Gir.B%2A%0A11/02/2026%20%E2%8F%B0%2021%3A00%0A%F0%9F%93%8D%20PALESTRA%20SMS%20POSIDONIA-LANZALONE%20XX%20SETTEMBRE%20%C2%A0TORRIONE%20SALERNO%20SAVIA%20XX%20SETTEMBRE%0ASALERNO%20GUISCARDS%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-17" data-camp="Under 18 Femminile Gir.B" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 17/02/2026 ⏰ 19:30</span> <span>|</span> <span>Giornata 12</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA SMS POSIDONIA-LANZALONE XX SETTEMBRE  TORRIONE SALERNO SAVIA XX SETTEMBRE</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20SMS%20POSIDONIA-LANZALONE%20XX%20SETTEMBRE%20%C2%A0TORRIONE%20SALERNO%20SAVIA%20XX%20SETTEMBRE" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20SALERNO%20GUISCARDS%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260211T120000/20260211T140000&location=PALESTRA%20SMS%20POSIDONIA-LANZALONE%20XX%20SETTEMBRE%20%C2%A0TORRIONE%20SALERNO%20SAVIA%20XX%20SETTEMBRE" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A11/02/2026%0ASALERNO%20GUISCARDS%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-17">
+        <div class="match-header"><span class="date-badge">📅 17/02/2026</span> | Giornata 12</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">MINERVA CAVA DE TIRRENI</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">MINERVA CAVA DE TIRRENI</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20MINERVA%20CAVA%20DE%20TIRRENI&dates=20260217T193000/20260217T213000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Under%2018%20Femminile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2018%20Femminile%20Gir.B%2A%0A17/02/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20MINERVA%20CAVA%20DE%20TIRRENI" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-24" data-camp="Under 18 Femminile Gir.B" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 24/02/2026 ⏰ 17:30</span> <span>|</span> <span>Giornata 13</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20MINERVA%20CAVA%20DE%20TIRRENI&dates=20260217T120000/20260217T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A17/02/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20MINERVA%20CAVA%20DE%20TIRRENI" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-24">
+        <div class="match-header"><span class="date-badge">📅 24/02/2026</span> | Giornata 13</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">ASD PALLAVOLO SCAFATI</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info">ASD PALLAVOLO SCAFATI</span>-</div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ ISTITUTO ROSA PISACANE SCAFATI SAVia Corbisiero, 6</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.76021140,14.53775950&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ASD%20PALLAVOLO%20SCAFATI%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260224T173000/20260224T193000&location=ISTITUTO%20ROSA%20PISACANE%C2%A0SCAFATI%20SAVia%20Corbisiero%2C%206&details=Campionato+Under%2018%20Femminile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2018%20Femminile%20Gir.B%2A%0A24/02/2026%20%E2%8F%B0%2017%3A30%0A%F0%9F%93%8D%20ISTITUTO%20ROSA%20PISACANE%C2%A0SCAFATI%20SAVia%20Corbisiero%2C%206%0AASD%20PALLAVOLO%20SCAFATI%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-03-03" data-camp="Under 18 Femminile Gir.B" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 03/03/2026 ⏰ 19:30</span> <span>|</span> <span>Giornata 14</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ ISTITUTO ROSA PISACANE SCAFATI SAVia Corbisiero, 6</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=ISTITUTO%20ROSA%20PISACANE%C2%A0SCAFATI%20SAVia%20Corbisiero%2C%206" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ASD%20PALLAVOLO%20SCAFATI%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260224T120000/20260224T140000&location=ISTITUTO%20ROSA%20PISACANE%C2%A0SCAFATI%20SAVia%20Corbisiero%2C%206" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A24/02/2026%0AASD%20PALLAVOLO%20SCAFATI%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-03-03">
+        <div class="match-header"><span class="date-badge">📅 03/03/2026</span> | Giornata 14</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">ASD CSI CAVA SPORTS</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">ASD CSI CAVA SPORTS</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASD%20CSI%20CAVA%20SPORTS&dates=20260303T193000/20260303T213000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Under%2018%20Femminile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2018%20Femminile%20Gir.B%2A%0A03/03/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASD%20CSI%20CAVA%20SPORTS" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    </div></div><div id="content-2" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr class="my-team-row"><td>1</td><td>TODIS PASTENA VOLLEY</td><td><b>16</b></td><td>6</td><td>5</td><td>1</td><td>17</td><td>4</td></tr><tr ><td>2</td><td>CUS SALERNO</td><td><b>15</b></td><td>6</td><td>5</td><td>1</td><td>17</td><td>5</td></tr><tr ><td>3</td><td>ASD CSI CAVA SPORTS</td><td><b>9</b></td><td>5</td><td>3</td><td>2</td><td>9</td><td>7</td></tr><tr ><td>4</td><td>ASD INTRAMONTES</td><td><b>6</b></td><td>5</td><td>2</td><td>3</td><td>6</td><td>10</td></tr><tr ><td>5</td><td>XENIA SCAFATI</td><td><b>5</b></td><td>4</td><td>2</td><td>2</td><td>8</td><td>8</td></tr><tr ><td>6</td><td>NEW VOLLEY SAN MARZANO ASD</td><td><b>3</b></td><td>4</td><td>1</td><td>3</td><td>4</td><td>9</td></tr><tr ><td>7</td><td>VITOLO B</td><td><b>0</b></td><td>6</td><td>0</td><td>6</td><td>0</td><td>18</td></tr></tbody></table></div></div><h2>📅 Calendario TODIS</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-2" data-sorted="false" onclick="toggleSort(2)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-2">
-    <div class="match-card win" data-date-iso="2025-11-17" data-camp="Under 16 Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 17/11/2025 ⏰ 17:00</span> <span>|</span> <span>Giornata 1</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASD%20CSI%20CAVA%20SPORTS&dates=20260303T120000/20260303T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A03/03/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASD%20CSI%20CAVA%20SPORTS" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div></div></div><div id="content-2" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><table><tr style="background:#fff3e0; font-weight:bold;"><td>1</td><td>TODIS PASTENA VOLLEY</td><td>16</td></tr><tr ><td>2</td><td>CUS SALERNO</td><td>15</td></tr><tr ><td>3</td><td>ASD CSI CAVA SPORTS</td><td>9</td></tr><tr ><td>4</td><td>ASD INTRAMONTES</td><td>6</td></tr><tr ><td>5</td><td>XENIA SCAFATI</td><td>5</td></tr><tr ><td>6</td><td>NEW VOLLEY SAN MARZANO ASD</td><td>3</td></tr><tr ><td>7</td><td>VITOLO B</td><td>0</td></tr></table></div><h2>📅 Calendario TODIS</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-2" data-sorted="false" onclick="toggleSort(2)">📅 Ordina Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-2"><div class="match-card win" data-date-iso="2025-11-17">
+        <div class="match-header"><span class="date-badge">📅 17/11/2025</span> | Giornata 1</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">NEW VOLLEY SAN MARZANO ASD</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">17</div><div class="partial-badge">20</div><div class="partial-badge">10</div></div><div class="set-total bg-red">0</div></div></span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
+            <div class="team-row"><span class="team-info">NEW VOLLEY SAN MARZANO ASD</span><div class="set-total bg-red">0</div></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA SMS FRANK  SAN MARZANO SUL SARNO SAVIA PENDINO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.77768300,14.58891370&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2016%20Femminile%20Gir.A%2A%0ANEW%20VOLLEY%20SAN%20MARZANO%20ASD%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card loss" data-date-iso="2025-12-02" data-camp="Under 16 Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 02/12/2025 ⏰ 17:30</span> <span>|</span> <span>Giornata 2</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA SMS FRANK  SAN MARZANO SUL SARNO SAVIA PENDINO</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20SMS%20FRANK%20%C2%A0SAN%20MARZANO%20SUL%20SARNO%20SAVIA%20PENDINO" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0ANEW%20VOLLEY%20SAN%20MARZANO%20ASD%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card loss" data-date-iso="2025-12-02">
+        <div class="match-header"><span class="date-badge">📅 02/12/2025</span> | Giornata 2</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">12</div><div class="partial-badge">25</div><div class="partial-badge">19</div><div class="partial-badge">5</div></div><div class="set-total bg-red">2</div></div></span></div>
-            <div class="team-row"><span class="team-info">CUS SALERNO</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">17</div><div class="partial-badge">25</div><div class="partial-badge">18</div><div class="partial-badge">25</div><div class="partial-badge">15</div></div><div class="set-total bg-green">3</div></div></span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-red">2</div></div>
+            <div class="team-row"><span class="team-info">CUS SALERNO</span><div class="set-total bg-green">3</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2016%20Femminile%20Gir.A%2A%0ATODIS%20PASTENA%20VOLLEY%202%20-%203%20CUS%20SALERNO" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card win" data-date-iso="2025-12-05" data-camp="Under 16 Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 05/12/2025 ⏰ 18:30</span> <span>|</span> <span>Giornata 3</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0ATODIS%20PASTENA%20VOLLEY%202%20-%203%20CUS%20SALERNO" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card win" data-date-iso="2025-12-05">
+        <div class="match-header"><span class="date-badge">📅 05/12/2025</span> | Giornata 3</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">ASD INTRAMONTES</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">18</div><div class="partial-badge">6</div><div class="partial-badge">17</div></div><div class="set-total bg-red">0</div></div></span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
+            <div class="team-row"><span class="team-info">ASD INTRAMONTES</span><div class="set-total bg-red">0</div></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ Palazzetto dello Sport TRAMONTI SAVia Acconciagioco 8</span>
-            <div class="action-buttons"><a href="http://maps.google.it/maps?q=TRAMONTI+SA%0D%0AVia+Acconciagioco+8&hl=it" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2016%20Femminile%20Gir.A%2A%0AASD%20INTRAMONTES%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card win" data-date-iso="2025-12-20" data-camp="Under 16 Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 20/12/2025 ⏰ 17:00</span> <span>|</span> <span>Giornata 4</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ Palazzetto dello Sport TRAMONTI SAVia Acconciagioco 8</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=Palazzetto%20dello%20Sport%C2%A0TRAMONTI%20SAVia%20Acconciagioco%208" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0AASD%20INTRAMONTES%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card win" data-date-iso="2025-12-20">
+        <div class="match-header"><span class="date-badge">📅 20/12/2025</span> | Giornata 4</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">23</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
-            <div class="team-row"><span class="team-info">XENIA SCAFATI</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">9</div><div class="partial-badge">23</div><div class="partial-badge">25</div><div class="partial-badge">21</div></div><div class="set-total bg-red">1</div></div></span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
+            <div class="team-row"><span class="team-info">XENIA SCAFATI</span><div class="set-total bg-red">1</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2016%20Femminile%20Gir.A%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%201%20XENIA%20SCAFATI" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card win" data-date-iso="2025-12-15" data-camp="Under 16 Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 15/12/2025 ⏰ 17:15</span> <span>|</span> <span>Giornata 5</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%201%20XENIA%20SCAFATI" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card win" data-date-iso="2025-12-15">
+        <div class="match-header"><span class="date-badge">📅 15/12/2025</span> | Giornata 5</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">VITOLO B</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">8</div><div class="partial-badge">8</div><div class="partial-badge">9</div></div><div class="set-total bg-red">0</div></div></span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
+            <div class="team-row"><span class="team-info">VITOLO B</span><div class="set-total bg-red">0</div></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ SMS FRESA - PASCOLI NOCERA SUPERIORE SAViale Europa</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.74589260,14.67372320&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2016%20Femminile%20Gir.A%2A%0AVITOLO%20B%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card win" data-date-iso="2026-01-08" data-camp="Under 16 Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 08/01/2026 ⏰ 17:30</span> <span>|</span> <span>Giornata 6</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ SMS FRESA - PASCOLI NOCERA SUPERIORE SAViale Europa</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=SMS%20FRESA%20-%20PASCOLI%C2%A0NOCERA%20SUPERIORE%20SAViale%20Europa" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0AVITOLO%20B%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card win" data-date-iso="2026-01-08">
+        <div class="match-header"><span class="date-badge">📅 08/01/2026</span> | Giornata 6</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
-            <div class="team-row"><span class="team-info">ASD CSI CAVA SPORTS</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">21</div><div class="partial-badge">18</div><div class="partial-badge">20</div></div><div class="set-total bg-red">0</div></div></span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
+            <div class="team-row"><span class="team-info">ASD CSI CAVA SPORTS</span><div class="set-total bg-red">0</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2016%20Femminile%20Gir.A%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20ASD%20CSI%20CAVA%20SPORTS" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-01-22" data-camp="Under 16 Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 22/01/2026 ⏰ 17:30</span> <span>|</span> <span>Giornata 8</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20ASD%20CSI%20CAVA%20SPORTS" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-01-22">
+        <div class="match-header"><span class="date-badge">📅 22/01/2026</span> | Giornata 8</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">NEW VOLLEY SAN MARZANO ASD</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">NEW VOLLEY SAN MARZANO ASD</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20NEW%20VOLLEY%20SAN%20MARZANO%20ASD&dates=20260122T173000/20260122T193000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Under%2016%20Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2016%20Femminile%20Gir.A%2A%0A22/01/2026%20%E2%8F%B0%2017%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20NEW%20VOLLEY%20SAN%20MARZANO%20ASD" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-01-29" data-camp="Under 16 Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 29/01/2026 ⏰ 17:00</span> <span>|</span> <span>Giornata 9</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20NEW%20VOLLEY%20SAN%20MARZANO%20ASD&dates=20260122T120000/20260122T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A22/01/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20NEW%20VOLLEY%20SAN%20MARZANO%20ASD" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-01-29">
+        <div class="match-header"><span class="date-badge">📅 29/01/2026</span> | Giornata 9</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">CUS SALERNO</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info">CUS SALERNO</span>-</div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA POLIVANETE UNIVERSITA' DI SALERNO PAL A BARONISSI SAVia Allende</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.75370170,14.78109800&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20CUS%20SALERNO%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260129T170000/20260129T190000&location=PALESTRA%20POLIVANETE%20UNIVERSITA%27%20DI%20SALERNO%20PAL%20A%C2%A0BARONISSI%20SAVia%20Allende&details=Campionato+Under%2016%20Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2016%20Femminile%20Gir.A%2A%0A29/01/2026%20%E2%8F%B0%2017%3A00%0A%F0%9F%93%8D%20PALESTRA%20POLIVANETE%20UNIVERSITA%27%20DI%20SALERNO%20PAL%20A%C2%A0BARONISSI%20SAVia%20Allende%0ACUS%20SALERNO%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-05" data-camp="Under 16 Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 05/02/2026 ⏰ 17:30</span> <span>|</span> <span>Giornata 10</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA POLIVANETE UNIVERSITA' DI SALERNO PAL A BARONISSI SAVia Allende</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20POLIVANETE%20UNIVERSITA%27%20DI%20SALERNO%20PAL%20A%C2%A0BARONISSI%20SAVia%20Allende" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20CUS%20SALERNO%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260129T120000/20260129T140000&location=PALESTRA%20POLIVANETE%20UNIVERSITA%27%20DI%20SALERNO%20PAL%20A%C2%A0BARONISSI%20SAVia%20Allende" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A29/01/2026%0ACUS%20SALERNO%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-05">
+        <div class="match-header"><span class="date-badge">📅 05/02/2026</span> | Giornata 10</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">ASD INTRAMONTES</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">ASD INTRAMONTES</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASD%20INTRAMONTES&dates=20260205T173000/20260205T193000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Under%2016%20Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2016%20Femminile%20Gir.A%2A%0A05/02/2026%20%E2%8F%B0%2017%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASD%20INTRAMONTES" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-12" data-camp="Under 16 Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 12/02/2026 ⏰ 18:30</span> <span>|</span> <span>Giornata 11</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASD%20INTRAMONTES&dates=20260205T120000/20260205T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A05/02/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASD%20INTRAMONTES" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-12">
+        <div class="match-header"><span class="date-badge">📅 12/02/2026</span> | Giornata 11</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">XENIA SCAFATI</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info">XENIA SCAFATI</span>-</div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ ITIS Pacinotti SCAFATI SAvia Don Angelo Pagano, 1</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.75305050,14.53010850&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20XENIA%20SCAFATI%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260212T183000/20260212T203000&location=ITIS%20Pacinotti%C2%A0SCAFATI%20SAvia%20Don%20Angelo%20Pagano%2C%201&details=Campionato+Under%2016%20Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2016%20Femminile%20Gir.A%2A%0A12/02/2026%20%E2%8F%B0%2018%3A30%0A%F0%9F%93%8D%20ITIS%20Pacinotti%C2%A0SCAFATI%20SAvia%20Don%20Angelo%20Pagano%2C%201%0AXENIA%20SCAFATI%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-19" data-camp="Under 16 Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 19/02/2026 ⏰ 17:30</span> <span>|</span> <span>Giornata 12</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ ITIS Pacinotti SCAFATI SAvia Don Angelo Pagano, 1</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=ITIS%20Pacinotti%C2%A0SCAFATI%20SAvia%20Don%20Angelo%20Pagano%2C%201" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20XENIA%20SCAFATI%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260212T120000/20260212T140000&location=ITIS%20Pacinotti%C2%A0SCAFATI%20SAvia%20Don%20Angelo%20Pagano%2C%201" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A12/02/2026%0AXENIA%20SCAFATI%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-19">
+        <div class="match-header"><span class="date-badge">📅 19/02/2026</span> | Giornata 12</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">VITOLO B</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">VITOLO B</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20VITOLO%20B&dates=20260219T173000/20260219T193000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Under%2016%20Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2016%20Femminile%20Gir.A%2A%0A19/02/2026%20%E2%8F%B0%2017%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20VITOLO%20B" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-26" data-camp="Under 16 Femminile Gir.A" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 26/02/2026 ⏰ 20:00</span> <span>|</span> <span>Giornata 13</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20VITOLO%20B&dates=20260219T120000/20260219T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A19/02/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20VITOLO%20B" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-26">
+        <div class="match-header"><span class="date-badge">📅 26/02/2026</span> | Giornata 13</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">ASD CSI CAVA SPORTS</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info">ASD CSI CAVA SPORTS</span>-</div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ LICEO CLASSICO MARCO GALDI CAVA DE' TIRRENI SAVIA ROSARIO SENATORE 64</span>
-            <div class="action-buttons"><a href="http://maps.google.it/maps?q=CAVA+DE%27+TIRRENI+SA%0D%0AVIA+ROSARIO+SENATORE+64&hl=it" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ASD%20CSI%20CAVA%20SPORTS%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260226T200000/20260226T220000&location=LICEO%20CLASSICO%20MARCO%20GALDI%C2%A0CAVA%20DE%27%20TIRRENI%20SAVIA%20ROSARIO%20SENATORE%2064&details=Campionato+Under%2016%20Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2016%20Femminile%20Gir.A%2A%0A26/02/2026%20%E2%8F%B0%2020%3A00%0A%F0%9F%93%8D%20LICEO%20CLASSICO%20MARCO%20GALDI%C2%A0CAVA%20DE%27%20TIRRENI%20SAVIA%20ROSARIO%20SENATORE%2064%0AASD%20CSI%20CAVA%20SPORTS%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    </div></div><div id="content-3" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr class="my-team-row"><td>1</td><td>TODIS PASTENA VOLLEY</td><td><b>9</b></td><td>3</td><td>3</td><td>0</td><td>9</td><td>0</td></tr><tr ><td>2</td><td>ASK ANGRI 1997</td><td><b>9</b></td><td>3</td><td>3</td><td>0</td><td>9</td><td>1</td></tr><tr ><td>3</td><td>INDOMITA</td><td><b>9</b></td><td>4</td><td>3</td><td>1</td><td>9</td><td>3</td></tr><tr ><td>4</td><td>VITOLO VOLLEY</td><td><b>7</b></td><td>5</td><td>2</td><td>3</td><td>8</td><td>11</td></tr><tr ><td>5</td><td>Sogec Mediazione Creditizia</td><td><b>3</b></td><td>4</td><td>1</td><td>3</td><td>5</td><td>10</td></tr><tr ><td>6</td><td>ASD CSI CAVA SPORTS</td><td><b>3</b></td><td>6</td><td>1</td><td>5</td><td>5</td><td>16</td></tr><tr ><td>7</td><td>ASD SPORTING AGRO</td><td><b>2</b></td><td>3</td><td>1</td><td>2</td><td>4</td><td>8</td></tr></tbody></table></div></div><h2>📅 Calendario TODIS</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-3" data-sorted="false" onclick="toggleSort(3)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-3">
-    <div class="match-card win" data-date-iso="2025-11-18" data-camp="Under 14 Femminile Gir.C" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 18/11/2025 ⏰ 17:30</span> <span>|</span> <span>Giornata 1</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ LICEO CLASSICO MARCO GALDI CAVA DE' TIRRENI SAVIA ROSARIO SENATORE 64</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=LICEO%20CLASSICO%20MARCO%20GALDI%C2%A0CAVA%20DE%27%20TIRRENI%20SAVIA%20ROSARIO%20SENATORE%2064" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ASD%20CSI%20CAVA%20SPORTS%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260226T120000/20260226T140000&location=LICEO%20CLASSICO%20MARCO%20GALDI%C2%A0CAVA%20DE%27%20TIRRENI%20SAVIA%20ROSARIO%20SENATORE%2064" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A26/02/2026%0AASD%20CSI%20CAVA%20SPORTS%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div></div></div><div id="content-3" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><table><tr style="background:#fff3e0; font-weight:bold;"><td>1</td><td>TODIS PASTENA VOLLEY</td><td>9</td></tr><tr ><td>2</td><td>ASK ANGRI 1997</td><td>9</td></tr><tr ><td>3</td><td>INDOMITA</td><td>9</td></tr><tr ><td>4</td><td>VITOLO VOLLEY</td><td>7</td></tr><tr ><td>5</td><td>Sogec Mediazione Creditizia</td><td>3</td></tr><tr ><td>6</td><td>ASD CSI CAVA SPORTS</td><td>3</td></tr><tr ><td>7</td><td>ASD SPORTING AGRO</td><td>2</td></tr></table></div><h2>📅 Calendario TODIS</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-3" data-sorted="false" onclick="toggleSort(3)">📅 Ordina Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-3"><div class="match-card win" data-date-iso="2025-11-18">
+        <div class="match-header"><span class="date-badge">📅 18/11/2025</span> | Giornata 1</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
-            <div class="team-row"><span class="team-info">INDOMITA</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">20</div><div class="partial-badge">16</div><div class="partial-badge">21</div></div><div class="set-total bg-red">0</div></div></span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
+            <div class="team-row"><span class="team-info">INDOMITA</span><div class="set-total bg-red">0</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2014%20Femminile%20Gir.C%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20INDOMITA" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-01-25" data-camp="Under 14 Femminile Gir.C" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 25/01/2026 ⏰ 11:00</span> <span>|</span> <span>Giornata 3</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20INDOMITA" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-01-25">
+        <div class="match-header"><span class="date-badge">📅 25/01/2026</span> | Giornata 3</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">Sogec Mediazione Creditizia</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info">Sogec Mediazione Creditizia</span>-</div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ SMS Carducci-Trezza VIA SANTORO  CAVA DE' TIRRENI SAVia Santoro, 18</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.70151950,14.71253200&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20Sogec%20Mediazione%20Creditizia%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260125T110000/20260125T130000&location=SMS%20Carducci-Trezza%20VIA%20SANTORO%20%C2%A0CAVA%20DE%27%20TIRRENI%20SAVia%20Santoro%2C%2018&details=Campionato+Under%2014%20Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2014%20Femminile%20Gir.C%2A%0A25/01/2026%20%E2%8F%B0%2011%3A00%0A%F0%9F%93%8D%20SMS%20Carducci-Trezza%20VIA%20SANTORO%20%C2%A0CAVA%20DE%27%20TIRRENI%20SAVia%20Santoro%2C%2018%0ASogec%20Mediazione%20Creditizia%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card win" data-date-iso="2025-12-09" data-camp="Under 14 Femminile Gir.C" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 09/12/2025 ⏰ 17:30</span> <span>|</span> <span>Giornata 4</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ SMS Carducci-Trezza VIA SANTORO  CAVA DE' TIRRENI SAVia Santoro, 18</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=SMS%20Carducci-Trezza%20VIA%20SANTORO%20%C2%A0CAVA%20DE%27%20TIRRENI%20SAVia%20Santoro%2C%2018" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20Sogec%20Mediazione%20Creditizia%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260125T120000/20260125T140000&location=SMS%20Carducci-Trezza%20VIA%20SANTORO%20%C2%A0CAVA%20DE%27%20TIRRENI%20SAVia%20Santoro%2C%2018" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A25/01/2026%0ASogec%20Mediazione%20Creditizia%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card win" data-date-iso="2025-12-09">
+        <div class="match-header"><span class="date-badge">📅 09/12/2025</span> | Giornata 4</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
-            <div class="team-row"><span class="team-info">VITOLO VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">12</div><div class="partial-badge">9</div><div class="partial-badge">20</div></div><div class="set-total bg-red">0</div></div></span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
+            <div class="team-row"><span class="team-info">VITOLO VOLLEY</span><div class="set-total bg-red">0</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2014%20Femminile%20Gir.C%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20VITOLO%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-01-30" data-camp="Under 14 Femminile Gir.C" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 30/01/2026 ⏰ 19:30</span> <span>|</span> <span>Giornata 5</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0ATODIS%20PASTENA%20VOLLEY%203%20-%200%20VITOLO%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-01-30">
+        <div class="match-header"><span class="date-badge">📅 30/01/2026</span> | Giornata 5</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">ASK ANGRI 1997</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info">ASK ANGRI 1997</span>-</div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA II° CD - ANGRI ANGRI SAVIA LEONARDO DA VINCI</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.73712810,14.56365930&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ASK%20ANGRI%201997%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260130T193000/20260130T213000&location=PALESTRA%20II%C2%B0%20CD%20-%20ANGRI%C2%A0ANGRI%20SAVIA%20LEONARDO%20DA%20VINCI&details=Campionato+Under%2014%20Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2014%20Femminile%20Gir.C%2A%0A30/01/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20II%C2%B0%20CD%20-%20ANGRI%C2%A0ANGRI%20SAVIA%20LEONARDO%20DA%20VINCI%0AASK%20ANGRI%201997%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-03-10" data-camp="Under 14 Femminile Gir.C" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 10/03/2026 ⏰ 17:30</span> <span>|</span> <span>Giornata 6</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA II° CD - ANGRI ANGRI SAVIA LEONARDO DA VINCI</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20II%C2%B0%20CD%20-%20ANGRI%C2%A0ANGRI%20SAVIA%20LEONARDO%20DA%20VINCI" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ASK%20ANGRI%201997%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260130T120000/20260130T140000&location=PALESTRA%20II%C2%B0%20CD%20-%20ANGRI%C2%A0ANGRI%20SAVIA%20LEONARDO%20DA%20VINCI" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A30/01/2026%0AASK%20ANGRI%201997%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-03-10">
+        <div class="match-header"><span class="date-badge">📅 10/03/2026</span> | Giornata 6</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">ASD SPORTING AGRO</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">ASD SPORTING AGRO</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASD%20SPORTING%20AGRO&dates=20260310T173000/20260310T193000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Under%2014%20Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2014%20Femminile%20Gir.C%2A%0A10/03/2026%20%E2%8F%B0%2017%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASD%20SPORTING%20AGRO" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card win" data-date-iso="2026-01-13" data-camp="Under 14 Femminile Gir.C" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 13/01/2026 ⏰ 20:00</span> <span>|</span> <span>Giornata 7</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASD%20SPORTING%20AGRO&dates=20260310T120000/20260310T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A10/03/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASD%20SPORTING%20AGRO" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card win" data-date-iso="2026-01-13">
+        <div class="match-header"><span class="date-badge">📅 13/01/2026</span> | Giornata 7</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">ASD CSI CAVA SPORTS</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">5</div><div class="partial-badge">3</div><div class="partial-badge">16</div></div><div class="set-total bg-red">0</div></div></span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper"><div class="scores-wrapper"><div class="partials-inline"><div class="partial-badge">25</div><div class="partial-badge">25</div><div class="partial-badge">25</div></div><div class="set-total bg-green">3</div></div></span></div>
+            <div class="team-row"><span class="team-info">ASD CSI CAVA SPORTS</span><div class="set-total bg-red">0</div></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><div class="set-total bg-green">3</div></div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ LICEO CLASSICO MARCO GALDI CAVA DE' TIRRENI SAVIA ROSARIO SENATORE 64</span>
-            <div class="action-buttons"><a href="http://maps.google.it/maps?q=CAVA+DE%27+TIRRENI+SA%0D%0AVIA+ROSARIO+SENATORE+64&hl=it" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%20Under%2014%20Femminile%20Gir.C%2A%0AASD%20CSI%20CAVA%20SPORTS%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-01-23" data-camp="Under 14 Femminile Gir.C" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 23/01/2026 ⏰ 18:45</span> <span>|</span> <span>Giornata 8</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ LICEO CLASSICO MARCO GALDI CAVA DE' TIRRENI SAVIA ROSARIO SENATORE 64</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=LICEO%20CLASSICO%20MARCO%20GALDI%C2%A0CAVA%20DE%27%20TIRRENI%20SAVIA%20ROSARIO%20SENATORE%2064" target="_blank" class="btn btn-map">📍</a><a href="https://wa.me/?text=%F0%9F%8F%90%20%2ARisultato%2A%0AASD%20CSI%20CAVA%20SPORTS%200%20-%203%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-01-23">
+        <div class="match-header"><span class="date-badge">📅 23/01/2026</span> | Giornata 8</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">INDOMITA</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info">INDOMITA</span>-</div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA I.C. ALFANO -QUASIMODO  SALERNO SAVIA DEI MILLE- INGRESSO PROL VIALE KENNEDY DI FRONTE POLIAMBULATORIO DI PASTENA</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.68244080,14.76809610&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20INDOMITA%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260123T184500/20260123T204500&location=PALESTRA%20I.C.%20ALFANO%20-QUASIMODO%20%C2%A0SALERNO%20SAVIA%20DEI%20MILLE-%20INGRESSO%20PROL%20VIALE%20KENNEDY%20DI%20FRONTE%20POLIAMBULATORIO%20DI%20PASTENA&details=Campionato+Under%2014%20Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2014%20Femminile%20Gir.C%2A%0A23/01/2026%20%E2%8F%B0%2018%3A45%0A%F0%9F%93%8D%20PALESTRA%20I.C.%20ALFANO%20-QUASIMODO%20%C2%A0SALERNO%20SAVIA%20DEI%20MILLE-%20INGRESSO%20PROL%20VIALE%20KENNEDY%20DI%20FRONTE%20POLIAMBULATORIO%20DI%20PASTENA%0AINDOMITA%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-03" data-camp="Under 14 Femminile Gir.C" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 03/02/2026 ⏰ 17:30</span> <span>|</span> <span>Giornata 10</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA I.C. ALFANO -QUASIMODO  SALERNO SAVIA DEI MILLE- INGRESSO PROL VIALE KENNEDY DI FRONTE POLIAMBULATORIO DI PASTENA</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20I.C.%20ALFANO%20-QUASIMODO%20%C2%A0SALERNO%20SAVIA%20DEI%20MILLE-%20INGRESSO%20PROL%20VIALE%20KENNEDY%20DI%20FRONTE%20POLIAMBULATORIO%20DI%20PASTENA" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20INDOMITA%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260123T120000/20260123T140000&location=PALESTRA%20I.C.%20ALFANO%20-QUASIMODO%20%C2%A0SALERNO%20SAVIA%20DEI%20MILLE-%20INGRESSO%20PROL%20VIALE%20KENNEDY%20DI%20FRONTE%20POLIAMBULATORIO%20DI%20PASTENA" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A23/01/2026%0AINDOMITA%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-03">
+        <div class="match-header"><span class="date-badge">📅 03/02/2026</span> | Giornata 10</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">Sogec Mediazione Creditizia</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">Sogec Mediazione Creditizia</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20Sogec%20Mediazione%20Creditizia&dates=20260203T173000/20260203T193000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Under%2014%20Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2014%20Femminile%20Gir.C%2A%0A03/02/2026%20%E2%8F%B0%2017%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20Sogec%20Mediazione%20Creditizia" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-10" data-camp="Under 14 Femminile Gir.C" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 10/02/2026 ⏰ 17:15</span> <span>|</span> <span>Giornata 11</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20Sogec%20Mediazione%20Creditizia&dates=20260203T120000/20260203T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A03/02/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20Sogec%20Mediazione%20Creditizia" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-10">
+        <div class="match-header"><span class="date-badge">📅 10/02/2026</span> | Giornata 11</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">VITOLO VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info">VITOLO VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ SMS FRESA - PASCOLI NOCERA SUPERIORE SAViale Europa</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.74589260,14.67372320&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VITOLO%20VOLLEY%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260210T171500/20260210T191500&location=SMS%20FRESA%20-%20PASCOLI%C2%A0NOCERA%20SUPERIORE%20SAViale%20Europa&details=Campionato+Under%2014%20Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2014%20Femminile%20Gir.C%2A%0A10/02/2026%20%E2%8F%B0%2017%3A15%0A%F0%9F%93%8D%20SMS%20FRESA%20-%20PASCOLI%C2%A0NOCERA%20SUPERIORE%20SAViale%20Europa%0AVITOLO%20VOLLEY%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-20" data-camp="Under 14 Femminile Gir.C" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 20/02/2026 ⏰ 17:30</span> <span>|</span> <span>Giornata 12</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ SMS FRESA - PASCOLI NOCERA SUPERIORE SAViale Europa</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=SMS%20FRESA%20-%20PASCOLI%C2%A0NOCERA%20SUPERIORE%20SAViale%20Europa" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VITOLO%20VOLLEY%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260210T120000/20260210T140000&location=SMS%20FRESA%20-%20PASCOLI%C2%A0NOCERA%20SUPERIORE%20SAViale%20Europa" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A10/02/2026%0AVITOLO%20VOLLEY%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-20">
+        <div class="match-header"><span class="date-badge">📅 20/02/2026</span> | Giornata 12</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">ASK ANGRI 1997</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">ASK ANGRI 1997</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASK%20ANGRI%201997&dates=20260220T173000/20260220T193000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Under%2014%20Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2014%20Femminile%20Gir.C%2A%0A20/02/2026%20%E2%8F%B0%2017%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASK%20ANGRI%201997" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-02-24" data-camp="Under 14 Femminile Gir.C" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 24/02/2026 ⏰ 19:00</span> <span>|</span> <span>Giornata 13</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASK%20ANGRI%201997&dates=20260220T120000/20260220T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A20/02/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASK%20ANGRI%201997" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-02-24">
+        <div class="match-header"><span class="date-badge">📅 24/02/2026</span> | Giornata 13</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info">ASD SPORTING AGRO</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info">ASD SPORTING AGRO</span>-</div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ S.M.S.  A.  CRISCUOLO PAGANI SAVIA  M. FERRANTE n° 6</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.74051410,14.60942920&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ASD%20SPORTING%20AGRO%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260224T190000/20260224T210000&location=S.M.S.%20%20A.%20%20CRISCUOLO%C2%A0PAGANI%20SAVIA%20%20M.%20FERRANTE%20n%C2%B0%206&details=Campionato+Under%2014%20Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2014%20Femminile%20Gir.C%2A%0A24/02/2026%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20S.M.S.%20%20A.%20%20CRISCUOLO%C2%A0PAGANI%20SAVIA%20%20M.%20FERRANTE%20n%C2%B0%206%0AASD%20SPORTING%20AGRO%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2026-03-03" data-camp="Under 14 Femminile Gir.C" data-my-team="true">
-        <div class="match-header">
-            <span class="date-badge">📅 03/03/2026 ⏰ 17:30</span> <span>|</span> <span>Giornata 14</span>
-        </div>
+        <div class="match-footer"><span class="gym-name">🏟️ S.M.S.  A.  CRISCUOLO PAGANI SAVIA  M. FERRANTE n° 6</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=S.M.S.%20%20A.%20%20CRISCUOLO%C2%A0PAGANI%20SAVIA%20%20M.%20FERRANTE%20n%C2%B0%206" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ASD%20SPORTING%20AGRO%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20260224T120000/20260224T140000&location=S.M.S.%20%20A.%20%20CRISCUOLO%C2%A0PAGANI%20SAVIA%20%20M.%20FERRANTE%20n%C2%B0%206" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A24/02/2026%0AASD%20SPORTING%20AGRO%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div><div class="match-card upcoming" data-date-iso="2026-03-03">
+        <div class="match-header"><span class="date-badge">📅 03/03/2026</span> | Giornata 14</div>
         <div class="teams">
-            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">ASD CSI CAVA SPORTS</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span>-</div>
+            <div class="team-row"><span class="team-info">ASD CSI CAVA SPORTS</span>-</div>
         </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASD%20CSI%20CAVA%20SPORTS&dates=20260303T173000/20260303T193000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+Under%2014%20Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2014%20Femminile%20Gir.C%2A%0A03/03/2026%20%E2%8F%B0%2017%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASD%20CSI%20CAVA%20SPORTS" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v2.0 (Global Sort & Print)</span></div></body></html>
+        <div class="match-footer"><span class="gym-name">🏟️ PALESTRA ITC AMENDOLA - A SALERNO SAVia Lazzarelli</span><div class="action-buttons"><a href="https://www.google.com/maps/search/?api=1&query=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-map">📍</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASD%20CSI%20CAVA%20SPORTS&dates=20260303T120000/20260303T140000&location=PALESTRA%20ITC%20AMENDOLA%20-%20A%C2%A0SALERNO%20SAVia%20Lazzarelli" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%2A%0A03/03/2026%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASD%20CSI%20CAVA%20SPORTS" target="_blank" class="btn btn-wa">💬</a></div></div>
+    </div></div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v67.0 (Short Tabs & Print)</span></div></body></html>
