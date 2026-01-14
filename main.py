@@ -1,5 +1,5 @@
 # ==============================================================================
-# SOFTWARE VERSION: v67.0
+# SOFTWARE VERSION: v.2.0
 # RELEASE NOTE: Sorting & Print estesi anche alle pagine Filtro TODIS
 # ==============================================================================
 
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v67.0 (Global Sort & Print)"
+APP_VERSION = "v2.0 Stable"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "👨‍💻 Non sparate sul programmatore (né sul libero 🏐)"                                                                              
@@ -585,8 +585,9 @@ def scrape_data():
 
 # ================= GENERATORI PAGINE =================
 def genera_landing_page():
-    html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>{NOME_VISUALIZZATO}</title>{CSS_BASE}</head><body><div class="app-header"><div class="header-left"><img src="{URL_LOGO}" class="logo-main"><div><h1>{NOME_VISUALIZZATO}</h1></div></div><div class="nav-buttons"><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a></div></div><div class="landing-container"><div class="instruction-text">Seleziona il settore:</div><div class="choice-card"><img src="{URL_SPLIT_IMG}" class="choice-img"><div class="click-overlay"><a href="{FILE_MALE}" class="click-area"></a><a href="{FILE_FEMALE}" class="click-area"></a></div></div></div><div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span></div></body></html>'
-    with open(FILE_LANDING, "w", encoding="utf-8") as f: f.write(html)
+    html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>{NOME_VISUALIZZATO}</title>{CSS_BASE}</head><body><div class="app-header"><div class="header-left"><img src="{URL_LOGO}" class="logo-main"><div><h1>{NOME_VISUALIZZATO}</h1></div></div><div class="nav-buttons"><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a></div></div><div class="landing-container"><div class="instruction-text">Seleziona il settore:</div><div class="choice-card"><img src="{URL_SPLIT_IMG}" class="choice-img"><div class="click-overlay"><a href="{FILE_MALE}" class="click-area"></a><a href="{FILE_FEMALE}" class="click-area"></a></div></div></div><div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span><div class="footer-msg">{FOOTER_MSG}</div></div><div id="ios-popup" class="ios-install-popup"><div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div><div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div><div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div><div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div><button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button></div></body></html>'
+    
+	with open(FILE_LANDING, "w", encoding="utf-8") as f: f.write(html)
 
 def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP"):
     page_title = "Settore Maschile" if "maschile" in filename else "Settore Femminile"
