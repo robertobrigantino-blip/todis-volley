@@ -1,5 +1,5 @@
 # ==============================================================================
-# SOFTWARE VERSION: v2.1
+# SOFTWARE VERSION: v2.0
 # RELEASE NOTE: Sorting & Print estesi anche alle pagine Filtro TODIS
 # ==============================================================================
 
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v2.1 (Global Sort & Print)"
+APP_VERSION = "v2.0 (Global Sort & Print)"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "👨‍💻 Non sparate sul programmatore (né sul libero 🏐)"                                                                              
@@ -650,7 +650,7 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
 
     campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
     html += '<div class="tab-bar">'
-    for i, camp in enumerate(campionati_disp): html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp}</button>'
+    for i, camp in enumerate(campionati_disp): html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp.split(" Gir.")[0]}</button>'
     html += '</div>'
 
     for i, camp in enumerate(campionati_disp):
@@ -664,7 +664,7 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
         html += '</tbody></table></div></div>'
         
         # AGGIUNTA PULSANTI E CONTAINER PER SORTING
-        html += f"<h2>📅 Calendario </h2>"
+        html += f"<h2>📅 Calendario TODIS</h2>"
         html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
         html += f'<div id="calendar-container-{i}">'
         df_todis = df_ris[(df_ris['Campionato'] == camp) & (df_ris['Squadra Casa'].apply(is_target_team) | df_ris['Squadra Ospite'].apply(is_target_team))]
@@ -681,9 +681,9 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
     
     campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
     html += '<div class="tab-bar">'
-    for i, camp in enumerate(campionati_disp): html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp}</button>'
+    for i, camp in enumerate(campionati_disp): html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp.split(" Gir.")[0]}</button>'
     html += '</div>'
-html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp}</button>'
+
     for i, camp in enumerate(campionati_disp):
         html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
         html += f'<h2>🏆 Classifica</h2>'
