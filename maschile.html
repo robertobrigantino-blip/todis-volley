@@ -23,6 +23,7 @@
     .nav-buttons { display: flex; gap: 10px; align-items: center; }
     .nav-icon-img { height: 45px; width: auto; transition: transform 0.1s, opacity 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
+    
     /* CALENDARIO NOTIFICA */
     .calendar-container { position: relative; display: inline-block; display: none; }
     .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
@@ -38,6 +39,17 @@
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
+
+    /* Controls Bar (Sort/Print) */
+    .calendar-controls { display: flex; gap: 10px; margin-bottom: 15px; justify-content: flex-end; align-items: center; }
+    .btn-tool { 
+        font-size: 11px; padding: 6px 12px; background: #f0f2f5; 
+        border: 1px solid #ccc; border-radius: 20px; cursor: pointer; 
+        color: #555; font-weight: bold; display: flex; align-items: center; gap: 5px; 
+        transition: background 0.2s;
+    }
+    .btn-tool:hover { background: #e0e0e0; }
+    .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
 
     /* Classifica */
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
@@ -75,19 +87,19 @@
     /* LAYOUT SET E PUNTEGGIO */
     .scores-wrapper { display: flex; align-items: center; gap: 8px; justify-content: flex-end; width: 100%; }
     
-    .set-total {
-        width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
-        color: white; font-weight: bold; font-size: 16px; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
+                
+    .set-total { width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+                                                                                                                
+     
     .bg-green { background-color: #2e7d32; } 
     .bg-red { background-color: #c62828; }
     .bg-gray { background-color: #78909c; }
 
     .partials-inline { display: flex; gap: 3px; overflow-x: auto; max-width: 150px; }
-    .partial-badge {
-        width: 24px; height: 24px; background-color: #7986cb; color: white; border-radius: 4px;
-        display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; flex-shrink: 0;
-    }
+                    
+                                                                                               
+    .partial-badge { width: 24px; height: 24px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; flex-shrink: 0; }
+     
 
     .team-info { flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
@@ -101,14 +113,14 @@
     .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
     .footer-counter img { height: 20px; vertical-align: middle; }
     .version-text { font-size: 10px; color: #999; margin-top: 5px; display: block; font-family: monospace; }
-    .footer-msg { font-size: 11px; color: #777; margin-top: 4px; font-style: italic; opacity: 0.8; }                                                                                   
+    .footer-msg { font-size: 11px; color: #777; margin-top: 4px; font-style: italic; opacity: 0.8; }
     
-    /* IOS INSTALL TIP */            
+    /* IOS INSTALL TIP */
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
 
-    /* LANDING PAGE STYLES */         
+                                      
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -116,6 +128,19 @@
     .click-area { width: 50%; height: 100%; cursor: pointer; }
     .click-area:active { background: rgba(255,255,255,0.1); }
     .instruction-text { margin-bottom: 15px; font-weight: 500; color: #555; font-size: 14px; }
+    
+    /* PRINT STYLES */
+    @media print {
+        .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup { display: none !important; }
+        body { background: white; color: black; padding: 0; margin: 0; }
+        .match-card { border: 1px solid #ccc; break-inside: avoid; box-shadow: none; margin-bottom: 10px; }
+        .tab-content { display: block !important; }
+        h2 { color: black; border-left: none; border-bottom: 2px solid #000; padding: 0; margin-top: 20px; }
+        .team-info { color: black; }
+        .result-badge { border: 1px solid #000; color: black; background: transparent !important; }
+        .bg-green, .bg-red, .bg-gray { background-color: #ddd !important; color: black !important; border: 1px solid #999; }
+        .partial-badge { background-color: white !important; color: black !important; border: 1px solid #ccc; }
+    }
 </style>
 <script>
     if ('serviceWorker' in navigator) {
@@ -161,6 +186,7 @@
         else window.location.href = "index.html";
     }
 
+    // Toggle Details Function
     function toggleDetails(id) {
         const details = document.getElementById('details-' + id);
         const icon = document.getElementById('icon-' + id);
@@ -168,6 +194,52 @@
             details.classList.toggle('open');
             if(icon) icon.classList.toggle('rotated');
         }
+    }
+    
+    // Sort & Print Logic
+    var originalOrder = {};
+    
+    function toggleSort(tabId) {
+        const container = document.getElementById('calendar-container-' + tabId);
+        const btn = document.getElementById('btn-sort-' + tabId);
+        const isSorted = btn.getAttribute('data-sorted') === 'true';
+        
+        if (!originalOrder[tabId]) {
+            originalOrder[tabId] = container.innerHTML;
+        }
+        
+        if (!isSorted) {
+            // Sort by Date
+            const cards = Array.from(container.querySelectorAll('.match-card'));
+            
+            // Nascondi gli header delle giornate
+            const headers = container.querySelectorAll('h3');
+            headers.forEach(h => h.style.display = 'none');
+            
+            cards.sort((a, b) => {
+                const da = a.getAttribute('data-date-iso') || '9999-99-99';
+                const db = b.getAttribute('data-date-iso') || '9999-99-99';
+                return da.localeCompare(db);
+            });
+            
+            // Re-append sorted cards (without headers)
+            container.innerHTML = "";
+            cards.forEach(card => container.appendChild(card));
+            
+            btn.innerHTML = "🔢 Ordina per Giornata";
+            btn.setAttribute('data-sorted', 'true');
+            btn.classList.add('active');
+        } else {
+            // Restore Original
+            container.innerHTML = originalOrder[tabId];
+            btn.innerHTML = "📅 Ordina per Data";
+            btn.setAttribute('data-sorted', 'false');
+            btn.classList.remove('active');
+        }
+    }
+    
+    function printCalendar() {
+        window.print();
     }
 
     window.onload = function() {
@@ -234,7 +306,7 @@
         <div class="app-header">
             <div class="header-left" onclick="window.location.href='index.html'">
                 <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" alt="Logo" class="logo-main">
-                <div><h1>Settore Maschile</h1><div class="last-update">14/01 10:56</div></div>
+                <div><h1>Settore Maschile</h1><div class="last-update">14/01 11:40</div></div>
             </div>
             <div class="nav-buttons">
     <a href="#" onclick="openModal(); return false;" title="Prossimi Appuntamenti"><span id="btn-calendar" class="calendar-container"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/prossimi_appuntamenti.png" class="nav-icon-img"></span></a>
@@ -1510,10 +1582,4 @@
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.65583900,14.80636530&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20PALL%20BATTIPAGLIA&dates=20260303T180000/20260303T200000&location=SMS%20Giovanni%20XXIII-MERCATELLO%20%C2%A0SALERNO%20SAVia%20Parmenide&details=Campionato+Under%2015%20Maschile%20Gir.B" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2015%20Maschile%20Gir.B%2A%0A03/03/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20SMS%20Giovanni%20XXIII-MERCATELLO%20%C2%A0SALERNO%20SAVia%20Parmenide%0ATODIS%20PASTENA%20VOLLEY%20vs%20PALL%20BATTIPAGLIA" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
-    </div>
-    <div class="footer-counter">
-        <img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f" alt="Visite"><br>
-        <span class="version-text">v1.0 Stable</span>
-        <div class="footer-msg">👨‍💻 Non sparate sul programmatore (né sul libero 🏐)</div>
-    </div>
-    </body></html>
+    </div><div style="height:20px;"></div></body></html>
