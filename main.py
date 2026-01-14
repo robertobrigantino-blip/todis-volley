@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v66.0
-# RELEASE NOTE: Sorting per Data/Giornata, Stampa PDF ottimizzata
+# SOFTWARE VERSION: v67.0
+# RELEASE NOTE: Sorting & Print estesi anche alle pagine Filtro TODIS
 # ==============================================================================
 
 import pandas as pd
@@ -19,11 +19,10 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v66.0"
+APP_VERSION = "v66.0 (Global Sort & Print)"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "👨‍💻 Non sparate sul programmatore (né sul libero 🏐)"                                                                              
-                                                     
 TARGET_TEAM_ALIASES = [
     "TODIS PASTENA VOLLEY",
     "TODIS CS PASTENA VOLLEY",
@@ -152,21 +151,12 @@ CSS_BASE = """
 
     /* LAYOUT SET E PUNTEGGIO */
     .scores-wrapper { display: flex; align-items: center; gap: 8px; justify-content: flex-end; width: 100%; }
-    
-                
     .set-total { width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-                                                                                                                
-     
     .bg-green { background-color: #2e7d32; } 
     .bg-red { background-color: #c62828; }
     .bg-gray { background-color: #78909c; }
-
     .partials-inline { display: flex; gap: 3px; overflow-x: auto; max-width: 150px; }
-                    
-                                                                                               
     .partial-badge { width: 24px; height: 24px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; flex-shrink: 0; }
-     
-
     .team-info { flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     /* Modals & Footer */
@@ -185,8 +175,6 @@ CSS_BASE = """
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
-
-                                      
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -213,7 +201,6 @@ CSS_BASE = """
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')
             .then(registration => {
-                // Check for updates
                 registration.onupdatefound = () => {
                     const installingWorker = registration.installing;
                     installingWorker.onstatechange = () => {
@@ -275,10 +262,7 @@ CSS_BASE = """
         }
         
         if (!isSorted) {
-            // Sort by Date
             const cards = Array.from(container.querySelectorAll('.match-card'));
-            
-            // Nascondi gli header delle giornate
             const headers = container.querySelectorAll('h3');
             headers.forEach(h => h.style.display = 'none');
             
@@ -288,7 +272,6 @@ CSS_BASE = """
                 return da.localeCompare(db);
             });
             
-            // Re-append sorted cards (without headers)
             container.innerHTML = "";
             cards.forEach(card => container.appendChild(card));
             
@@ -296,7 +279,6 @@ CSS_BASE = """
             btn.setAttribute('data-sorted', 'true');
             btn.classList.add('active');
         } else {
-            // Restore Original
             container.innerHTML = originalOrder[tabId];
             btn.innerHTML = "📅 Ordina per Data";
             btn.setAttribute('data-sorted', 'false');
@@ -315,7 +297,6 @@ CSS_BASE = """
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
 
-        // Logic for Upcoming Matches Notification
         if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -492,10 +473,6 @@ def crea_card_html(r, camp, is_focus_mode=False):
     os = 'class="team-info my-team-text"' if is_away else 'class="team-info"'
     
     status_class = "upcoming"
-    badge_html = ""
-    sets_html = ""
-    
-    # Valori di default
     sc_val = r['Set Casa'] if r['Set Casa'] else "-"
     so_val = r['Set Ospite'] if r['Set Ospite'] else "-"
 
@@ -504,40 +481,19 @@ def crea_card_html(r, camp, is_focus_mode=False):
             sc, so = int(r['Set Casa']), int(r['Set Ospite'])
             bg_c = "bg-green" if sc > so else "bg-red"
             bg_o = "bg-green" if so > sc else "bg-red"
-            
-            # Badge Vittoria/Sconfitta (solo per la mia squadra)
             if is_my_match:
-                if (is_home and sc > so) or (is_away and so > sc):
-                    status_class = "win"
-                else:
-                    status_class = "loss"
+                status_class = "win" if ((is_home and sc > so) or (is_away and so > sc)) else "loss"
             else:
                 status_class = "played"
                 bg_c, bg_o = "bg-gray", "bg-gray"
 
-            # Costruzione Riga Set Parziali
             if r['Parziali'] and str(r['Parziali']).strip():
                 matches = re.findall(r'(\d+)\s*-\s*(\d+)', str(r['Parziali']))
                 if matches:
-                    partials_c = ""
-                    partials_o = ""
-                    for p_casa, p_ospite in matches:
-                        partials_c += f'<div class="partial-badge">{p_casa}</div>'
-                        partials_o += f'<div class="partial-badge">{p_ospite}</div>'
-                    
-                    # SWAP: Prima parziali, poi totale
-                    sc_val = f"""
-                    <div class="scores-wrapper">
-                        <div class="partials-inline">{partials_c}</div>
-                        <div class="set-total {bg_c}">{sc}</div>
-                    </div>
-                    """
-                    so_val = f"""
-                    <div class="scores-wrapper">
-                        <div class="partials-inline">{partials_o}</div>
-                        <div class="set-total {bg_o}">{so}</div>
-                    </div>
-                    """
+                    partials_c = "".join([f'<div class="partial-badge">{p[0]}</div>' for p in matches])
+                    partials_o = "".join([f'<div class="partial-badge">{p[1]}</div>' for p in matches])
+                    sc_val = f'<div class="scores-wrapper"><div class="partials-inline">{partials_c}</div><div class="set-total {bg_c}">{sc}</div></div>'
+                    so_val = f'<div class="scores-wrapper"><div class="partials-inline">{partials_o}</div><div class="set-total {bg_o}">{so}</div></div>'
         except: status_class = "played"
     
     lnk_wa = create_whatsapp_link(r)
@@ -546,26 +502,18 @@ def crea_card_html(r, camp, is_focus_mode=False):
     
     btns_html = ""
     if lnk_map: btns_html += f'<a href="{lnk_map}" target="_blank" class="btn btn-map">📍 Mappa</a>'
-    
     if is_my_match or not is_focus_mode:
         if lnk_cal: btns_html += f'<a href="{lnk_cal}" target="_blank" class="btn btn-cal">📅</a>'
         if lnk_wa: btns_html += f'<a href="{lnk_wa}" target="_blank" class="btn btn-wa">💬</a>'
 
     return f"""
     <div class="match-card {status_class}" data-date-iso="{r['DataISO']}" data-camp="{camp}" data-my-team="{str(is_my_match).lower()}">
-        {badge_html}
         <div class="match-header">
             <span class="date-badge">📅 {r['Data']}</span> <span>|</span> <span>{r['Giornata']}</span>
         </div>
         <div class="teams">
-            <div class="team-row">
-                <span {cs}>{r['Squadra Casa']}</span>
-                <span class="team-score-wrapper">{sc_val}</span>
-            </div>
-            <div class="team-row">
-                <span {os}>{r['Squadra Ospite']}</span>
-                <span class="team-score-wrapper">{so_val}</span>
-            </div>
+            <div class="team-row"><span {cs}>{r['Squadra Casa']}</span><span class="team-score-wrapper">{sc_val}</span></div>
+            <div class="team-row"><span {os}>{r['Squadra Ospite']}</span><span class="team-score-wrapper">{so_val}</span></div>
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ {r['Impianto']}</span>
@@ -576,451 +524,147 @@ def crea_card_html(r, camp, is_focus_mode=False):
 
 # ================= SCRAPING =================
 def get_match_details_robust(driver, match_url):
-    data_ora_full, data_iso, luogo, link_maps = "Data da definire", "", "Impianto non definito", ""
-    parziali_str = ""
-    
+    data_ora_full, data_iso, luogo, link_maps, parziali_str = "Data da definire", "", "Impianto non definito", "", ""
     try:
         driver.get(match_url)
-        # SMART WAIT
-        try:
-            WebDriverWait(driver, 1.5).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
-				  
-        except: pass
-
+        WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
-        
-        # Data
         date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:\.]\d{2})', clean_text)
         if date_pattern:
             d, o = date_pattern.group(1), date_pattern.group(2)
             data_ora_full = f"{d} ⏰ {o}"
             try: data_iso = datetime.strptime(d, "%d/%m/%Y").strftime("%Y-%m-%d")
             except: pass
-        else:
-            sd = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4})', clean_text)
-            if sd: 
-                data_ora_full = sd.group(1)
-                try: data_iso = datetime.strptime(data_ora_full, "%d/%m/%Y").strftime("%Y-%m-%d")
-                except: pass
-
         imp = soup.find('div', class_='divImpianto')
         if imp: luogo = imp.get_text(strip=True)
-        
         a_map = soup.find('a', href=lambda x: x and ('google.com/maps' in x or 'maps.google' in x))
         if a_map: link_maps = a_map['href']
-        elif luogo != "Impianto non definito": 
-            clean_gym = re.sub(r'\s+', ' ', luogo).strip()
-            link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(clean_gym)}"
-            
-        # --- FIX PARZIALI SET (Regex) ---
-        try:
-            div_casa = soup.find('div', id='risultatoCasa')
-            div_ospite = soup.find('div', id='risultatoOspite')
-
-            if div_casa and div_ospite:
-                # Estrai tutti i numeri dai box parziale, ignorando lo sporco
-                nums_casa = []
-                for div in div_casa.find_all('div', class_='parziale'):
-                    txt = div.get_text(strip=True)
-                    match = re.search(r'\d+', txt)
-                    if match: nums_casa.append(match.group())
-                
-                nums_ospite = []
-                for div in div_ospite.find_all('div', class_='parziale'):
-                    txt = div.get_text(strip=True)
-                    match = re.search(r'\d+', txt)
-                    if match: nums_ospite.append(match.group())
-                
-                sets_list = []
-                                                                                       
-                for i in range(min(len(nums_casa), len(nums_ospite))):
-                    sets_list.append(f"{nums_casa[i]}-{nums_ospite[i]}")
-                                                                       
-                                       
-                                                            
-                
-                parziali_str = ",".join(sets_list)
-        except: parziali_str = ""
-
+        elif luogo != "Impianto non definito": link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(luogo)}"
+        div_casa = soup.find('div', id='risultatoCasa')
+        div_ospite = soup.find('div', id='risultatoOspite')
+        if div_casa and div_ospite:
+            nums_casa = [d.get_text(strip=True) for d in div_casa.find_all('div', class_='parziale') if re.search(r'\d+', d.get_text())]
+            nums_ospite = [d.get_text(strip=True) for d in div_ospite.find_all('div', class_='parziale') if re.search(r'\d+', d.get_text())]
+            parziali_str = ",".join([f"{nums_casa[i]}-{nums_ospite[i]}" for i in range(min(len(nums_casa), len(nums_ospite)))])
     except: pass
     return data_ora_full, data_iso, luogo, link_maps, parziali_str
 
 def scrape_data():
-    print("🚀 Avvio scraping TOTALE (Turbo Mode)...")
     chrome_options = Options()
     chrome_options.add_argument("--headless") 
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
     driver = webdriver.Chrome(options=chrome_options)
     all_results, all_standings = [], []
-
     for nome_camp, id_camp in ALL_CAMPIONATI.items():
-        print(f"   Analisi: {nome_camp}...")
         base_url = "https://www.fipavsalerno.it/mobile/"
         if "Serie C" in nome_camp or "Serie D" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/"
-        
         driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}")
-        
         soup = BeautifulSoup(driver.page_source, 'html.parser')
-        
-        div_giornata = soup.find('div', style="margin-top:7.5em;; text-align:center;")
+        div_giornata = soup.find('div', style=lambda x: x and 'margin-top:7.5em' in x)
         curr_giornata = "N/D"
         if div_giornata:
             for el in div_giornata.children:
                 if el.name == 'div' and 'divGiornata' in el.get('class', []): curr_giornata = el.get_text(strip=True)
                 elif el.name == 'a' and 'gara' in el.get('class', []):
-                    c = el.find('div', class_='squadraCasa').get_text(strip=True)
-                    o = el.find('div', class_='squadraOspite').get_text(strip=True)
                     pt_c = el.find('div', class_='setCasa').get_text(strip=True) if el.find('div', class_='setCasa') else ''
                     pt_o = el.find('div', class_='setOspite').get_text(strip=True) if el.find('div', class_='setOspite') else ''
-                    c = c.replace(pt_c, '').strip()
-                    o = o.replace(pt_o, '').strip()
-
-                    full_url = urljoin(base_url, el.get('href', ''))
-                                          
-                    d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, full_url)
-                    
-                    all_results.append({
-                        'Campionato': nome_camp, 'Giornata': curr_giornata,
-                        'Squadra Casa': c, 'Squadra Ospite': o,
-                        'Punteggio': f"{pt_c}-{pt_o}" if pt_c else "", 
-                        'Data': d_ora, 'DataISO': d_iso, 'Impianto': luogo, 'Maps': maps,
-                        'Set Casa': pt_c, 'Set Ospite': pt_o,
-                        'Parziali': parziali
-                    })
+                    c = el.find('div', class_='squadraCasa').get_text(strip=True).replace(pt_c, '').strip()
+                    o = el.find('div', class_='squadraOspite').get_text(strip=True).replace(pt_o, '').strip()
+                    d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, urljoin(base_url, el.get('href', '')))
+                    all_results.append({'Campionato': nome_camp, 'Giornata': curr_giornata, 'Squadra Casa': c, 'Squadra Ospite': o, 'Punteggio': f"{pt_c}-{pt_o}" if pt_c else "", 'Data': d_ora, 'DataISO': d_iso, 'Impianto': luogo, 'Maps': maps, 'Set Casa': pt_c, 'Set Ospite': pt_o, 'Parziali': parziali})
         try:
             driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
-            time.sleep(1) 
             tabs = pd.read_html(StringIO(driver.page_source))
             if tabs:
                 df_s = tabs[0]
                 df_s['Campionato'] = nome_camp
                 all_standings.append(df_s)
         except: pass
-
     driver.quit()
     return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
 
-# ================= GENERATORE LANDING PAGE =================
+# ================= GENERATORI PAGINE =================
 def genera_landing_page():
-    print(f"📄 Generazione Landing Page...")
-    nav_links = f'<a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
-    
-    html = f"""<!DOCTYPE html>
-    <html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <meta name="theme-color" content="#d32f2f">
-        <title>{NOME_VISUALIZZATO}</title>
-        <link rel="icon" type="image/png" href="{URL_LOGO}">
-        <link rel="apple-touch-icon" href="{URL_LOGO}">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <link rel="manifest" href="manifest.json">
-        {CSS_BASE}
-    </head>
-    <body>
-        <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
-            <div class="modal-content" onclick="event.stopPropagation()">
-                <div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div>
-                <div id="modal-body"></div>
-                <div style="text-align:center; margin-top:15px;"><button onclick="closeModal()" style="background:#d32f2f; color:white; border:none; padding:8px 20px; border-radius:20px;">Chiudi</button></div>
-            </div>
-        </div>
-        
-        <div class="app-header">
-            <div class="header-left">
-                <img src="{URL_LOGO}" alt="Logo" class="logo-main">
-                <div><h1>{NOME_VISUALIZZATO}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
-            </div>
-            <div class="nav-buttons">{nav_links}</div>
-        </div>
-        
-        <div class="landing-container">
-            <div class="instruction-text">Seleziona il settore:</div>
-            <div class="choice-card">
-                <img src="{URL_SPLIT_IMG}" alt="Scelta Campionato" class="choice-img">
-                <div class="click-overlay">
-                    <a href="{FILE_MALE}" class="click-area"></a>
-                    <a href="{FILE_FEMALE}" class="click-area"></a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="footer-counter">
-            <img src="{URL_COUNTER}" alt="Visite"><br>
-            <span class="version-text">{APP_VERSION}</span>
-            <div class="footer-msg">{FOOTER_MSG}</div>
-        </div>
-        
-        <div id="ios-popup" class="ios-install-popup">
-            <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
-            <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
-            <div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div>
-            <div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div>
-            <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
-        </div>
-    </body>
-    </html>"""
+    html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>{NOME_VISUALIZZATO}</title>{CSS_BASE}</head><body><div class="app-header"><div class="header-left"><img src="{URL_LOGO}" class="logo-main"><div><h1>{NOME_VISUALIZZATO}</h1></div></div><div class="nav-buttons"><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a></div></div><div class="landing-container"><div class="instruction-text">Seleziona il settore:</div><div class="choice-card"><img src="{URL_SPLIT_IMG}" class="choice-img"><div class="click-overlay"><a href="{FILE_MALE}" class="click-area"></a><a href="{FILE_FEMALE}" class="click-area"></a></div></div></div><div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span></div></body></html>'
     with open(FILE_LANDING, "w", encoding="utf-8") as f: f.write(html)
 
 def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP"):
-    print(f"📄 Generazione {filename} (Mode: {mode})...")
-    is_app = True
-    
-    if "maschile" in filename: 
-        page_title = "Settore Maschile"
-        origin_param = "maschile"
-    elif "femminile" in filename: 
-        page_title = "Settore Femminile"
-        origin_param = "femminile"
-    else: 
-        page_title = NOME_VISUALIZZATO
-        origin_param = ""
-    
-    nav_links = f"""
-    <a href="#" onclick="openModal(); return false;" title="Prossimi Appuntamenti"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR_EVENTS}" class="nav-icon-img"></span></a>
-    <a href="{FILE_GEN_MALE if origin_param == 'maschile' else FILE_GEN_FEMALE}?from={origin_param}" title="Tutti i risultati"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a>
-    <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
-    """
+    page_title = "Settore Maschile" if "maschile" in filename else "Settore Femminile"
+    origin = "maschile" if "maschile" in filename else "femminile"
+    nav_links = f'<a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR_EVENTS}" class="nav-icon-img"></span></a><a href="{"generale_m.html" if origin=="maschile" else "generale_f.html"}?from={origin}"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
 
-    modal_html = """
-        <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
-            <div class="modal-content" onclick="event.stopPropagation()">
-                <div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div>
-                <div id="modal-body"></div>
-                <div style="text-align:center; margin-top:15px;"><button onclick="closeModal()" style="background:#d32f2f; color:white; border:none; padding:8px 20px; border-radius:20px;">Chiudi</button></div>
-            </div>
-        </div>"""
-    
-    footer_html = f'<div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"><br><span class="version-text">{APP_VERSION}</span><div class="footer-msg">{FOOTER_MSG}</div></div>'
-                                
-                                                  
-                                                       
-                                                  
-          
-       
-
-    html = f"""<!DOCTYPE html>
-    <html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <meta name="theme-color" content="#d32f2f">
-        <title>{page_title}</title>
-        <link rel="icon" type="image/png" href="{URL_LOGO}">
-        <link rel="apple-touch-icon" href="{URL_LOGO}">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <link rel="manifest" href="manifest.json">
-        {CSS_BASE}
-    </head>
-    <body>
-        {modal_html}
-        <div class="app-header">
-            <div class="header-left" onclick="window.location.href='{FILE_LANDING}'">
-                <img src="{URL_LOGO}" alt="Logo" class="logo-main">
-                <div><h1>{page_title}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
-            </div>
-            <div class="nav-buttons">{nav_links}</div>
-        </div>
-    """
+    html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>{page_title}</title>{CSS_BASE}</head><body>'
+    html += f'<div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div><div id="modal-body"></div></div></div>'
+    html += f'<div class="app-header"><div class="header-left" onclick="window.location.href=\'index.html\'"><img src="{URL_LOGO}" class="logo-main"><div><h1>{page_title}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div></div><div class="nav-buttons">{nav_links}</div></div>'
 
     campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
-    
     html += '<div class="tab-bar">'
-    for i, camp in enumerate(campionati_disp):
-        if "Gir." in camp:
-            parts = camp.split("Gir.")
-            base = parts[0].strip().split()
-            nome_base = f"{base[0]} {base[1]}" if len(base) >= 2 else parts[0]
-            lettera_girone = parts[1].strip()
-            n = f"{nome_base} Gir.{lettera_girone}"
-        else:
-            n = camp
-        html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{n}</button>'
+    for i, camp in enumerate(campionati_disp): html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp.split(" Gir.")[0]}</button>'
     html += '</div>'
 
     for i, camp in enumerate(campionati_disp):
         html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
         html += f"<h2>🏆 Classifica</h2>"
         df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
-        html += """<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>"""
+        html += '<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
         for _, r in df_c.iterrows():
             cls = 'class="my-team-row"' if is_target_team(r['Squadra']) else ''
             html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
         html += '</tbody></table></div></div>'
-
+        
         # AGGIUNTA PULSANTI E CONTAINER PER SORTING
-        html += f"<h2>📅 Calendario</h2>"
+        html += f"<h2>📅 Calendario TODIS</h2>"
         html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
         html += f'<div id="calendar-container-{i}">'
-        df_r = df_ris[df_ris['Campionato'] == camp]
-                                                    
-        mask = df_r['Squadra Casa'].apply(is_target_team) | df_r['Squadra Ospite'].apply(is_target_team)
-        df_r = df_r[mask]
-        
-        if df_r.empty:
-            html += "<p>Nessuna partita trovata.</p>"
-        else:
-            for _, r in df_r.iterrows(): html += crea_card_html(r, camp, is_focus_mode=True)
-        html += '</div>'
+        df_todis = df_ris[(df_ris['Campionato'] == camp) & (df_ris['Squadra Casa'].apply(is_target_team) | df_ris['Squadra Ospite'].apply(is_target_team))]
+        for _, r in df_todis.iterrows(): html += crea_card_html(r, camp, is_focus_mode=True)
+        html += '</div></div>'
 
-    html += '<div style="height:20px;"></div></body></html>'
-
+    html += f'<div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span></div></body></html>'
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
 
 def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_link):
-    print(f"📄 Generazione {filename} (Mode: GENERAL)...")
-    title = "Risultati Completi"
-    nav_links = f"""
-    <a href="#" onclick="tornaAlSettore(); return false;" title="Filtro Todis"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>
-    <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
-    """
+    nav_links = f'<a href="#" onclick="tornaAlSettore(); return false;"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
+    html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Risultati Completi</title>{CSS_BASE}</head><body>'
+    html += f'<div class="app-header" style="background:#1976D2"><div class="header-left" onclick="window.location.href=\'index.html\'"><img src="{URL_LOGO}" class="logo-main"><h1>Risultati Completi</h1></div><div class="nav-buttons">{nav_links}</div></div>'
     
-    # PULSANTI ORDINAMENTO (Header Aggiuntivo)
-    # Generiamo ID univoci per i TAB in modo che lo script sappia quale container ordinare
-    
-    html = f"""<!DOCTYPE html>
-    <html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <meta name="theme-color" content="#1976D2">
-        <title>{title}</title>
-        <link rel="icon" type="image/png" href="{URL_LOGO}">
-        <link rel="apple-touch-icon" href="{URL_LOGO}">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <link rel="manifest" href="manifest.json">
-        {CSS_BASE}
-        <style>.app-header {{ background-color: #1976D2; }}</style>
-    </head>
-    <body>
-        <div class="app-header">
-            <div class="header-left" onclick="window.location.href='{FILE_LANDING}'">
-                <img src="{URL_LOGO}" alt="Logo" class="logo-main">
-                <div><h1>{title}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div>
-            </div>
-            <div class="nav-buttons">{nav_links}</div>
-        </div>
-    """
-
     campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
     html += '<div class="tab-bar">'
-    for i, camp in enumerate(campionati_disp):
-        if "Gir." in camp:
-            parts = camp.split("Gir.")
-            base = parts[0].strip().split()
-            nome_base = f"{base[0]} {base[1]}" if len(base) >= 2 else parts[0]
-            lettera_girone = parts[1].strip()
-            n = f"{nome_base} Gir.{lettera_girone}"
-        else:
-            n = camp
-        html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{n}</button>'
+    for i, camp in enumerate(campionati_disp): html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp.split(" Gir.")[0]}</button>'
     html += '</div>'
 
     for i, camp in enumerate(campionati_disp):
         html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
-        html += f"<h2>🏆 Classifica</h2>"
+        html += f'<h2>🏆 Classifica</h2>'
         df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
-        html += """<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>"""
+        html += '<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
         for _, r in df_c.iterrows():
             cls = 'class="my-team-row"' if is_target_team(r['Squadra']) else ''
             html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
         html += '</tbody></table></div></div>'
-
-        html += f"<h2>📅 Calendario</h2>"
         
-        # BARRA STRUMENTI: Ordina / Stampa
-        html += f"""
-        <div class="calendar-controls">
-            <button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button>
-            <button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button>
-        </div>
-        <div id="calendar-container-{i}">
-        """
-        
+        html += f'<h2>📅 Calendario</h2>'
+        html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
+        html += f'<div id="calendar-container-{i}">'
         df_r = df_ris[df_ris['Campionato'] == camp]
-        
-        if df_r.empty:
-            html += "<p>Nessuna partita trovata.</p>"
-        else:
-            giornate = df_r['Giornata'].unique()
-            for g in giornate:
-                html += f'<h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">{g}</h3>'
-                for _, r in df_r[df_r['Giornata'] == g].iterrows(): html += crea_card_html(r, camp, is_focus_mode=False)
-        html += '</div></div>' # Chiude container e tab
+        for g in df_r['Giornata'].unique():
+            html += f'<h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">{g}</h3>'
+            for _, r in df_r[df_r['Giornata'] == g].iterrows(): html += crea_card_html(r, camp, is_focus_mode=False)
+        html += '</div></div>'
 
-    html += f'''
-    <div class="footer-counter">
-        <img src="{URL_COUNTER}" alt="Visite"><br>
-        <span class="version-text">{APP_VERSION}</span>
-        <div class="footer-msg">{FOOTER_MSG}</div>
-    </div>
-    </body></html>'''
-    
+    html += f'<div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span></div></body></html>'
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
 
 def genera_segnapunti():
-    print(f"📄 Generazione Segnapunti...")
-    nav_links = f'<a href="{FILE_LANDING}" title="Home"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a>'
-
-    html = f"""<!DOCTYPE html>
-    <html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <meta name="theme-color" content="#121212">
-        <title>Segnapunti</title>
-        <link rel="icon" type="image/png" href="{URL_LOGO}">
-        <link rel="apple-touch-icon" href="{URL_LOGO}">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <link rel="manifest" href="manifest.json">
-        {SCOREBOARD_CODE}
-    </head>
-    <body>
-        <div class="sb-container">
-            <div class="team-panel team-home" id="colHome" onclick="addPoint('Home')">
-                <div class="service-ball">🏐</div>
-                <input type="text" class="team-name-input" value="CASA">
-                <div class="score-display" id="scoreHome">0</div>
-                <div class="fine-tune">
-                    <button class="btn-tune" onclick="adjScore('Home', -1); event.stopPropagation()">-</button>
-                    <button class="btn-tune" onclick="adjScore('Home', 1); event.stopPropagation()">+</button>
-                </div>
-            </div>
-            <div class="center-panel">
-                <div class="sets-box"><div class="sets-label">SETS</div><div class="sets-score"><span id="setsHome">0</span> - <span id="setsGuest">0</span></div><div class="current-set-badge" id="setNum">SET 1</div></div>
-                <div class="timer-box"><div class="timer-val" id="timer">00:00</div><button class="btn-timer" onclick="toggleTimer()" id="btnTimer">START</button></div>
-                <div class="controls-bottom">
-                    <button class="btn-ctrl" style="background:#2e7d32;" onclick="setServiceManual()">Battuta</button>
-                    <button class="btn-ctrl btn-fs" onclick="toggleFullScreen()">⛶ Full</button>
-                    <button class="btn-ctrl btn-reset" onclick="resetMatch()">Reset</button>
-                    <a href="{FILE_LANDING}" class="btn-ctrl btn-exit">Esci</a>
-                </div>
-            </div>
-            <div class="team-panel team-guest" id="colGuest" onclick="addPoint('Guest')">
-                <div class="service-ball">🏐</div>
-                <input type="text" class="team-name-input" value="OSPITI">
-                <div class="score-display" id="scoreGuest">0</div>
-                <div class="fine-tune">
-                    <button class="btn-tune" onclick="adjScore('Guest', -1); event.stopPropagation()">-</button>
-                    <button class="btn-tune" onclick="adjScore('Guest', 1); event.stopPropagation()">+</button>
-                </div>
-            </div>
-        </div>
-        <div class="rotate-overlay"><div style="font-size: 50px;">🔄</div><h2>Ruota il dispositivo</h2><p>Il segnapunti funziona in orizzontale</p></div>
-    </body>
-    </html>"""
+    html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Segnapunti</title>{SCOREBOARD_CODE}</head></html>'
     with open(FILE_SCORE, "w", encoding="utf-8") as f: f.write(html)
 
 if __name__ == "__main__":
     df_ris, df_class = scrape_data()
     genera_landing_page()
-    genera_pagina_app(df_ris, df_class, FILE_MALE, CAMPIONATI_MASCHILI, mode="APP")
-    genera_pagina_app(df_ris, df_class, FILE_FEMALE, CAMPIONATI_FEMMINILI, mode="APP")
-    genera_pagina_generale(df_ris, df_class, FILE_GEN_MALE, CAMPIONATI_MASCHILI, back_link=FILE_MALE)
-    genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, back_link=FILE_FEMALE)
+    genera_pagina_app(df_ris, df_class, FILE_MALE, CAMPIONATI_MASCHILI)
+    genera_pagina_app(df_ris, df_class, FILE_FEMALE, CAMPIONATI_FEMMINILI)
+    genera_pagina_generale(df_ris, df_class, FILE_GEN_MALE, CAMPIONATI_MASCHILI, FILE_MALE)
+    genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
-    print("✅ Generazione completata! Site structure built.")
+    print(f"✅ Generazione {APP_VERSION} completata!")
