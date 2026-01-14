@@ -1,5 +1,5 @@
 # ==============================================================================
-# SOFTWARE VERSION: v65.0
+# SOFTWARE VERSION: v66.0
 # RELEASE NOTE: Sorting per Data/Giornata, Stampa PDF ottimizzata
 # ==============================================================================
 
@@ -19,11 +19,10 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v65.0 (Sort & Print)"
+APP_VERSION = "v66.0"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "👨‍💻 Non sparate sul programmatore (né sul libero 🏐)"                                                                              
-                                                     
 TARGET_TEAM_ALIASES = [
     "TODIS PASTENA VOLLEY",
     "TODIS CS PASTENA VOLLEY",
@@ -152,21 +151,12 @@ CSS_BASE = """
 
     /* LAYOUT SET E PUNTEGGIO */
     .scores-wrapper { display: flex; align-items: center; gap: 8px; justify-content: flex-end; width: 100%; }
-    
-                
     .set-total { width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-                                                                                                                
-     
     .bg-green { background-color: #2e7d32; } 
     .bg-red { background-color: #c62828; }
     .bg-gray { background-color: #78909c; }
-
     .partials-inline { display: flex; gap: 3px; overflow-x: auto; max-width: 150px; }
-                    
-                                                                                               
     .partial-badge { width: 24px; height: 24px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; flex-shrink: 0; }
-     
-
     .team-info { flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     /* Modals & Footer */
@@ -185,8 +175,6 @@ CSS_BASE = """
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
-
-                                      
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -633,12 +621,8 @@ def get_match_details_robust(driver, match_url):
                     if match: nums_ospite.append(match.group())
                 
                 sets_list = []
-                                                                                       
                 for i in range(min(len(nums_casa), len(nums_ospite))):
                     sets_list.append(f"{nums_casa[i]}-{nums_ospite[i]}")
-                                                                       
-                                       
-                                                            
                 
                 parziali_str = ",".join(sets_list)
         except: parziali_str = ""
@@ -679,9 +663,7 @@ def scrape_data():
                     o = o.replace(pt_o, '').strip()
 
                     full_url = urljoin(base_url, el.get('href', ''))
-                                          
                     d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, full_url)
-                    
                     all_results.append({
                         'Campionato': nome_camp, 'Giornata': curr_giornata,
                         'Squadra Casa': c, 'Squadra Ospite': o,
@@ -796,12 +778,6 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
         </div>"""
     
     footer_html = f'<div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"><br><span class="version-text">{APP_VERSION}</span><div class="footer-msg">{FOOTER_MSG}</div></div>'
-                                
-                                                  
-                                                       
-                                                  
-          
-       
 
     html = f"""<!DOCTYPE html>
     <html lang="it">
@@ -852,19 +828,15 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
             html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
         html += '</tbody></table></div></div>'
 
-        html += f"<h2>📅 Calendario</h2>"
-        df_r = df_ris[df_ris['Campionato'] == camp]
-        mask = df_r['Squadra Casa'].apply(is_target_team) | df_r['Squadra Ospite'].apply(is_target_team)
-        df_r = df_r[mask]
-        
-        if df_r.empty:
-            html += "<p>Nessuna partita trovata.</p>"
-        else:
-            for _, r in df_r.iterrows(): html += crea_card_html(r, camp, is_focus_mode=True)
-        html += '</div>'
+          # AGGIUNTA PULSANTI E CONTAINER PER SORTING
+        html += f"<h2>📅 Calendario </h2>"
+        html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
+        html += f'<div id="calendar-container-{i}">'
+        df_todis = df_ris[(df_ris['Campionato'] == camp) & (df_ris['Squadra Casa'].apply(is_target_team) | df_ris['Squadra Ospite'].apply(is_target_team))]
+        for _, r in df_todis.iterrows(): html += crea_card_html(r, camp, is_focus_mode=True)
+        html += '</div></div>'
 
-    html += '<div style="height:20px;"></div></body></html>'
-                            
+    html += f'<div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span></div></body></html>'
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
 
 def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_link):
