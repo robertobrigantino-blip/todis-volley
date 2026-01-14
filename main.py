@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v66.0 (Global Sort & Print)"
+APP_VERSION = "v67.0 (Global Sort & Print)"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "👨‍💻 Non sparate sul programmatore (né sul libero 🏐)"                                                                              
@@ -668,3 +668,4 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
+
