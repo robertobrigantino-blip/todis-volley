@@ -1,5 +1,5 @@
 # ==============================================================================
-# SOFTWARE VERSION: v2.0
+# SOFTWARE VERSION: v2.1
 # RELEASE NOTE: Sorting & Print estesi anche alle pagine Filtro TODIS
 # ==============================================================================
 
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v2.0 (Global Sort & Print)"
+APP_VERSION = "v2.1 (Global Sort & Print)"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "👨‍💻 Non sparate sul programmatore (né sul libero 🏐)"                                                                              
@@ -51,14 +51,14 @@ URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg
 
 # CAMPIONATI
 CAMPIONATI_MASCHILI = {
-    "Serie D Gir.C": "85622",
+    "Serie D  Gir.C": "85622",
     "Under 19 Gir.A": "86865",
     "Under 17 Gir.B": "86864",
     "Under 15 Gir.B": "86848",
 }
 
 CAMPIONATI_FEMMINILI = {
-    "Serie C Gir.A": "85471",
+    "Serie C  Gir.A": "85471",
     "Under 18 Gir.B": "86850",
     "Under 16 Gir.A": "86853",
     "Under 14 Gir.C": "86860",
@@ -479,8 +479,6 @@ def crea_card_html(r, camp, is_focus_mode=False):
     if r['Punteggio']:
         try:
             sc, so = int(r['Set Casa']), int(r['Set Ospite'])
-																							
-													   
             bg_c = "bg-green" if sc > so else "bg-red"
             bg_o = "bg-green" if so > sc else "bg-red"
             if is_my_match:
@@ -652,9 +650,7 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
 
     campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
     html += '<div class="tab-bar">'
-								 
-																							 
-    for i, camp in enumerate(campionati_disp): html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp.split(" Gir.")[0]}</button>'
+    for i, camp in enumerate(campionati_disp): html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp}</button>'
     html += '</div>'
 
     for i, camp in enumerate(campionati_disp):
@@ -668,7 +664,7 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
         html += '</tbody></table></div></div>'
         
         # AGGIUNTA PULSANTI E CONTAINER PER SORTING
-        html += f"<h2>📅 Calendario TODIS</h2>"
+        html += f"<h2>📅 Calendario </h2>"
         html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
         html += f'<div id="calendar-container-{i}">'
         df_todis = df_ris[(df_ris['Campionato'] == camp) & (df_ris['Squadra Casa'].apply(is_target_team) | df_ris['Squadra Ospite'].apply(is_target_team))]
@@ -685,11 +681,9 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
     
     campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
     html += '<div class="tab-bar">'
-								 
-																							 
-    for i, camp in enumerate(campionati_disp): html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp.split(" Gir.")[0]}</button>'
+    for i, camp in enumerate(campionati_disp): html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp}</button>'
     html += '</div>'
-
+html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp}</button>'
     for i, camp in enumerate(campionati_disp):
         html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
         html += f'<h2>🏆 Classifica</h2>'
@@ -725,5 +719,4 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
-
 
