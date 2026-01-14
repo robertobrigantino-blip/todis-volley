@@ -1,15 +1,4 @@
-<!DOCTYPE html>
-    <html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <meta name="theme-color" content="#d32f2f">
-        <title>TODIS PASTENA VOLLEY</title>
-        <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
-        <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <link rel="manifest" href="manifest.json">
-        
+<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>TODIS PASTENA VOLLEY</title>
 <style>
     body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
     
@@ -86,21 +75,12 @@
 
     /* LAYOUT SET E PUNTEGGIO */
     .scores-wrapper { display: flex; align-items: center; gap: 8px; justify-content: flex-end; width: 100%; }
-    
-                
     .set-total { width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-                                                                                                                
-     
     .bg-green { background-color: #2e7d32; } 
     .bg-red { background-color: #c62828; }
     .bg-gray { background-color: #78909c; }
-
     .partials-inline { display: flex; gap: 3px; overflow-x: auto; max-width: 150px; }
-                    
-                                                                                               
     .partial-badge { width: 24px; height: 24px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; flex-shrink: 0; }
-     
-
     .team-info { flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     /* Modals & Footer */
@@ -119,8 +99,6 @@
     .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
     .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
     @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
-
-                                      
     .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
     .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
     .choice-img { width: 100%; display: block; height: auto; }
@@ -147,7 +125,6 @@
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')
             .then(registration => {
-                // Check for updates
                 registration.onupdatefound = () => {
                     const installingWorker = registration.installing;
                     installingWorker.onstatechange = () => {
@@ -209,10 +186,7 @@
         }
         
         if (!isSorted) {
-            // Sort by Date
             const cards = Array.from(container.querySelectorAll('.match-card'));
-            
-            // Nascondi gli header delle giornate
             const headers = container.querySelectorAll('h3');
             headers.forEach(h => h.style.display = 'none');
             
@@ -222,7 +196,6 @@
                 return da.localeCompare(db);
             });
             
-            // Re-append sorted cards (without headers)
             container.innerHTML = "";
             cards.forEach(card => container.appendChild(card));
             
@@ -230,7 +203,6 @@
             btn.setAttribute('data-sorted', 'true');
             btn.classList.add('active');
         } else {
-            // Restore Original
             container.innerHTML = originalOrder[tabId];
             btn.innerHTML = "📅 Ordina per Data";
             btn.setAttribute('data-sorted', 'false');
@@ -249,7 +221,6 @@
             setTimeout(() => { document.getElementById('ios-popup').style.display = 'block'; }, 2000);
         }
 
-        // Logic for Upcoming Matches Notification
         if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -292,48 +263,4 @@
         }
     };
 </script>
-
-    </head>
-    <body>
-        <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
-            <div class="modal-content" onclick="event.stopPropagation()">
-                <div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div>
-                <div id="modal-body"></div>
-                <div style="text-align:center; margin-top:15px;"><button onclick="closeModal()" style="background:#d32f2f; color:white; border:none; padding:8px 20px; border-radius:20px;">Chiudi</button></div>
-            </div>
-        </div>
-        
-        <div class="app-header">
-            <div class="header-left">
-                <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" alt="Logo" class="logo-main">
-                <div><h1>TODIS PASTENA VOLLEY</h1><div class="last-update">14/01 13:54</div></div>
-            </div>
-            <div class="nav-buttons"><a href="segnapunti.html" title="Segnapunti"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div>
-        </div>
-        
-        <div class="landing-container">
-            <div class="instruction-text">Seleziona il settore:</div>
-            <div class="choice-card">
-                <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/scelta_campionato.jpg" alt="Scelta Campionato" class="choice-img">
-                <div class="click-overlay">
-                    <a href="maschile.html" class="click-area"></a>
-                    <a href="femminile.html" class="click-area"></a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="footer-counter">
-            <img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f" alt="Visite"><br>
-            <span class="version-text">v66.0</span>
-            <div class="footer-msg">👨‍💻 Non sparate sul programmatore (né sul libero 🏐)</div>
-        </div>
-        
-        <div id="ios-popup" class="ios-install-popup">
-            <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
-            <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
-            <div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div>
-            <div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div>
-            <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
-        </div>
-    </body>
-    </html>
+</head><body><div class="app-header"><div class="header-left"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" class="logo-main"><div><h1>TODIS PASTENA VOLLEY</h1></div></div><div class="nav-buttons"><a href="segnapunti.html"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div></div><div class="landing-container"><div class="instruction-text">Seleziona il settore:</div><div class="choice-card"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/scelta_campionato.jpg" class="choice-img"><div class="click-overlay"><a href="maschile.html" class="click-area"></a><a href="femminile.html" class="click-area"></a></div></div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v66.0 (Global Sort & Print)</span></div></body></html>
