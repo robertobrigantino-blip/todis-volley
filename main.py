@@ -1,5 +1,5 @@
 # ==============================================================================
-# SOFTWARE VERSION: v2.0
+# SOFTWARE VERSION: v2.1
 # RELEASE NOTE: Sorting & Print estesi anche alle pagine Filtro TODIS
 # ==============================================================================
 
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v2.0 (Global Sort & Print)"
+APP_VERSION = "v2.1 (Global Sort & Print)"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "👨‍💻 Non sparate sul programmatore (né sul libero 🏐)"                                                                              
@@ -51,17 +51,17 @@ URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg
 
 # CAMPIONATI
 CAMPIONATI_MASCHILI = {
-    "Serie D  Gir.C": "85622",
-    "Under 19 Gir.A": "86865",
-    "Under 17 Gir.B": "86864",
-    "Under 15 Gir.B": "86848",
+    "Serie D  Gir.C S.Maschile": "85622",
+    "Under 19 Gir.A S.Maschile": "86865",
+    "Under 17 Gir.B S.Maschile": "86864",
+    "Under 15 Gir.B S.Maschile": "86848",
 }
 
 CAMPIONATI_FEMMINILI = {
-    "Serie C  Gir.A": "85471",
-    "Under 18 Gir.B": "86850",
-    "Under 16 Gir.A": "86853",
-    "Under 14 Gir.C": "86860",
+    "Serie C  Gir.A S.Femminile": "85471",
+    "Under 18 Gir.B S.Femminile": "86850",
+    "Under 16 Gir.A S.Femminile": "86853",
+    "Under 14 Gir.C S.Femminile": "86860",
 }
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
@@ -650,7 +650,7 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
 
     campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
     html += '<div class="tab-bar">'
-    for i, camp in enumerate(campionati_disp): html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp.split(" Gir.")[0]}</button>'
+    for i, camp in enumerate(campionati_disp): html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp.split(" S.")[0]}</button>'
     html += '</div>'
 
     for i, camp in enumerate(campionati_disp):
@@ -681,7 +681,7 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
     
     campionati_disp = [c for c in campionati_target.keys() if c in df_class['Campionato'].unique()]
     html += '<div class="tab-bar">'
-    for i, camp in enumerate(campionati_disp): html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp.split(" Gir.")[0]}</button>'
+    for i, camp in enumerate(campionati_disp): html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp.split(" S.")[0]}</button>'
     html += '</div>'
 
     for i, camp in enumerate(campionati_disp):
