@@ -1,5 +1,5 @@
 # ==============================================================================
-# SOFTWARE VERSION: v2.1
+# SOFTWARE VERSION: v2.2
 # RELEASE NOTE: Sorting & Print estesi anche alle pagine Filtro TODIS
 # ==============================================================================
 
@@ -19,10 +19,10 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v2.1 (Global Sort & Print)"
+APP_VERSION = "v2.2 | Stable Release 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
-FOOTER_MSG = "👨‍💻 Non sparate sul programmatore (né sul libero 🏐)"                                                                              
+FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"                                                                             
 TARGET_TEAM_ALIASES = [
     "TODIS PASTENA VOLLEY",
     "TODIS CS PASTENA VOLLEY",
