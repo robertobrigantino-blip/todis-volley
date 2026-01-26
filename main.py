@@ -1,5 +1,5 @@
 # ==============================================================================
-# SOFTWARE VERSION: v3.2
+# SOFTWARE VERSION: v3.3
 # RELEASE NOTE: Stampa Ottimizzata
 # ==============================================================================
 
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v3.2 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v3.3 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -74,7 +74,7 @@ def is_target_team(team_name):
         if alias.upper() in name_clean: return True
     return False
 
-# ================= CSS COMUNE TOTALE (v3.0 - Allineamento Perfetto & No-Overflow) =================
+# ================= CSS COMUNE TOTALE (v3.3 - Final Print & Click Fix) =================
 CSS_BASE = """
 <style>
     /* Reset e Layout Base */
@@ -233,9 +233,17 @@ CSS_BASE = """
     .modal-title { font-size: 16px; font-weight: bold; color: #d32f2f; }
     .close-btn { background: #eee; border: none; font-size: 20px; padding: 0 8px; border-radius: 5px; cursor: pointer; }
 
-    /* Tools */
-    .calendar-controls { display: flex; gap: 8px; margin-bottom: 12px; justify-content: flex-end; }
-    .btn-tool { font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; transition: 0.2s; }
+    /* Tools Bar (Fix Cliccabilità) */
+    .calendar-controls { 
+        display: flex; gap: 8px; margin-bottom: 12px; 
+        justify-content: flex-end; position: relative; z-index: 10; 
+    }
+    .btn-tool { 
+        font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; 
+        border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; 
+        transition: 0.2s; position: relative; z-index: 11;
+    }
+    .btn-tool:active { transform: scale(0.95); background: #f0f0f0; }
     .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
 	
     /* Footer */
@@ -297,6 +305,12 @@ CSS_BASE = """
     }
 </style>
 <script>
+    /* Funzioni Globali */
+    function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+    function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
+    function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
+    function printCalendar() { window.print(); } /* FUNZIONE STAMPA */
+    
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed: ', err));
@@ -311,12 +325,7 @@ CSS_BASE = """
         document.getElementById("content-" + tabIndex).classList.add("active");
         document.getElementById("btn-" + tabIndex).classList.add("active");
     }
-    
-    function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
-    function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
-    function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
-    function printCalendar() { window.print(); } /* FUNZIONE STAMPA */
-    
+
     function tornaAlSettore() {
         const urlParams = new URLSearchParams(window.location.search);
         const origin = urlParams.get('from');
