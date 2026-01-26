@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v2.3
-# RELEASE NOTE: Added Instagram and Facebook links
+# SOFTWARE VERSION: v2.4
+# RELEASE NOTE: Fix Layout Landing Page
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v2.3 | Stable Release 🏁"
+APP_VERSION = "v2.4 | Stable Release 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"                                                                             
@@ -76,45 +76,95 @@ def is_target_team(team_name):
 # ================= CSS COMUNE =================
 CSS_BASE = """
 <style>
-    body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: #333; padding-bottom: 80px; }
+    /* Reset e Layout Base */
+    body { 
+        font-family: 'Roboto', sans-serif; 
+        background-color: #f0f2f5; 
+        margin: 0; 
+        padding: 0; 
+        color: #333; 
+        display: flex; 
+        flex-direction: column; 
+        min-height: 100vh; 
+        overflow-x: hidden;
+    }
     
-    /* Header */
-    .app-header { background-color: #d32f2f; color: white; padding: 5px 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top:0; z-index:1000; height: 60px; }
+    /* Header fisso */
+    .app-header { 
+        background-color: #d32f2f; 
+        color: white; 
+        padding: 0 15px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+        position: sticky; 
+        top:0; 
+        z-index:1000; 
+        height: 60px; 
+        flex-shrink: 0;
+    }
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
     .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
     
-    .nav-buttons { display: flex; gap: 10px; align-items: center; }
-    .nav-icon-img { height: 45px; width: auto; transition: transform 0.1s, opacity 0.2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
-    .nav-icon-img:active { transform: scale(0.90); opacity: 0.8; }
+    .nav-buttons { display: flex; gap: 8px; align-items: center; }
+    .nav-icon-img { height: 42px; width: auto; transition: transform 0.1s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
+    .nav-icon-img:active { transform: scale(0.90); }
     
-    /* CALENDARIO NOTIFICA */
-    .calendar-container { position: relative; display: inline-block; display: none; }
-    .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
-    .calendar-container.has-events::after { content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; }
-    @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    /* LANDING PAGE - Ottimizzazione Spazio */
+    .landing-container { 
+        flex-grow: 1; 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center; 
+        align-items: center; 
+        padding: 10px 15px; 
+        gap: 12px; 
+    }
+    .instruction-text { font-weight: 500; color: #555; font-size: 13px; margin: 0; }
+    .choice-card { 
+        position: relative; 
+        width: 85%; 
+        max-width: 380px; 
+        border-radius: 15px; 
+        overflow: hidden; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+        background: white; 
+    }
+    .choice-img { width: 100%; display: block; height: auto; }
+    .click-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; }
+    .click-area { width: 50%; height: 100%; cursor: pointer; }
 
-    /* Tabs */
-    .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; }
+    /* Social Section Compatta */
+    .social-section { text-align: center; width: 100%; margin: 5px 0; }
+    .social-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: bold; }
+    .social-icons { display: flex; justify-content: center; gap: 30px; }
+    .social-icon-img { width: 30px; height: 30px; transition: transform 0.2s; }
+    .social-icon-img:active { transform: scale(0.8); }
+
+    /* FOOTER Alzato e Compatto */
+    .footer-counter { 
+        text-align: center; 
+        padding: 10px 0; 
+        border-top: 1px solid #eee; 
+        background: white; 
+        flex-shrink: 0; 
+    }
+    .footer-counter img { height: 18px; vertical-align: middle; }
+    .version-text { font-size: 9px; color: #999; margin-top: 2px; display: block; font-family: monospace; }
+    .footer-msg { font-size: 10px; color: #777; margin-top: 2px; font-style: italic; }
+
+    /* Stili per Pagine Contenuto (Classifiche/Risultati) */
+    .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; flex-shrink: 0; }
     .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
-    .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
+    .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; flex-grow: 1; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
-
-    /* Controls Bar (Sort/Print) */
-    .calendar-controls { display: flex; gap: 10px; margin-bottom: 15px; justify-content: flex-end; align-items: center; }
-    .btn-tool { 
-        font-size: 11px; padding: 6px 12px; background: #f0f2f5; 
-        border: 1px solid #ccc; border-radius: 20px; cursor: pointer; 
-        color: #555; font-weight: bold; display: flex; align-items: center; gap: 5px; 
-        transition: background 0.2s;
-    }
-    .btn-tool:hover { background: #e0e0e0; }
-    .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
 
     /* Classifica */
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
@@ -126,84 +176,61 @@ CSS_BASE = """
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
 
     /* Card Partita */
-    .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; transition: max-height 0.3s ease; }
+    .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; }
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
-    .result-badge { position: absolute; top: 0; right: 0; font-size: 9px; padding: 3px 6px; border-bottom-left-radius: 6px; font-weight: bold; color: white; z-index: 10; text-transform: uppercase; }
-    .badge-win { background-color: #2e7d32; }
-    .badge-loss { background-color: #c62828; }
-    .badge-played { background-color: #78909c; } 
+    .match-card.played { border-left-color: #78909c; }
 
-    .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; padding-right: 50px; }
-    .date-badge { font-weight: bold; color: #d32f2f; display: flex; align-items: center; gap: 4px; }
+    .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; }
+    .date-badge { font-weight: bold; color: #d32f2f; }
     .teams { display: flex; flex-direction: column; gap: 6px; font-size: 14px; margin-bottom: 8px; }
     .team-row { display: flex; justify-content: space-between; align-items: center; }
     .my-team-text { color: #d32f2f; font-weight: 700; }
-    .team-score { font-weight: bold; background: #eee; padding: 2px 8px; border-radius: 4px; min-width: 25px; text-align: center; }
-    .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
-    .gym-name { font-size: 11px; color: #666; width: 100%; display: block; margin-bottom: 5px; }
+    .scores-wrapper { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+    .set-total { width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; }
+    .bg-green { background-color: #2e7d32; } 
+    .bg-red { background-color: #c62828; }
+    .bg-gray { background-color: #78909c; }
+    .partials-inline { display: flex; gap: 3px; }
+    .partial-badge { width: 22px; height: 22px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+    
+    .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+    .gym-name { font-size: 10px; color: #666; width: 100%; margin-bottom: 5px; }
     .action-buttons { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
-    .btn { text-decoration: none; padding: 5px 10px; border-radius: 15px; font-size: 10px; font-weight: bold; display: flex; align-items: center; gap: 3px; border: 1px solid transparent; }
+    .btn { text-decoration: none; padding: 4px 8px; border-radius: 12px; font-size: 9px; font-weight: bold; border: 1px solid transparent; }
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
 
-    /* LAYOUT SET E PUNTEGGIO */
-    .scores-wrapper { display: flex; align-items: center; gap: 8px; justify-content: flex-end; width: 100%; }
-    .set-total { width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .bg-green { background-color: #2e7d32; } 
-    .bg-red { background-color: #c62828; }
-    .bg-gray { background-color: #78909c; }
-    .partials-inline { display: flex; gap: 3px; overflow-x: auto; max-width: 150px; }
-    .partial-badge { width: 24px; height: 24px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; flex-shrink: 0; }
-    .team-info { flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* CALENDARIO NOTIFICA */
+    .calendar-container { position: relative; display: none; }
+    .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
+    .calendar-container.has-events::after { content: ''; position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; }
+    @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-    /* Modals & Footer */
+    /* Modali */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-    .modal-content { background: white; width: 85%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 20px; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
+    .modal-content { background: white; width: 90%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 15px; overflow-y: auto; position: relative; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
-    .modal-title { font-size: 18px; font-weight: bold; color: #d32f2f; }
-    .close-btn { background: #eee; border: none; font-size: 24px; padding: 0 10px; border-radius: 5px; color: #555; cursor: pointer; }
-    .modal-content .match-card { border: 1px solid #eee; box-shadow: none; padding: 10px; margin-bottom: 8px; }
-    .footer-counter { text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #eee; }
-    .footer-counter img { height: 20px; vertical-align: middle; }
-    .version-text { font-size: 10px; color: #999; margin-top: 5px; display: block; font-family: monospace; }
-    .footer-msg { font-size: 11px; color: #777; margin-top: 4px; font-style: italic; opacity: 0.8; }
-    
+    .modal-title { font-size: 16px; font-weight: bold; color: #d32f2f; }
+    .close-btn { background: #eee; border: none; font-size: 20px; padding: 0 8px; border-radius: 5px; cursor: pointer; }
+
+    /* Controls Bar */
+    .calendar-controls { display: flex; gap: 8px; margin-bottom: 12px; justify-content: flex-end; }
+    .btn-tool { font-size: 10px; padding: 5px 10px; background: #fff; border: 1px solid #ccc; border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; }
+    .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
+
     /* IOS INSTALL TIP */
-    .ios-install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 350px; text-align: center; display: none; animation: popUp 0.5s; }
-    .ios-install-popup:after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent; }
-    @keyframes popUp { from{transform:translate(-50%, 20px); opacity:0;} to{transform:translate(-50%, 0); opacity:1;} }
-    .landing-container { padding: 15px; max-width: 600px; margin: 0 auto; text-align: center; }
-    .choice-card { position: relative; width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: white; }
-    .choice-img { width: 100%; display: block; height: auto; }
-    .click-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; }
-    .click-area { width: 50%; height: 100%; cursor: pointer; }
-    .click-area:active { background: rgba(255,255,255,0.1); }
-    .instruction-text { margin-bottom: 15px; font-weight: 500; color: #555; font-size: 14px; }
-    
+    .ios-install-popup { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 12px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 320px; text-align: center; display: none; }
+
     /* PRINT STYLES */
     @media print {
         .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup { display: none !important; }
-        body { background: white; color: black; padding: 0; margin: 0; }
-        .match-card { border: 1px solid #ccc; break-inside: avoid; box-shadow: none; margin-bottom: 10px; }
+        body { background: white; color: black; }
         .tab-content { display: block !important; }
-        h2 { color: black; border-left: none; border-bottom: 2px solid #000; padding: 0; margin-top: 20px; }
-        .team-info { color: black; }
-        .result-badge { border: 1px solid #000; color: black; background: transparent !important; }
-        .bg-green, .bg-red, .bg-gray { background-color: #ddd !important; color: black !important; border: 1px solid #999; }
-        .partial-badge { background-color: white !important; color: black !important; border: 1px solid #ccc; }
+        .match-card { border: 1px solid #ccc; break-inside: avoid; }
     }
-    
-    /* Social Section */
-    .social-section { margin-top: 30px; margin-bottom: 10px; }
-    .social-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; font-weight: bold; }
-    .social-icons { display: flex; justify-content: center; gap: 30px; }
-    .social-link { transition: transform 0.2s; display: block; }
-    .social-link:active { transform: scale(0.9); }
-    .social-icon-img { width: 35px; height: 35px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
-    
 </style>
 <script>
     if ('serviceWorker' in navigator) {
@@ -594,7 +621,7 @@ def scrape_data():
 
 # ================= GENERATORI PAGINE =================
 def genera_landing_page():
-    print(f"📄 Generazione Landing Page...")
+    print(f"📄 Generazione Landing Page (Single Viewport)...")
     html = f"""<!DOCTYPE html>
     <html lang="it">
     <head>
@@ -605,7 +632,6 @@ def genera_landing_page():
         <link rel="icon" type="image/png" href="{URL_LOGO}">
         <link rel="apple-touch-icon" href="{URL_LOGO}">
         <meta name="apple-mobile-web-app-capable" content="yes">
-        <link rel="manifest" href="manifest.json">
         {CSS_BASE}
     </head>
     <body>
@@ -621,6 +647,7 @@ def genera_landing_page():
         
         <div class="landing-container">
             <div class="instruction-text">Seleziona il settore:</div>
+            
             <div class="choice-card">
                 <img src="{URL_SPLIT_IMG}" alt="Scelta Campionato" class="choice-img">
                 <div class="click-overlay">
@@ -629,14 +656,13 @@ def genera_landing_page():
                 </div>
             </div>
 
-            <!-- SEZIONE SOCIAL AGGIUNTA -->
             <div class="social-section">
                 <div class="social-label">Seguici sui Social</div>
                 <div class="social-icons">
-                    <a href="https://www.facebook.com/111542261731361?ref=_xav_ig_profile_page_web" target="_blank" class="social-link">
+                    <a href="https://www.facebook.com/111542261731361?ref=_xav_ig_profile_page_web" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" class="social-icon-img" alt="Facebook">
                     </a>
-                    <a href="https://www.instagram.com/asdcspastena_volley/" target="_blank" class="social-link">
+                    <a href="https://www.instagram.com/asdcspastena_volley/" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" class="social-icon-img" alt="Instagram">
                     </a>
                 </div>
@@ -647,14 +673,6 @@ def genera_landing_page():
             <img src="{URL_COUNTER}" alt="Visite"><br>
             <span class="version-text">{APP_VERSION}</span>
             <div class="footer-msg">{FOOTER_MSG}</div>
-        </div>
-        
-        <div id="ios-popup" class="ios-install-popup">
-            <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
-            <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
-            <div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div>
-            <div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div>
-            <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
         </div>
     </body>
     </html>"""
