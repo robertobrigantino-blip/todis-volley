@@ -8,6 +8,7 @@
         <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
         <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
         <meta name="apple-mobile-web-app-capable" content="yes">
+												  
         
 <style>
     /* Reset e Layout Base */
@@ -43,8 +44,17 @@
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 13px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }   
+																	   
+	
     .nav-buttons { display: flex; gap: 8px; align-items: center; }
     .nav-icon-img { height: 42px; width: auto; transition: transform 0.1s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
+																  
+	
+							 
+																					 
+																								
+																																																   
+																													  
 
     /* --- LANDING PAGE --- */
     .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 5px 0; overflow: hidden; }
@@ -95,6 +105,7 @@
     .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; width: 100%; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+	
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
 
     /* --- CLASSIFICHE FIXATE --- */
@@ -137,6 +148,14 @@
         white-space: normal; word-wrap: break-word; /* Permette il ritorno a capo */
     }
     .my-team-text { color: #d32f2f; font-weight: 700; }
+																																   
+																																													  
+																								
+																						
+																																															
+																				  
+																				   
+																				  
 
     .scores-wrapper { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .partials-inline { display: flex; flex-direction: row; gap: 2px; }
@@ -246,6 +265,21 @@
     
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
+													 
+								   
+													
+																	 
+															
+																	 
+																	 
+																					  
+									
+																				  
+							 
+						 
+					  
+				  
+			  
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed: ', err));
         });
     }
@@ -259,6 +293,10 @@
         document.getElementById("btn-" + tabIndex).classList.add("active");
     }
 
+																							  
+																							 
+																							 
+	
     function tornaAlSettore() {
         const urlParams = new URLSearchParams(window.location.search);
         const origin = urlParams.get('from');
@@ -267,20 +305,42 @@
         else window.location.href = "index.html";
     }
 
+							  
+								
+																 
+														   
+					  
+											 
+													  
+		 
+	 
+	
+						 
     var originalOrder = {};
+	
     function toggleSort(tabId) {
         const container = document.getElementById('calendar-container-' + tabId);
         const btn = document.getElementById('btn-sort-' + tabId);
         const isSorted = btn.getAttribute('data-sorted') === 'true';
+		
+									
         if (!originalOrder[tabId]) originalOrder[tabId] = container.innerHTML;
+		 
         
         if (!isSorted) {
             const cards = Array.from(container.querySelectorAll('.match-card'));
 				
             container.querySelectorAll('h3').forEach(h => h.style.display = 'none');
             cards.sort((a, b) => (a.getAttribute('data-date-iso') || '9999').localeCompare(b.getAttribute('data-date-iso') || '9999'));
+								  
+																		   
+																		   
+											
+			   
+			
             container.innerHTML = "";
             cards.forEach(card => container.appendChild(card));
+			
             btn.innerHTML = "🔢 Per Giornata";
             btn.setAttribute('data-sorted', 'true');
             btn.classList.add('active');
@@ -291,6 +351,11 @@
             btn.classList.remove('active');
         }
     }
+	
+							  
+					   
+	 
+
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
@@ -302,15 +367,19 @@
             const today = new Date();
             today.setHours(0,0,0,0);
             let nextMatches = {};
+			
             document.querySelectorAll('.match-card.upcoming').forEach(card => {
                 if(card.getAttribute('data-my-team') === 'true') {	 
+										 
                     const dateStr = card.getAttribute('data-date-iso');
                     const campName = card.getAttribute('data-camp'); 
+											  
                     const parts = dateStr.split('-');
                     const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
                     if (matchDate >= today) {
                         if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
                             nextMatches[campName] = { date: matchDate, html: card.outerHTML };
+							 
                         }
                     }
                 }
@@ -321,12 +390,16 @@
             for (const [camp, data] of Object.entries(nextMatches)) {
                 const campPulito = camp.replace(' S.Femminile', '').replace(' S.Maschile', '');
                 popupHTML += `<h3 style="color:#d32f2f; font-size:14px; margin-top:10px; border-bottom:1px solid #eee">🏆 ${campPulito}</h3>` + data.html;			   
+									   
                 count++;
             }
+			
             if (count > 0) {
                 const modalBody = document.getElementById('modal-body');										 
+																			 
                 if(modalBody) {
                     modalBody.innerHTML = popupHTML;							 
+															 
                     document.getElementById('btn-calendar').style.display = 'inline-block';
                     document.getElementById('btn-calendar').classList.add('has-events');
                 }
@@ -373,8 +446,16 @@
         
         <div class="footer-counter">
             <img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f" alt="Visite"><br>
-            <span class="version-text">v3.3 | Stagione 25/26 - Ver. Finale 🏁</span>
+            <span class="version-text">v3.4 | Stagione 25/26 - Ver. Finale 🏁</span>
             <div class="footer-msg">🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐</div>
+        </div>
+        
+        <div id="ios-popup" class="ios-install-popup">
+            <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
+            <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
+            <div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div>
+            <div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div>
+            <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
         </div>
     </body>
     </html>
