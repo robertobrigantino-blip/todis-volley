@@ -33,17 +33,8 @@
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 13px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }   
-																	   
-	
     .nav-buttons { display: flex; gap: 8px; align-items: center; }
     .nav-icon-img { height: 42px; width: auto; transition: transform 0.1s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
-																  
-	
-							 
-																					 
-																								
-																																																   
-																													  
 
     /* --- LANDING PAGE --- */
     .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 5px 0; overflow: hidden; }
@@ -137,15 +128,6 @@
         white-space: normal; word-wrap: break-word; /* Permette il ritorno a capo */
     }
     .my-team-text { color: #d32f2f; font-weight: 700; }
-																																   
-																																													  
-																								
-																						
-																																															
-																				  
-																				   
-																				  
-
     .scores-wrapper { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .partials-inline { display: flex; flex-direction: row; gap: 2px; }
     .partial-badge { width: 22px; height: 22px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; flex-shrink: 0; }
@@ -174,17 +156,9 @@
     .modal-title { font-size: 16px; font-weight: bold; color: #d32f2f; }
     .close-btn { background: #eee; border: none; font-size: 20px; padding: 0 8px; border-radius: 5px; cursor: pointer; }
 
-    /* Tools Bar (Fix Cliccabilità) */
-    .calendar-controls { 
-        display: flex; gap: 8px; margin-bottom: 12px; 
-        justify-content: flex-end; position: relative; z-index: 10; 
-    }
-    .btn-tool { 
-        font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; 
-        border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; 
-        transition: 0.2s; position: relative; z-index: 11;
-    }
-    .btn-tool:active { transform: scale(0.95); background: #f0f0f0; }
+    /* Tools Bar */												  
+    .calendar-controls { display: flex; gap: 8px; margin-bottom: 12px; justify-content: flex-end; position: relative; z-index: 10; }		
+    .btn-tool { font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; transition: 0.2s; }												 
     .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
 	
     /* Footer */
@@ -195,80 +169,16 @@
 
     /* iOS Popup */
     .ios-install-popup { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 12px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 320px; text-align: center; display: none; }
-		 
-    /* --- STILI DI STAMPA MIGLIORATI --- */
-    @media print {
-        html, body {
-            height: auto !important;
-            overflow: visible !important;
-            display: block !important;
-            background: white !important;
-        }
-        .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup {
-            display: none !important;
-        }
-        .tab-content {
-            display: none !important;
-        }
-        .tab-content.active {
-            display: block !important;
-            position: relative !important;
-            width: 100% !important;
-            height: auto !important;
-            overflow: visible !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-        .table-scroll {
-            overflow: visible !important;
-        }
-        table {
-            table-layout: auto !important;
-            width: 100% !important;
-            border: 1px solid #000 !important;
-        }
-        th, td {
-            border: 1px solid #eee !important;
-            color: black !important;
-        }
-        .match-card {
-            page-break-inside: avoid;
-            break-inside: avoid;
-            border: 1px solid #ccc !important;
-            margin-bottom: 20px !important;
-            box-shadow: none !important;
-        }
-        .bg-green, .bg-red, .bg-gray, .partial-badge {
-            background-color: #f0f0f0 !important;
-            color: black !important;
-            border: 1px solid #ccc !important;
-        }
-    }
+
 </style>
 <script>
     /* Funzioni Globali */
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
     function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
-    function printCalendar() { window.print(); } /* FUNZIONE STAMPA */
-    
+
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-													 
-								   
-													
-																	 
-															
-																	 
-																	 
-																					  
-									
-																				  
-							 
-						 
-					  
-				  
-			  
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed: ', err));
         });
     }
@@ -282,10 +192,6 @@
         document.getElementById("btn-" + tabIndex).classList.add("active");
     }
 
-																							  
-																							 
-																							 
-	
     function tornaAlSettore() {
         const urlParams = new URLSearchParams(window.location.search);
         const origin = urlParams.get('from');
@@ -293,43 +199,21 @@
         else if (origin === 'femminile') window.location.href = "femminile.html";
         else window.location.href = "index.html";
     }
-
-							  
-								
-																 
-														   
-					  
-											 
-													  
-		 
-	 
-	
-						 
+			 
     var originalOrder = {};
 	
     function toggleSort(tabId) {
         const container = document.getElementById('calendar-container-' + tabId);
         const btn = document.getElementById('btn-sort-' + tabId);
-        const isSorted = btn.getAttribute('data-sorted') === 'true';
-		
-									
+        const isSorted = btn.getAttribute('data-sorted') === 'true';		
         if (!originalOrder[tabId]) originalOrder[tabId] = container.innerHTML;
-		 
-        
         if (!isSorted) {
             const cards = Array.from(container.querySelectorAll('.match-card'));
 				
             container.querySelectorAll('h3').forEach(h => h.style.display = 'none');
             cards.sort((a, b) => (a.getAttribute('data-date-iso') || '9999').localeCompare(b.getAttribute('data-date-iso') || '9999'));
-								  
-																		   
-																		   
-											
-			   
-			
             container.innerHTML = "";
             cards.forEach(card => container.appendChild(card));
-			
             btn.innerHTML = "🔢 Per Giornata";
             btn.setAttribute('data-sorted', 'true');
             btn.classList.add('active');
@@ -340,10 +224,6 @@
             btn.classList.remove('active');
         }
     }
-	
-							  
-					   
-	 
 
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
@@ -358,17 +238,14 @@
             let nextMatches = {};
 			
             document.querySelectorAll('.match-card.upcoming').forEach(card => {
-                if(card.getAttribute('data-my-team') === 'true') {	 
-										 
+                if(card.getAttribute('data-my-team') === 'true') {	 						 
                     const dateStr = card.getAttribute('data-date-iso');
-                    const campName = card.getAttribute('data-camp'); 
-											  
+                    const campName = card.getAttribute('data-camp'); 				  
                     const parts = dateStr.split('-');
                     const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
                     if (matchDate >= today) {
                         if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
-                            nextMatches[campName] = { date: matchDate, html: card.outerHTML };
-							 
+                            nextMatches[campName] = { date: matchDate, html: card.outerHTML }; 
                         }
                     }
                 }
@@ -378,17 +255,13 @@
             let count = 0;
             for (const [camp, data] of Object.entries(nextMatches)) {
                 const campPulito = camp.replace(' S.Femminile', '').replace(' S.Maschile', '');
-                popupHTML += `<h3 style="color:#d32f2f; font-size:14px; margin-top:10px; border-bottom:1px solid #eee">🏆 ${campPulito}</h3>` + data.html;			   
-									   
+                popupHTML += `<h3 style="color:#d32f2f; font-size:14px; margin-top:10px; border-bottom:1px solid #eee">🏆 ${campPulito}</h3>` + data.html;			   						   
                 count++;
-            }
-			
+            }	
             if (count > 0) {
-                const modalBody = document.getElementById('modal-body');										 
-																			 
+                const modalBody = document.getElementById('modal-body');										 																 
                 if(modalBody) {
-                    modalBody.innerHTML = popupHTML;							 
-															 
+                    modalBody.innerHTML = popupHTML;							 														 
                     document.getElementById('btn-calendar').style.display = 'inline-block';
                     document.getElementById('btn-calendar').classList.add('has-events');
                 }
@@ -396,7 +269,7 @@
         }
     };
 </script>
-</head><body><div class="app-header" style="background:#1976D2"><div class="header-left" onclick="window.location.href='index.html'"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" class="logo-main"><h1>Risultati Completi</h1></div><div class="nav-buttons"><a href="#" onclick="tornaAlSettore(); return false;"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/todis_result.png" class="nav-icon-img"></a><a href="segnapunti.html"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div></div><div class="tab-bar"><button id="btn-0" class="tab-btn active" onclick="openTab(0)">Serie D  Gir.C</button><button id="btn-1" class="tab-btn " onclick="openTab(1)">Under 19 Gir.A</button><button id="btn-2" class="tab-btn " onclick="openTab(2)">Under 17 Gir.B</button><button id="btn-3" class="tab-btn " onclick="openTab(3)">Under 15 Gir.B</button></div><div id="content-0" class="tab-content active"><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>POLISPORTIVA SPORT FOR LIFE</td><td><b>33</b></td><td>12</td><td>12</td><td>0</td><td>36</td><td>10</td></tr><tr ><td>2</td><td>NOCERA VOLLEY</td><td><b>29</b></td><td>12</td><td>10</td><td>2</td><td>32</td><td>16</td></tr><tr ><td>3</td><td>U.S. SALERNO OFFICIAL-MINERVA</td><td><b>26</b></td><td>12</td><td>9</td><td>3</td><td>31</td><td>17</td></tr><tr ><td>4</td><td>PALL BATTIPAGLIA</td><td><b>21</b></td><td>12</td><td>6</td><td>6</td><td>29</td><td>24</td></tr><tr ><td>5</td><td>NUOVA GS OLIMPICA</td><td><b>18</b></td><td>12</td><td>6</td><td>6</td><td>23</td><td>24</td></tr><tr ><td>6</td><td>ISV PRIMA COLTA</td><td><b>16</b></td><td>12</td><td>5</td><td>7</td><td>24</td><td>26</td></tr><tr class="my-team-row"><td>7</td><td>TODIS CS PASTENA VOLLEY</td><td><b>15</b></td><td>12</td><td>5</td><td>7</td><td>21</td><td>26</td></tr><tr ><td>8</td><td>ZETA VOLLEY STRIANO</td><td><b>11</b></td><td>12</td><td>4</td><td>8</td><td>18</td><td>31</td></tr><tr ><td>9</td><td>ASD ACCA VOLLEY EBOLI</td><td><b>7</b></td><td>12</td><td>2</td><td>10</td><td>16</td><td>33</td></tr><tr ><td>10</td><td>MURATE VOLLEY</td><td><b>4</b></td><td>12</td><td>1</td><td>11</td><td>12</td><td>35</td></tr></tbody></table></div></div><h2>📅 Calendario</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-0" data-sorted="false" onclick="toggleSort(0)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-0"><h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 1</h3>
+</head><body><div class="app-header" style="background:#1976D2"><div class="header-left" onclick="window.location.href='index.html'"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" class="logo-main"><h1>Risultati Completi</h1></div><div class="nav-buttons"><a href="#" onclick="tornaAlSettore(); return false;"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/todis_result.png" class="nav-icon-img"></a><a href="segnapunti.html"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div></div><div class="tab-bar"><button id="btn-0" class="tab-btn active" onclick="openTab(0)">Serie D  Gir.C</button><button id="btn-1" class="tab-btn " onclick="openTab(1)">Under 19 Gir.A</button><button id="btn-2" class="tab-btn " onclick="openTab(2)">Under 17 Gir.B</button><button id="btn-3" class="tab-btn " onclick="openTab(3)">Under 15 Gir.B</button></div><div id="content-0" class="tab-content active"><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>POLISPORTIVA SPORT FOR LIFE</td><td><b>33</b></td><td>12</td><td>12</td><td>0</td><td>36</td><td>10</td></tr><tr ><td>2</td><td>NOCERA VOLLEY</td><td><b>29</b></td><td>12</td><td>10</td><td>2</td><td>32</td><td>16</td></tr><tr ><td>3</td><td>U.S. SALERNO OFFICIAL-MINERVA</td><td><b>26</b></td><td>12</td><td>9</td><td>3</td><td>31</td><td>17</td></tr><tr ><td>4</td><td>PALL BATTIPAGLIA</td><td><b>21</b></td><td>12</td><td>6</td><td>6</td><td>29</td><td>24</td></tr><tr ><td>5</td><td>NUOVA GS OLIMPICA</td><td><b>18</b></td><td>12</td><td>6</td><td>6</td><td>23</td><td>24</td></tr><tr ><td>6</td><td>ISV PRIMA COLTA</td><td><b>16</b></td><td>12</td><td>5</td><td>7</td><td>24</td><td>26</td></tr><tr class="my-team-row"><td>7</td><td>TODIS CS PASTENA VOLLEY</td><td><b>15</b></td><td>12</td><td>5</td><td>7</td><td>21</td><td>26</td></tr><tr ><td>8</td><td>ZETA VOLLEY STRIANO</td><td><b>11</b></td><td>12</td><td>4</td><td>8</td><td>18</td><td>31</td></tr><tr ><td>9</td><td>ASD ACCA VOLLEY EBOLI</td><td><b>7</b></td><td>12</td><td>2</td><td>10</td><td>16</td><td>33</td></tr><tr ><td>10</td><td>MURATE VOLLEY</td><td><b>4</b></td><td>12</td><td>1</td><td>11</td><td>12</td><td>35</td></tr></tbody></table></div></div><h2>📅 Calendario</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-0" data-sorted="false" onclick="toggleSort(0)">📅 Ordina per Data</button></div><div id="calendar-container-0"><h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 1</h3>
     <div class="match-card played" data-date-iso="2025-10-26" data-camp="Serie D  Gir.C S.Maschile" data-my-team="false">
         <div class="match-header">
             <span class="date-badge">📅 26/10/2025 ⏰ 11:30</span> <span>|</span> <span>Giornata 1</span>
@@ -1656,7 +1529,7 @@
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.60091010,14.97733000&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20PALL%20BATTIPAGLIA%20vs%20TODIS%20CS%20PASTENA%20VOLLEY&dates=20260308T190000/20260308T210000&location=PALESTRA%20%20SKIBA%20c/oSTADIO%20PASTENA%20%C2%A0BATTIPAGLIA%20SAPIAZZA%20POZZO&details=Campionato+Serie%20D%20%20Gir.C%20S.Maschile" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Serie%20D%20%20Gir.C%20S.Maschile%2A%0A08/03/2026%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20PALESTRA%20%20SKIBA%20c/oSTADIO%20PASTENA%20%C2%A0BATTIPAGLIA%20SAPIAZZA%20POZZO%0APALL%20BATTIPAGLIA%20vs%20TODIS%20CS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
-    </div></div><div id="content-1" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>POLISPORTIVA PESSY</td><td><b>18</b></td><td>6</td><td>6</td><td>0</td><td>18</td><td>2</td></tr><tr ><td>2</td><td>INDOMITA</td><td><b>15</b></td><td>7</td><td>5</td><td>2</td><td>17</td><td>7</td></tr><tr class="my-team-row"><td>3</td><td>TODIS PASTENA VOLLEY</td><td><b>12</b></td><td>6</td><td>4</td><td>2</td><td>13</td><td>8</td></tr><tr ><td>4</td><td>ANNALISA VOLLEY SAN MARZANO</td><td><b>3</b></td><td>6</td><td>1</td><td>5</td><td>4</td><td>15</td></tr><tr ><td>5</td><td>ASD INTRAMONTES</td><td><b>0</b></td><td>7</td><td>0</td><td>7</td><td>1</td><td>21</td></tr></tbody></table></div></div><h2>📅 Calendario</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-1" data-sorted="false" onclick="toggleSort(1)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-1"><h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 1</h3>
+    </div></div><div id="content-1" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>POLISPORTIVA PESSY</td><td><b>18</b></td><td>6</td><td>6</td><td>0</td><td>18</td><td>2</td></tr><tr ><td>2</td><td>INDOMITA</td><td><b>15</b></td><td>7</td><td>5</td><td>2</td><td>17</td><td>7</td></tr><tr class="my-team-row"><td>3</td><td>TODIS PASTENA VOLLEY</td><td><b>12</b></td><td>6</td><td>4</td><td>2</td><td>13</td><td>8</td></tr><tr ><td>4</td><td>ANNALISA VOLLEY SAN MARZANO</td><td><b>3</b></td><td>6</td><td>1</td><td>5</td><td>4</td><td>15</td></tr><tr ><td>5</td><td>ASD INTRAMONTES</td><td><b>0</b></td><td>7</td><td>0</td><td>7</td><td>1</td><td>21</td></tr></tbody></table></div></div><h2>📅 Calendario</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-1" data-sorted="false" onclick="toggleSort(1)">📅 Ordina per Data</button></div><div id="calendar-container-1"><h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 1</h3>
     <div class="match-card played" data-date-iso="2025-11-21" data-camp="Under 19 Gir.A S.Maschile" data-my-team="false">
         <div class="match-header">
             <span class="date-badge">📅 21/11/2025 ⏰ 20:00</span> <span>|</span> <span>Giornata 1</span>
@@ -1936,7 +1809,7 @@
             <div class="action-buttons"><a href="http://maps.google.it/maps?q=TRAMONTI+SA%0D%0AVia+Acconciagioco+8&hl=it" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ASD%20INTRAMONTES%20vs%20ANNALISA%20VOLLEY%20SAN%20MARZANO&dates=20260206T200000/20260206T220000&location=Palazzetto%20dello%20Sport%C2%A0TRAMONTI%20SAVia%20Acconciagioco%208&details=Campionato+Under%2019%20Gir.A%20S.Maschile" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2019%20Gir.A%20S.Maschile%2A%0A06/02/2026%20%E2%8F%B0%2020%3A00%0A%F0%9F%93%8D%20Palazzetto%20dello%20Sport%C2%A0TRAMONTI%20SAVia%20Acconciagioco%208%0AASD%20INTRAMONTES%20vs%20ANNALISA%20VOLLEY%20SAN%20MARZANO" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
-    </div></div><div id="content-2" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>ASD VOLLEY SALERNO OFFICIAL</td><td><b>21</b></td><td>7</td><td>7</td><td>0</td><td>21</td><td>3</td></tr><tr ><td>2</td><td>MURATE</td><td><b>16</b></td><td>6</td><td>6</td><td>0</td><td>18</td><td>5</td></tr><tr ><td>3</td><td>POLISPORTIVA PESSY</td><td><b>10</b></td><td>7</td><td>3</td><td>4</td><td>14</td><td>14</td></tr><tr ><td>4</td><td>DMB PALLAVOLO VILLA D'AGRI</td><td><b>9</b></td><td>7</td><td>3</td><td>4</td><td>11</td><td>12</td></tr><tr class="my-team-row"><td>5</td><td>TODIS PASTENA VOLLEY</td><td><b>4</b></td><td>6</td><td>1</td><td>5</td><td>6</td><td>15</td></tr><tr ><td>6</td><td>XENIA SCAFATI</td><td><b>0</b></td><td>7</td><td>0</td><td>7</td><td>0</td><td>21</td></tr></tbody></table></div></div><h2>📅 Calendario</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-2" data-sorted="false" onclick="toggleSort(2)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-2"><h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 1</h3>
+    </div></div><div id="content-2" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>ASD VOLLEY SALERNO OFFICIAL</td><td><b>21</b></td><td>7</td><td>7</td><td>0</td><td>21</td><td>3</td></tr><tr ><td>2</td><td>MURATE</td><td><b>16</b></td><td>6</td><td>6</td><td>0</td><td>18</td><td>5</td></tr><tr ><td>3</td><td>POLISPORTIVA PESSY</td><td><b>10</b></td><td>7</td><td>3</td><td>4</td><td>14</td><td>14</td></tr><tr ><td>4</td><td>DMB PALLAVOLO VILLA D'AGRI</td><td><b>9</b></td><td>7</td><td>3</td><td>4</td><td>11</td><td>12</td></tr><tr class="my-team-row"><td>5</td><td>TODIS PASTENA VOLLEY</td><td><b>4</b></td><td>6</td><td>1</td><td>5</td><td>6</td><td>15</td></tr><tr ><td>6</td><td>XENIA SCAFATI</td><td><b>0</b></td><td>7</td><td>0</td><td>7</td><td>0</td><td>21</td></tr></tbody></table></div></div><h2>📅 Calendario</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-2" data-sorted="false" onclick="toggleSort(2)">📅 Ordina per Data</button></div><div id="calendar-container-2"><h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 1</h3>
     <div class="match-card played" data-date-iso="2025-11-17" data-camp="Under 17 Gir.B S.Maschile" data-my-team="false">
         <div class="match-header">
             <span class="date-badge">📅 17/11/2025 ⏰ 19:00</span> <span>|</span> <span>Giornata 1</span>
@@ -2356,7 +2229,7 @@
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63370980,15.80881810&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20MURATE%20vs%20ASD%20VOLLEY%20SALERNO%20OFFICIAL&dates=20260206T183000/20260206T203000&location=PALESTRA%20LUIGI%20LA%20VISTA%C2%A0POTENZA%20PZVIA%20E.%20TOTI&details=Campionato+Under%2017%20Gir.B%20S.Maschile" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2017%20Gir.B%20S.Maschile%2A%0A06/02/2026%20%E2%8F%B0%2018%3A30%0A%F0%9F%93%8D%20PALESTRA%20LUIGI%20LA%20VISTA%C2%A0POTENZA%20PZVIA%20E.%20TOTI%0AMURATE%20vs%20ASD%20VOLLEY%20SALERNO%20OFFICIAL" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
-    </div></div><div id="content-3" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>PALL BATTIPAGLIA</td><td><b>17</b></td><td>6</td><td>6</td><td>0</td><td>18</td><td>4</td></tr><tr ><td>2</td><td>MURATE</td><td><b>13</b></td><td>5</td><td>4</td><td>1</td><td>14</td><td>6</td></tr><tr ><td>3</td><td>INDOMITA</td><td><b>11</b></td><td>5</td><td>4</td><td>1</td><td>13</td><td>6</td></tr><tr ><td>4</td><td>NOCERA VOLLEY</td><td><b>7</b></td><td>7</td><td>2</td><td>5</td><td>10</td><td>15</td></tr><tr ><td>5</td><td>RINASCITA LAGONEGRO</td><td><b>6</b></td><td>4</td><td>2</td><td>2</td><td>7</td><td>6</td></tr><tr class="my-team-row"><td>6</td><td>TODIS PASTENA VOLLEY</td><td><b>6</b></td><td>7</td><td>2</td><td>5</td><td>10</td><td>17</td></tr><tr ><td>7</td><td>VOLLEY MONTECORVINO</td><td><b>0</b></td><td>6</td><td>0</td><td>6</td><td>0</td><td>18</td></tr></tbody></table></div></div><h2>📅 Calendario</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-3" data-sorted="false" onclick="toggleSort(3)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-3"><h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 1</h3>
+    </div></div><div id="content-3" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>PALL BATTIPAGLIA</td><td><b>17</b></td><td>6</td><td>6</td><td>0</td><td>18</td><td>4</td></tr><tr ><td>2</td><td>MURATE</td><td><b>13</b></td><td>5</td><td>4</td><td>1</td><td>14</td><td>6</td></tr><tr ><td>3</td><td>INDOMITA</td><td><b>11</b></td><td>5</td><td>4</td><td>1</td><td>13</td><td>6</td></tr><tr ><td>4</td><td>NOCERA VOLLEY</td><td><b>7</b></td><td>7</td><td>2</td><td>5</td><td>10</td><td>15</td></tr><tr ><td>5</td><td>RINASCITA LAGONEGRO</td><td><b>6</b></td><td>4</td><td>2</td><td>2</td><td>7</td><td>6</td></tr><tr class="my-team-row"><td>6</td><td>TODIS PASTENA VOLLEY</td><td><b>6</b></td><td>7</td><td>2</td><td>5</td><td>10</td><td>17</td></tr><tr ><td>7</td><td>VOLLEY MONTECORVINO</td><td><b>0</b></td><td>6</td><td>0</td><td>6</td><td>0</td><td>18</td></tr></tbody></table></div></div><h2>📅 Calendario</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-3" data-sorted="false" onclick="toggleSort(3)">📅 Ordina per Data</button></div><div id="calendar-container-3"><h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 1</h3>
     <div class="match-card loss" data-date-iso="2025-11-18" data-camp="Under 15 Gir.B S.Maschile" data-my-team="true">
         <div class="match-header">
             <span class="date-badge">📅 18/11/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 1</span>
@@ -2944,4 +2817,4 @@
             <div class="action-buttons"><a href="http://maps.google.it/maps?q=MONTECORVINO+ROVELLA+MONTECORVINO+ROVELLA+SA%0D%0AVIA+LARGO+DEL+PONTE&hl=it" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20MONTECORVINO%20vs%20INDOMITA&dates=20260304T203000/20260304T223000&location=PALESTRA%20SABATO%20DE%20LUCA%C2%A0MONTECORVINO%20ROVELLA%20MONTECORVINO%20ROVELLA%20SAVIA%20LARGO%20DEL%20PONTE&details=Campionato+Under%2015%20Gir.B%20S.Maschile" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2015%20Gir.B%20S.Maschile%2A%0A04/03/2026%20%E2%8F%B0%2020%3A30%0A%F0%9F%93%8D%20PALESTRA%20SABATO%20DE%20LUCA%C2%A0MONTECORVINO%20ROVELLA%20MONTECORVINO%20ROVELLA%20SAVIA%20LARGO%20DEL%20PONTE%0AVOLLEY%20MONTECORVINO%20vs%20INDOMITA" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
-    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v3.4 | Stagione 25/26 - Ver. Finale 🏁</span></div></body></html>
+    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v3.5 | Stagione 25/26 - Ver. Finale 🏁</span></div></body></html>
