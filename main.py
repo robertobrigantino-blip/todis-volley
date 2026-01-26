@@ -1,5 +1,5 @@
 # ==============================================================================
-# SOFTWARE VERSION: v2.6
+# SOFTWARE VERSION: v2.7
 # RELEASE NOTE: Fix Layout Landing Page
 # ==============================================================================
 
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v2.6 | Stable Release 🏁"
+APP_VERSION = "v2.7 | Stable Release 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"                                                                             
@@ -76,7 +76,7 @@ def is_target_team(team_name):
 # ================= CSS COMUNE =================
 CSS_BASE = """
 <style>
-    /* Reset e Layout Base */
+    /* Reset e Layout Fondamentali */
     * { box-sizing: border-box; }
     html, body { 
         height: 100%; 
@@ -93,7 +93,7 @@ CSS_BASE = """
         overflow-x: hidden;
     }
     
-    /* Header fisso */
+    /* Header Superiore */
     .app-header { 
         background-color: #d32f2f; 
         color: white; 
@@ -111,78 +111,46 @@ CSS_BASE = """
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 14px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }
-																	   
+    .last-update { font-size: 9px; opacity: 0.9; font-weight: normal; }
     
     .nav-buttons { display: flex; gap: 8px; align-items: center; }
     .nav-icon-img { height: 42px; width: auto; transition: transform 0.1s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
-												   
+    .nav-icon-img:active { transform: scale(0.9); }
 
-    /* --- LANDING PAGE (Ottimizzata per immagine intera) --- */
+    /* -------------------------------------------------------------------------
+       LANDING PAGE STYLES (Single Viewport)
+    -------------------------------------------------------------------------- */
     .landing-container { 
         flex: 1; 
         display: flex; 
         flex-direction: column; 
-        justify-content: space-around; /* Distribuisce equamente gli spazi */
+        justify-content: space-around; 
         align-items: center; 
         padding: 5px 0;
-        overflow: hidden; /* Evita lo scroll nella landing */
+        overflow: hidden;
     }
-    
     .instruction-text { font-weight: 700; color: #555; font-size: 11px; text-transform: uppercase; margin: 0; }
-    
-    .choice-card { 
-        position: relative; 
-        width: 92%; 
-        max-width: 450px; 
-        /* Rimosso height fisso per evitare tagli */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+    .choice-card { position: relative; width: 92%; max-width: 450px; display: flex; justify-content: center; align-items: center; }
     .choice-img { 
-        width: 100%; 
-        height: auto; 
-        max-height: 58vh; /* Limite massimo per non spingere il footer */
-        object-fit: contain; /* IMMAGINE SEMPRE INTERA */
-        display: block; 
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-						   
+        width: 100%; height: auto; max-height: 58vh; object-fit: contain; 
+        display: block; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
-																				 
     .click-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; border-radius: 15px; overflow: hidden; }
     .click-area { width: 50%; height: 100%; cursor: pointer; }
-
+    
     .social-section { text-align: center; margin: 5px 0; }
-    .social-label { font-size: 10px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; display: block; }
+    .social-label { font-size: 10px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 8px; display: block; }
     .social-icons { display: flex; justify-content: center; gap: 30px; }
-    .social-icon-img { width: 34px; height: 34px; }
-													  
+    .social-icon-img { width: 34px; height: 34px; transition: transform 0.2s; }
+    .social-icon-img:active { transform: scale(0.8); }
 
-    /* Footer Sottile */
-    .footer-counter { 
-        text-align: center; 
-        padding: 6px 0; 
-        background: white; 
-        border-top: 1px solid #eee; 
-        flex-shrink: 0; 
-    }
-    .footer-counter img { height: 16px; margin-bottom: 2px; }
-    .version-text { font-size: 9px; color: #999; margin: 0; font-family: monospace; }
-    .footer-msg { font-size: 10px; color: #d32f2f; margin: 0; font-weight: bold; }
-
-    /* --- PAGINE INTERNE (Con Scroll abilitato) --- */
+    /* -------------------------------------------------------------------------
+       PAGINE INTERNE (Risultati e Classifiche)
+    -------------------------------------------------------------------------- */
     .tab-bar { 
-        background-color: white; 
-        display: flex; 
-        overflow-x: auto; 
-        white-space: nowrap; 
-        position: sticky; 
-        top: 60px; 
-        z-index: 99; 
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
-        border-bottom: 1px solid #eee; 
-        flex-shrink: 0;
+        background-color: white; display: flex; overflow-x: auto; white-space: nowrap; 
+        position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+        border-bottom: 1px solid #eee; flex-shrink: 0;
     }
     .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
@@ -193,7 +161,7 @@ CSS_BASE = """
     
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
 
-    /* Tabelle e Classifiche */
+    /* Classifiche */
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
@@ -202,60 +170,79 @@ CSS_BASE = """
     td:nth-child(2) { text-align: left; min-width: 140px; font-weight: 500; position: sticky; left: 0; background-color: white; border-right: 1px solid #eee; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
 
-    /* Match Cards */
-    .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; overflow: hidden; }
+    /* Match Cards (Layout Fix per i Sets) */
+    .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; }
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
     .match-card.played { border-left-color: #78909c; }
 
-    .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; }
+    .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 10px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; }
     .date-badge { font-weight: bold; color: #d32f2f; }
-    .teams { display: flex; flex-direction: column; gap: 6px; font-size: 14px; margin-bottom: 8px; }
-    .team-row { display: flex; justify-content: space-between; align-items: center; }
+    
+    .teams { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+    .team-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+    .team-info { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; padding-right: 10px; }
     .my-team-text { color: #d32f2f; font-weight: 700; }
-    
-						  
-    .scores-wrapper { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
-    .set-total { width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; }
-    .bg-green { background-color: #2e7d32; } .bg-red { background-color: #c62828; } .bg-gray { background-color: #78909c; }
-										  
-										   
-												 
-    .partial-badge { width: 22px; height: 22px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; }
-    
+
+    /* Fix Punteggi Set Orizzontali */
+    .scores-wrapper { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .partials-inline { display: flex; flex-direction: row; gap: 3px; }
+    .partial-badge { 
+        width: 24px; height: 24px; background-color: #7986cb; color: white; 
+        border-radius: 4px; display: flex; align-items: center; justify-content: center; 
+        font-size: 10px; font-weight: bold; flex-shrink: 0; 
+    }
+    .set-total { 
+        width: 28px; height: 28px; border-radius: 4px; display: flex; 
+        align-items: center; justify-content: center; color: white; 
+        font-weight: bold; font-size: 15px; flex-shrink: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .bg-green { background-color: #2e7d32; } 
+    .bg-red { background-color: #c62828; } 
+    .bg-gray { background-color: #78909c; }
+
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
     .gym-name { font-size: 10px; color: #666; width: 100%; margin-bottom: 5px; }
     .action-buttons { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
-    .btn { text-decoration: none; padding: 5px 10px; border-radius: 12px; font-size: 9px; font-weight: bold; border: 1px solid transparent; display: flex; align-items: center; gap: 3px; }
+    .btn { text-decoration: none; padding: 5px 10px; border-radius: 12px; font-size: 9px; font-weight: bold; display: flex; align-items: center; gap: 3px; border: 1px solid transparent; }
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
 
-    /* Modali e Altro */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-    .modal-content { background: white; width: 90%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 15px; overflow-y: auto; position: relative; }
-		
-    /* Strumenti Sorting */
-    .calendar-controls { display: flex; gap: 8px; margin-bottom: 12px; justify-content: flex-end; }
-    .btn-tool { font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; }
-    .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
-
-    /* Notifica Calendario */
+    /* Notifiche Calendario */
     .calendar-container { position: relative; display: none; }
     .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
     .calendar-container.has-events::after { content: ''; position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; }
     @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-    /* IOS Popup */
+    /* Modali */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+    .modal-content { background: white; width: 90%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 15px; overflow-y: auto; position: relative; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+    .modal-title { font-size: 16px; font-weight: bold; color: #d32f2f; }
+    .close-btn { background: #eee; border: none; font-size: 20px; padding: 0 8px; border-radius: 5px; cursor: pointer; }
+
+    /* Tools (Sort & Print) */
+    .calendar-controls { display: flex; gap: 8px; margin-bottom: 12px; justify-content: flex-end; }
+    .btn-tool { font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; transition: 0.2s; }
+    .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
+
+    /* Footer Sottile */
+    .footer-counter { text-align: center; padding: 8px 0; background: white; border-top: 1px solid #eee; flex-shrink: 0; }
+    .footer-counter img { height: 16px; margin-bottom: 2px; }
+    .version-text { font-size: 9px; color: #999; margin: 0; font-family: monospace; }
+    .footer-msg { font-size: 10px; color: #d32f2f; margin: 0; font-weight: bold; }
+
+    /* iOS Popup */
     .ios-install-popup { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 12px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 320px; text-align: center; display: none; }
 
-    /* PRINT */
+    /* Print Stili */
     @media print {
         .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup { display: none !important; }
         body { background: white; color: black; }
         .tab-content { display: block !important; }
-        .match-card { border: 1px solid #ccc; break-inside: avoid; }
+        .match-card { border: 1px solid #ccc; break-inside: avoid; box-shadow: none; }
     }
 </style>
 <script>
