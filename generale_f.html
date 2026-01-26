@@ -156,9 +156,17 @@
     .modal-title { font-size: 16px; font-weight: bold; color: #d32f2f; }
     .close-btn { background: #eee; border: none; font-size: 20px; padding: 0 8px; border-radius: 5px; cursor: pointer; }
 
-    /* Tools */
-    .calendar-controls { display: flex; gap: 8px; margin-bottom: 12px; justify-content: flex-end; }
-    .btn-tool { font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; transition: 0.2s; }
+    /* Tools Bar (Fix Cliccabilità) */
+    .calendar-controls { 
+        display: flex; gap: 8px; margin-bottom: 12px; 
+        justify-content: flex-end; position: relative; z-index: 10; 
+    }
+    .btn-tool { 
+        font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; 
+        border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; 
+        transition: 0.2s; position: relative; z-index: 11;
+    }
+    .btn-tool:active { transform: scale(0.95); background: #f0f0f0; }
     .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
 	
     /* Footer */
@@ -220,6 +228,12 @@
     }
 </style>
 <script>
+    /* Funzioni Globali */
+    function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+    function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
+    function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
+    function printCalendar() { window.print(); } /* FUNZIONE STAMPA */
+    
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed: ', err));
@@ -234,12 +248,7 @@
         document.getElementById("content-" + tabIndex).classList.add("active");
         document.getElementById("btn-" + tabIndex).classList.add("active");
     }
-    
-    function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
-    function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
-    function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
-    function printCalendar() { window.print(); } /* FUNZIONE STAMPA */
-    
+
     function tornaAlSettore() {
         const urlParams = new URLSearchParams(window.location.search);
         const origin = urlParams.get('from');
@@ -3087,4 +3096,4 @@
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.73712810,14.56365930&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ASK%20ANGRI%201997%20vs%20VITOLO%20VOLLEY&dates=20260303T193000/20260303T213000&location=PALESTRA%20II%C2%B0%20CD%20-%20ANGRI%C2%A0ANGRI%20SAVIA%20LEONARDO%20DA%20VINCI&details=Campionato+Under%2014%20Gir.C%20S.Femminile" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2014%20Gir.C%20S.Femminile%2A%0A03/03/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20II%C2%B0%20CD%20-%20ANGRI%C2%A0ANGRI%20SAVIA%20LEONARDO%20DA%20VINCI%0AASK%20ANGRI%201997%20vs%20VITOLO%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
-    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v3.2 | Stagione 25/26 - Ver. Finale 🏁</span></div></body></html>
+    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v3.3 | Stagione 25/26 - Ver. Finale 🏁</span></div></body></html>
