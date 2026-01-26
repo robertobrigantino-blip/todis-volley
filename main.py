@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v3.3
-# RELEASE NOTE: Stampa Ottimizzata
+# SOFTWARE VERSION: v3.4
+# RELEASE NOTE: ios pop-up
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v3.3 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v3.4 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -110,8 +110,17 @@ CSS_BASE = """
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 13px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }   
+																	   
+	
     .nav-buttons { display: flex; gap: 8px; align-items: center; }
     .nav-icon-img { height: 42px; width: auto; transition: transform 0.1s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
+																  
+	
+							 
+																					 
+																								
+																																																   
+																													  
 
     /* --- LANDING PAGE --- */
     .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 5px 0; overflow: hidden; }
@@ -162,6 +171,7 @@ CSS_BASE = """
     .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; width: 100%; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+	
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
 
     /* --- CLASSIFICHE FIXATE --- */
@@ -204,6 +214,14 @@ CSS_BASE = """
         white-space: normal; word-wrap: break-word; /* Permette il ritorno a capo */
     }
     .my-team-text { color: #d32f2f; font-weight: 700; }
+																																   
+																																													  
+																								
+																						
+																																															
+																				  
+																				   
+																				  
 
     .scores-wrapper { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .partials-inline { display: flex; flex-direction: row; gap: 2px; }
@@ -313,6 +331,21 @@ CSS_BASE = """
     
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
+													 
+								   
+													
+																	 
+															
+																	 
+																	 
+																					  
+									
+																				  
+							 
+						 
+					  
+				  
+			  
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed: ', err));
         });
     }
@@ -326,6 +359,10 @@ CSS_BASE = """
         document.getElementById("btn-" + tabIndex).classList.add("active");
     }
 
+																							  
+																							 
+																							 
+	
     function tornaAlSettore() {
         const urlParams = new URLSearchParams(window.location.search);
         const origin = urlParams.get('from');
@@ -334,20 +371,42 @@ CSS_BASE = """
         else window.location.href = "index.html";
     }
 
+							  
+								
+																 
+														   
+					  
+											 
+													  
+		 
+	 
+	
+						 
     var originalOrder = {};
+	
     function toggleSort(tabId) {
         const container = document.getElementById('calendar-container-' + tabId);
         const btn = document.getElementById('btn-sort-' + tabId);
         const isSorted = btn.getAttribute('data-sorted') === 'true';
+		
+									
         if (!originalOrder[tabId]) originalOrder[tabId] = container.innerHTML;
+		 
         
         if (!isSorted) {
             const cards = Array.from(container.querySelectorAll('.match-card'));
 				
             container.querySelectorAll('h3').forEach(h => h.style.display = 'none');
             cards.sort((a, b) => (a.getAttribute('data-date-iso') || '9999').localeCompare(b.getAttribute('data-date-iso') || '9999'));
+								  
+																		   
+																		   
+											
+			   
+			
             container.innerHTML = "";
             cards.forEach(card => container.appendChild(card));
+			
             btn.innerHTML = "🔢 Per Giornata";
             btn.setAttribute('data-sorted', 'true');
             btn.classList.add('active');
@@ -358,6 +417,11 @@ CSS_BASE = """
             btn.classList.remove('active');
         }
     }
+	
+							  
+					   
+	 
+
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
@@ -369,15 +433,19 @@ CSS_BASE = """
             const today = new Date();
             today.setHours(0,0,0,0);
             let nextMatches = {};
+			
             document.querySelectorAll('.match-card.upcoming').forEach(card => {
                 if(card.getAttribute('data-my-team') === 'true') {	 
+										 
                     const dateStr = card.getAttribute('data-date-iso');
                     const campName = card.getAttribute('data-camp'); 
+											  
                     const parts = dateStr.split('-');
                     const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
                     if (matchDate >= today) {
                         if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
                             nextMatches[campName] = { date: matchDate, html: card.outerHTML };
+							 
                         }
                     }
                 }
@@ -388,12 +456,16 @@ CSS_BASE = """
             for (const [camp, data] of Object.entries(nextMatches)) {
                 const campPulito = camp.replace(' S.Femminile', '').replace(' S.Maschile', '');
                 popupHTML += `<h3 style="color:#d32f2f; font-size:14px; margin-top:10px; border-bottom:1px solid #eee">🏆 ${campPulito}</h3>` + data.html;			   
+									   
                 count++;
             }
+			
             if (count > 0) {
                 const modalBody = document.getElementById('modal-body');										 
+																			 
                 if(modalBody) {
                     modalBody.innerHTML = popupHTML;							 
+															 
                     document.getElementById('btn-calendar').style.display = 'inline-block';
                     document.getElementById('btn-calendar').classList.add('has-events');
                 }
@@ -658,6 +730,7 @@ def genera_landing_page():
         <link rel="icon" type="image/png" href="{URL_LOGO}">
         <link rel="apple-touch-icon" href="{URL_LOGO}">
         <meta name="apple-mobile-web-app-capable" content="yes">
+												  
         {CSS_BASE}
     </head>
     <body>
@@ -699,6 +772,14 @@ def genera_landing_page():
             <img src="{URL_COUNTER}" alt="Visite"><br>
             <span class="version-text">{APP_VERSION}</span>
             <div class="footer-msg">{FOOTER_MSG}</div>
+        </div>
+        
+        <div id="ios-popup" class="ios-install-popup">
+            <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
+            <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
+            <div style="font-size:14px; margin-bottom:10px;">1. Premi il tasto Condividi <span style="font-size:18px">📤</span></div>
+            <div style="font-size:14px;">2. Scorri e premi "Aggiungi alla schermata Home" <span style="font-size:18px">➕</span></div>
+            <button onclick="closeIosPopup()" style="margin-top:15px; padding:5px 15px; border:none; background:#eee; border-radius:10px;">Chiudi</button>
         </div>
     </body>
     </html>"""
@@ -785,4 +866,3 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
-
