@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v2.2
-# RELEASE NOTE: Sorting & Print estesi anche alle pagine Filtro TODIS
+# SOFTWARE VERSION: v2.3
+# RELEASE NOTE: Added Instagram and Facebook links
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v2.2 | Stable Release 🏁"
+APP_VERSION = "v2.3 | Stable Release 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"                                                                             
@@ -195,6 +195,15 @@ CSS_BASE = """
         .bg-green, .bg-red, .bg-gray { background-color: #ddd !important; color: black !important; border: 1px solid #999; }
         .partial-badge { background-color: white !important; color: black !important; border: 1px solid #ccc; }
     }
+    
+    /* Social Section */
+    .social-section { margin-top: 30px; margin-bottom: 10px; }
+    .social-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; font-weight: bold; }
+    .social-icons { display: flex; justify-content: center; gap: 30px; }
+    .social-link { transition: transform 0.2s; display: block; }
+    .social-link:active { transform: scale(0.9); }
+    .social-icon-img { width: 35px; height: 35px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+    
 </style>
 <script>
     if ('serviceWorker' in navigator) {
@@ -617,6 +626,19 @@ def genera_landing_page():
                 <div class="click-overlay">
                     <a href="{FILE_MALE}" class="click-area"></a>
                     <a href="{FILE_FEMALE}" class="click-area"></a>
+                </div>
+            </div>
+
+            <!-- SEZIONE SOCIAL AGGIUNTA -->
+            <div class="social-section">
+                <div class="social-label">Seguici sui Social</div>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/111542261731361?ref=_xav_ig_profile_page_web" target="_blank" class="social-link">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" class="social-icon-img" alt="Facebook">
+                    </a>
+                    <a href="https://www.instagram.com/asdcspastena_volley/" target="_blank" class="social-link">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" class="social-icon-img" alt="Instagram">
+                    </a>
                 </div>
             </div>
         </div>
