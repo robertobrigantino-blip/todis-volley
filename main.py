@@ -110,17 +110,8 @@ CSS_BASE = """
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 13px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }   
-																	   
-	
     .nav-buttons { display: flex; gap: 8px; align-items: center; }
     .nav-icon-img { height: 42px; width: auto; transition: transform 0.1s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
-																  
-	
-							 
-																					 
-																								
-																																																   
-																													  
 
     /* --- LANDING PAGE --- */
     .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 5px 0; overflow: hidden; }
@@ -214,15 +205,6 @@ CSS_BASE = """
         white-space: normal; word-wrap: break-word; /* Permette il ritorno a capo */
     }
     .my-team-text { color: #d32f2f; font-weight: 700; }
-																																   
-																																													  
-																								
-																						
-																																															
-																				  
-																				   
-																				  
-
     .scores-wrapper { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .partials-inline { display: flex; flex-direction: row; gap: 2px; }
     .partial-badge { width: 22px; height: 22px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; flex-shrink: 0; }
@@ -331,22 +313,7 @@ CSS_BASE = """
     
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-													 
-								   
-													
-																	 
-															
-																	 
-																	 
-																					  
-									
-																				  
-							 
-						 
-					  
-				  
-			  
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed: ', err));
+        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed: ', err));
         });
     }
 
@@ -359,10 +326,6 @@ CSS_BASE = """
         document.getElementById("btn-" + tabIndex).classList.add("active");
     }
 
-																							  
-																							 
-																							 
-	
     function tornaAlSettore() {
         const urlParams = new URLSearchParams(window.location.search);
         const origin = urlParams.get('from');
@@ -370,43 +333,22 @@ CSS_BASE = """
         else if (origin === 'femminile') window.location.href = "femminile.html";
         else window.location.href = "index.html";
     }
-
-							  
-								
-																 
-														   
-					  
-											 
-													  
-		 
-	 
-	
-						 
+			 
     var originalOrder = {};
 	
     function toggleSort(tabId) {
         const container = document.getElementById('calendar-container-' + tabId);
         const btn = document.getElementById('btn-sort-' + tabId);
         const isSorted = btn.getAttribute('data-sorted') === 'true';
-		
-									
+						
         if (!originalOrder[tabId]) originalOrder[tabId] = container.innerHTML;
-		 
-        
+
         if (!isSorted) {
-            const cards = Array.from(container.querySelectorAll('.match-card'));
-				
+            const cards = Array.from(container.querySelectorAll('.match-card'));		
             container.querySelectorAll('h3').forEach(h => h.style.display = 'none');
             cards.sort((a, b) => (a.getAttribute('data-date-iso') || '9999').localeCompare(b.getAttribute('data-date-iso') || '9999'));
-								  
-																		   
-																		   
-											
-			   
-			
             container.innerHTML = "";
             cards.forEach(card => container.appendChild(card));
-			
             btn.innerHTML = "🔢 Per Giornata";
             btn.setAttribute('data-sorted', 'true');
             btn.classList.add('active');
@@ -417,10 +359,6 @@ CSS_BASE = """
             btn.classList.remove('active');
         }
     }
-	
-							  
-					   
-	 
 
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
@@ -866,4 +804,5 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
+
 
