@@ -41,14 +41,12 @@
     .instruction-text { font-weight: 700; color: #555; font-size: 11px; text-transform: uppercase; margin: 0; }
     .choice-card { position: relative; width: 92%; max-width: 450px; display: flex; justify-content: center; align-items: center; }
     .choice-img { width: 100%; height: auto; max-height: 58vh; object-fit: contain; display: block; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-  
     .click-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; border-radius: 15px; overflow: hidden; }
     .click-area { width: 50%; height: 100%; cursor: pointer; }
     .social-section { text-align: center; margin: 5px 0; } 
     .social-icons { display: flex; justify-content: center; gap: 30px; }
     .social-icon-img { width: 34px; height: 34px; }
 			   
-
     /* --- MENU TABS --- */
 
     .tab-bar { 
@@ -90,71 +88,27 @@
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
 
     /* --- CLASSIFICHE FIXATE --- */
-    .table-card { 
-						   
+    .table-card { 			   
         background: white; border-radius: 8px; overflow: hidden; 
-						  
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; width: 100%; 
-							
-																   
-    }
-					
-						  
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; width: 100%; 													   
+    }				  
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
-					 
-	 
-    table { 
-					 
+    table { 			 
         width: 100%; border-collapse: collapse; font-size: 11px; 
-        table-layout: fixed; /* Forza allineamento millimetrico */
-						   
+        table-layout: fixed; /* Forza allineamento millimetrico */					   
     }
     th, td { padding: 8px 4px; text-align: center; border-bottom: 1px solid #f0f0f0; }
     th { background-color: #ffebee; color: #c62828; font-weight: bold; text-transform: uppercase; font-size: 10px; }
-						
-						   
-							
-						   
-								  
-						
-	 
-		 
-						   
-							
-										  
-	 
 
     /* Colonne Classifica */
     th:nth-child(1), td:nth-child(1) { width: 30px; } /* Pos */
     th:nth-child(2), td:nth-child(2) { 
         width: 120px; text-align: left; position: sticky; left: 0; 
-						  
-				 
-								 
-					
         background-color: white; z-index: 10; border-right: 1px solid #eee;
-		
-								  
-        white-space: normal; word-wrap: break-word; line-height: 1.2;
-																  
-																				 
-																		   
-																					  
-    }
-	
-										 
+        white-space: normal; word-wrap: break-word; line-height: 1.2;																		  
+    }								 
     th:nth-child(3), td:nth-child(3) { width: 35px; font-weight: 800; background-color: #fafafa; } /* PT */
     th:not(:nth-child(-n+3)), td:not(:nth-child(-n+3)) { width: 28px; font-size: 9px; }
-					
-								  
-						
-	 
-
-											 
-												  
-						
-	 
-
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
     .my-team-row td:nth-child(2) { background-color: #fff3e0 !important; }
 
@@ -164,7 +118,6 @@
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 10px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; }
-    
     .teams { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
     .team-row { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; }
     
@@ -179,11 +132,9 @@
     .partials-inline { display: flex; flex-direction: row; gap: 2px; }
     .partial-badge { width: 22px; height: 22px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; flex-shrink: 0; }
     .set-total { width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; flex-shrink: 0; }
-    
     .bg-green { background-color: #2e7d32; } 
     .bg-red { background-color: #c62828; } 
     .bg-gray { background-color: #78909c; }
-
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
     .gym-name { font-size: 9px; color: #666; width: 100%; margin-bottom: 5px; flex: 1; }
     .action-buttons { display: flex; gap: 5px; justify-content: flex-end; }
@@ -218,8 +169,7 @@
 
     /* iOS Popup */
     .ios-install-popup { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 12px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 320px; text-align: center; display: none; }
-
-					 
+		 
     @media print {
         .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup { display: none !important; }
         body { background: white; color: black; }
@@ -269,43 +219,19 @@
         else if (origin === 'femminile') window.location.href = "femminile.html";
         else window.location.href = "index.html";
     }
-
-							  
-								
-																 
-														   
-					  
-											 
-													  
-		 
-	 
-	
-						 
-						   
 	
     function toggleSort(tabId) {
         const container = document.getElementById('calendar-container-' + tabId);
         const btn = document.getElementById('btn-sort-' + tabId);
-        const isSorted = btn.getAttribute('data-sorted') === 'true';
-		
-									
+        const isSorted = btn.getAttribute('data-sorted') === 'true';		
         if (!originalOrder[tabId]) originalOrder[tabId] = container.innerHTML;
-		 
-        
         if (!isSorted) {
             const cards = Array.from(container.querySelectorAll('.match-card'));
 															 
             container.querySelectorAll('h3').forEach(h => h.style.display = 'none');
             cards.sort((a, b) => (a.getAttribute('data-date-iso') || '9999').localeCompare(b.getAttribute('data-date-iso') || '9999'));
-								  
-																		   
-																		   
-											
-			   
-			
             container.innerHTML = "";
             cards.forEach(card => container.appendChild(card));
-			
             btn.innerHTML = "🔢 Per Giornata";
             btn.setAttribute('data-sorted', 'true');
             btn.classList.add('active');
@@ -318,9 +244,11 @@
     }
     
     var originalOrder = {};
-					   
-	 
-
+	
+    function printCalendar() {
+        window.print();
+    }
+	
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
@@ -332,19 +260,15 @@
             const today = new Date();
             today.setHours(0,0,0,0);
             let nextMatches = {};
-            
             document.querySelectorAll('.match-card.upcoming').forEach(card => {
-                if(card.getAttribute('data-my-team') === 'true') {
-										 
+                if(card.getAttribute('data-my-team') === 'true') {	 
                     const dateStr = card.getAttribute('data-date-iso');
-                    const campName = card.getAttribute('data-camp');
-											  
+                    const campName = card.getAttribute('data-camp'); 
                     const parts = dateStr.split('-');
                     const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
                     if (matchDate >= today) {
                         if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
                             nextMatches[campName] = { date: matchDate, html: card.outerHTML };
-							 
                         }
                     }
                 }
@@ -353,19 +277,14 @@
             let popupHTML = "";
             let count = 0;
             for (const [camp, data] of Object.entries(nextMatches)) {
-																			   
                 const campPulito = camp.replace(' S.Femminile', '').replace(' S.Maschile', '');
-                popupHTML += `<h3 style="color:#d32f2f; font-size:14px; margin-top:10px; border-bottom:1px solid #eee">🏆 ${campPulito}</h3>` + data.html;
-									   
+                popupHTML += `<h3 style="color:#d32f2f; font-size:14px; margin-top:10px; border-bottom:1px solid #eee">🏆 ${campPulito}</h3>` + data.html;			   
                 count++;
             }
-            
             if (count > 0) {
-                const modalBody = document.getElementById('modal-body');
-																			 
+                const modalBody = document.getElementById('modal-body');										 
                 if(modalBody) {
-                    modalBody.innerHTML = popupHTML;
-															 
+                    modalBody.innerHTML = popupHTML;							 
                     document.getElementById('btn-calendar').style.display = 'inline-block';
                     document.getElementById('btn-calendar').classList.add('has-events');
                 }
@@ -373,7 +292,7 @@
         }
     };
 </script>
-</head><body><div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div><div id="modal-body"></div></div></div><div class="app-header"><div class="header-left" onclick="window.location.href='index.html'"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" class="logo-main"><div><h1>Settore Femminile</h1><div class="last-update">26/01 11:46</div></div></div><div class="nav-buttons"><a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/prossimi_appuntamenti.png" class="nav-icon-img"></span></a><a href="generale_f.html?from=femminile"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/all_result.png" class="nav-icon-img"></a><a href="segnapunti.html"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div></div><div class="tab-bar"><button id="btn-0" class="tab-btn active" onclick="openTab(0)">Serie C  Gir.A</button><button id="btn-1" class="tab-btn " onclick="openTab(1)">Under 18 Gir.B</button><button id="btn-2" class="tab-btn " onclick="openTab(2)">Under 16 Gir.A</button><button id="btn-3" class="tab-btn " onclick="openTab(3)">Under 14 Gir.C</button></div><div id="content-0" class="tab-content active"><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>CUCC VOLLEY</td><td><b>29</b></td><td>11</td><td>10</td><td>1</td><td>30</td><td>5</td></tr><tr ><td>2</td><td>ANCIS VILLARICCA</td><td><b>25</b></td><td>11</td><td>8</td><td>3</td><td>27</td><td>11</td></tr><tr ><td>3</td><td>ASD VOLLEY VOLLA</td><td><b>23</b></td><td>10</td><td>8</td><td>2</td><td>25</td><td>10</td></tr><tr ><td>4</td><td>VOLLEYTIME</td><td><b>21</b></td><td>11</td><td>7</td><td>4</td><td>23</td><td>15</td></tr><tr ><td>5</td><td>APD LIBERTAS SORRENTO</td><td><b>20</b></td><td>11</td><td>7</td><td>4</td><td>25</td><td>20</td></tr><tr ><td>6</td><td>VITOLO VOLLEY</td><td><b>12</b></td><td>11</td><td>4</td><td>7</td><td>16</td><td>25</td></tr><tr class="my-team-row"><td>7</td><td>TODIS PASTENA VOLLEY</td><td><b>8</b></td><td>11</td><td>3</td><td>8</td><td>15</td><td>28</td></tr><tr ><td>8</td><td>CARBAT MATESE</td><td><b>3</b></td><td>10</td><td>1</td><td>9</td><td>6</td><td>29</td></tr><tr ><td>9</td><td>SMILERS SAN LORENZO</td><td><b>3</b></td><td>10</td><td>0</td><td>10</td><td>6</td><td>30</td></tr></tbody></table></div></div><h2>📅 Calendario TODIS</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-0" data-sorted="false" onclick="toggleSort(0)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-0">
+</head><body><div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div><div id="modal-body"></div></div></div><div class="app-header"><div class="header-left" onclick="window.location.href='index.html'"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" class="logo-main"><div><h1>Settore Femminile</h1><div class="last-update">26/01 11:57</div></div></div><div class="nav-buttons"><a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/prossimi_appuntamenti.png" class="nav-icon-img"></span></a><a href="generale_f.html?from=femminile"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/all_result.png" class="nav-icon-img"></a><a href="segnapunti.html"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div></div><div class="tab-bar"><button id="btn-0" class="tab-btn active" onclick="openTab(0)">Serie C  Gir.A</button><button id="btn-1" class="tab-btn " onclick="openTab(1)">Under 18 Gir.B</button><button id="btn-2" class="tab-btn " onclick="openTab(2)">Under 16 Gir.A</button><button id="btn-3" class="tab-btn " onclick="openTab(3)">Under 14 Gir.C</button></div><div id="content-0" class="tab-content active"><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>CUCC VOLLEY</td><td><b>29</b></td><td>11</td><td>10</td><td>1</td><td>30</td><td>5</td></tr><tr ><td>2</td><td>ANCIS VILLARICCA</td><td><b>25</b></td><td>11</td><td>8</td><td>3</td><td>27</td><td>11</td></tr><tr ><td>3</td><td>ASD VOLLEY VOLLA</td><td><b>23</b></td><td>10</td><td>8</td><td>2</td><td>25</td><td>10</td></tr><tr ><td>4</td><td>VOLLEYTIME</td><td><b>21</b></td><td>11</td><td>7</td><td>4</td><td>23</td><td>15</td></tr><tr ><td>5</td><td>APD LIBERTAS SORRENTO</td><td><b>20</b></td><td>11</td><td>7</td><td>4</td><td>25</td><td>20</td></tr><tr ><td>6</td><td>VITOLO VOLLEY</td><td><b>12</b></td><td>11</td><td>4</td><td>7</td><td>16</td><td>25</td></tr><tr class="my-team-row"><td>7</td><td>TODIS PASTENA VOLLEY</td><td><b>8</b></td><td>11</td><td>3</td><td>8</td><td>15</td><td>28</td></tr><tr ><td>8</td><td>CARBAT MATESE</td><td><b>3</b></td><td>10</td><td>1</td><td>9</td><td>6</td><td>29</td></tr><tr ><td>9</td><td>SMILERS SAN LORENZO</td><td><b>3</b></td><td>10</td><td>0</td><td>10</td><td>6</td><td>30</td></tr></tbody></table></div></div><h2>📅 Calendario TODIS</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-0" data-sorted="false" onclick="toggleSort(0)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-0">
     <div class="match-card loss" data-date-iso="2025-10-26" data-camp="Serie C  Gir.A S.Femminile" data-my-team="true">
         <div class="match-header">
             <span class="date-badge">📅 26/10/2025 ⏰ 17:30</span> <span>|</span> <span>Giornata 1</span>
