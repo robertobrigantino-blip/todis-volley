@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v3.1
-# RELEASE NOTE: Visualizzazione Ottimizzata + Ripristino Print
+# SOFTWARE VERSION: v3.2
+# RELEASE NOTE: Stampa Ottimizzata
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v3.1 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v3.2 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -247,12 +247,53 @@ CSS_BASE = """
     /* iOS Popup */
     .ios-install-popup { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 12px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 320px; text-align: center; display: none; }
 		 
-    /* Print Stili */      
+    /* --- STILI DI STAMPA MIGLIORATI --- */
     @media print {
-        .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup { display: none !important; }
-        body { background: white; color: black; }
-        .tab-content { display: block !important; }
-        .match-card { border: 1px solid #ccc; break-inside: avoid; box-shadow: none; }
+        html, body {
+            height: auto !important;
+            overflow: visible !important;
+            display: block !important;
+            background: white !important;
+        }
+        .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup {
+            display: none !important;
+        }
+        .tab-content {
+            display: none !important;
+        }
+        .tab-content.active {
+            display: block !important;
+            position: relative !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .table-scroll {
+            overflow: visible !important;
+        }
+        table {
+            table-layout: auto !important;
+            width: 100% !important;
+            border: 1px solid #000 !important;
+        }
+        th, td {
+            border: 1px solid #eee !important;
+            color: black !important;
+        }
+        .match-card {
+            page-break-inside: avoid;
+            break-inside: avoid;
+            border: 1px solid #ccc !important;
+            margin-bottom: 20px !important;
+            box-shadow: none !important;
+        }
+        .bg-green, .bg-red, .bg-gray, .partial-badge {
+            background-color: #f0f0f0 !important;
+            color: black !important;
+            border: 1px solid #ccc !important;
+        }
     }
 </style>
 <script>
@@ -735,3 +776,4 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
+
