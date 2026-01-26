@@ -1,5 +1,5 @@
 # ==============================================================================
-# SOFTWARE VERSION: v3.5
+# SOFTWARE VERSION: v3.4
 # RELEASE NOTE: ios pop-up
 # ==============================================================================
 
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v3.5 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v3.4 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -74,7 +74,7 @@ def is_target_team(team_name):
         if alias.upper() in name_clean: return True
     return False
 
-# ================= CSS COMUNE TOTALE (v3.5) =================
+# ================= CSS COMUNE TOTALE (v3.3 - Final Print & Click Fix) =================
 CSS_BASE = """
 <style>
     /* Reset e Layout Base */
@@ -110,8 +110,17 @@ CSS_BASE = """
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 13px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }   
+																	   
+	
     .nav-buttons { display: flex; gap: 8px; align-items: center; }
     .nav-icon-img { height: 42px; width: auto; transition: transform 0.1s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
+																  
+	
+							 
+																					 
+																								
+																																																   
+																													  
 
     /* --- LANDING PAGE --- */
     .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 5px 0; overflow: hidden; }
@@ -205,6 +214,15 @@ CSS_BASE = """
         white-space: normal; word-wrap: break-word; /* Permette il ritorno a capo */
     }
     .my-team-text { color: #d32f2f; font-weight: 700; }
+																																   
+																																													  
+																								
+																						
+																																															
+																				  
+																				   
+																				  
+
     .scores-wrapper { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .partials-inline { display: flex; flex-direction: row; gap: 2px; }
     .partial-badge { width: 22px; height: 22px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; flex-shrink: 0; }
@@ -233,9 +251,17 @@ CSS_BASE = """
     .modal-title { font-size: 16px; font-weight: bold; color: #d32f2f; }
     .close-btn { background: #eee; border: none; font-size: 20px; padding: 0 8px; border-radius: 5px; cursor: pointer; }
 
-    /* Tools Bar */												  
-    .calendar-controls { display: flex; gap: 8px; margin-bottom: 12px; justify-content: flex-end; position: relative; z-index: 10; }		
-    .btn-tool { font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; transition: 0.2s; }												 
+    /* Tools Bar (Fix Cliccabilità) */
+    .calendar-controls { 
+        display: flex; gap: 8px; margin-bottom: 12px; 
+        justify-content: flex-end; position: relative; z-index: 10; 
+    }
+    .btn-tool { 
+        font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; 
+        border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; 
+        transition: 0.2s; position: relative; z-index: 11;
+    }
+    .btn-tool:active { transform: scale(0.95); background: #f0f0f0; }
     .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
 	
     /* Footer */
@@ -246,16 +272,80 @@ CSS_BASE = """
 
     /* iOS Popup */
     .ios-install-popup { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 12px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 320px; text-align: center; display: none; }
-
+		 
+    /* --- STILI DI STAMPA MIGLIORATI --- */
+    @media print {
+        html, body {
+            height: auto !important;
+            overflow: visible !important;
+            display: block !important;
+            background: white !important;
+        }
+        .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup {
+            display: none !important;
+        }
+        .tab-content {
+            display: none !important;
+        }
+        .tab-content.active {
+            display: block !important;
+            position: relative !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .table-scroll {
+            overflow: visible !important;
+        }
+        table {
+            table-layout: auto !important;
+            width: 100% !important;
+            border: 1px solid #000 !important;
+        }
+        th, td {
+            border: 1px solid #eee !important;
+            color: black !important;
+        }
+        .match-card {
+            page-break-inside: avoid;
+            break-inside: avoid;
+            border: 1px solid #ccc !important;
+            margin-bottom: 20px !important;
+            box-shadow: none !important;
+        }
+        .bg-green, .bg-red, .bg-gray, .partial-badge {
+            background-color: #f0f0f0 !important;
+            color: black !important;
+            border: 1px solid #ccc !important;
+        }
+    }
 </style>
 <script>
     /* Funzioni Globali */
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
     function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
-
+    function printCalendar() { window.print(); } /* FUNZIONE STAMPA */
+    
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
+													 
+								   
+													
+																	 
+															
+																	 
+																	 
+																					  
+									
+																				  
+							 
+						 
+					  
+				  
+			  
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed: ', err));
         });
     }
@@ -269,6 +359,10 @@ CSS_BASE = """
         document.getElementById("btn-" + tabIndex).classList.add("active");
     }
 
+																							  
+																							 
+																							 
+	
     function tornaAlSettore() {
         const urlParams = new URLSearchParams(window.location.search);
         const origin = urlParams.get('from');
@@ -276,21 +370,43 @@ CSS_BASE = """
         else if (origin === 'femminile') window.location.href = "femminile.html";
         else window.location.href = "index.html";
     }
-			 
+
+							  
+								
+																 
+														   
+					  
+											 
+													  
+		 
+	 
+	
+						 
     var originalOrder = {};
 	
     function toggleSort(tabId) {
         const container = document.getElementById('calendar-container-' + tabId);
         const btn = document.getElementById('btn-sort-' + tabId);
-        const isSorted = btn.getAttribute('data-sorted') === 'true';		
+        const isSorted = btn.getAttribute('data-sorted') === 'true';
+		
+									
         if (!originalOrder[tabId]) originalOrder[tabId] = container.innerHTML;
+		 
+        
         if (!isSorted) {
             const cards = Array.from(container.querySelectorAll('.match-card'));
 				
             container.querySelectorAll('h3').forEach(h => h.style.display = 'none');
             cards.sort((a, b) => (a.getAttribute('data-date-iso') || '9999').localeCompare(b.getAttribute('data-date-iso') || '9999'));
+								  
+																		   
+																		   
+											
+			   
+			
             container.innerHTML = "";
             cards.forEach(card => container.appendChild(card));
+			
             btn.innerHTML = "🔢 Per Giornata";
             btn.setAttribute('data-sorted', 'true');
             btn.classList.add('active');
@@ -301,6 +417,10 @@ CSS_BASE = """
             btn.classList.remove('active');
         }
     }
+	
+							  
+					   
+	 
 
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
@@ -315,14 +435,17 @@ CSS_BASE = """
             let nextMatches = {};
 			
             document.querySelectorAll('.match-card.upcoming').forEach(card => {
-                if(card.getAttribute('data-my-team') === 'true') {	 						 
+                if(card.getAttribute('data-my-team') === 'true') {	 
+										 
                     const dateStr = card.getAttribute('data-date-iso');
-                    const campName = card.getAttribute('data-camp'); 				  
+                    const campName = card.getAttribute('data-camp'); 
+											  
                     const parts = dateStr.split('-');
                     const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
                     if (matchDate >= today) {
                         if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
-                            nextMatches[campName] = { date: matchDate, html: card.outerHTML }; 
+                            nextMatches[campName] = { date: matchDate, html: card.outerHTML };
+							 
                         }
                     }
                 }
@@ -332,13 +455,17 @@ CSS_BASE = """
             let count = 0;
             for (const [camp, data] of Object.entries(nextMatches)) {
                 const campPulito = camp.replace(' S.Femminile', '').replace(' S.Maschile', '');
-                popupHTML += `<h3 style="color:#d32f2f; font-size:14px; margin-top:10px; border-bottom:1px solid #eee">🏆 ${campPulito}</h3>` + data.html;			   						   
+                popupHTML += `<h3 style="color:#d32f2f; font-size:14px; margin-top:10px; border-bottom:1px solid #eee">🏆 ${campPulito}</h3>` + data.html;			   
+									   
                 count++;
-            }	
+            }
+			
             if (count > 0) {
-                const modalBody = document.getElementById('modal-body');										 																 
+                const modalBody = document.getElementById('modal-body');										 
+																			 
                 if(modalBody) {
-                    modalBody.innerHTML = popupHTML;							 														 
+                    modalBody.innerHTML = popupHTML;							 
+															 
                     document.getElementById('btn-calendar').style.display = 'inline-block';
                     document.getElementById('btn-calendar').classList.add('has-events');
                 }
@@ -685,8 +812,11 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
         
         # AGGIUNTA PULSANTI E CONTAINER PER SORTING
         html += f"<h2>📅 Calendario TODIS</h2>"
-        html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button></div>'
+        html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
         html += f'<div id="calendar-container-{i}">'
+        df_todis = df_ris[(df_ris['Campionato'] == camp) & (df_ris['Squadra Casa'].apply(is_target_team) | df_ris['Squadra Ospite'].apply(is_target_team))]
+        for _, r in df_todis.iterrows(): html += crea_card_html(r, camp, is_focus_mode=True)
+        html += '</div></div>'
 
     html += f'<div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span></div></body></html>'
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
@@ -712,7 +842,7 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
         html += '</tbody></table></div></div>'
         
         html += f'<h2>📅 Calendario</h2>'
-        html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button></div>'
+        html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
         html += f'<div id="calendar-container-{i}">'
         df_r = df_ris[df_ris['Campionato'] == camp]
         for g in df_r['Giornata'].unique():
