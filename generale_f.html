@@ -87,14 +87,73 @@
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
 
-    /* Classifiche */
-    .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
-    th { background-color: #ffebee; color: #c62828; padding: 10px 6px; text-align: center; font-weight: bold; font-size: 11px; text-transform: uppercase; }
-    td { padding: 10px 6px; text-align: center; border-bottom: 1px solid #f0f0f0; }
-    td:nth-child(2) { text-align: left; min-width: 140px; font-weight: 500; position: sticky; left: 0; background-color: white; border-right: 1px solid #eee; }
+/* --- CLASSIFICHE OTTIMIZZATE (Fix Disallineamento) --- */
+    .table-card { 
+        background: white; 
+        border-radius: 8px; 
+        overflow: hidden; 
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+        margin-bottom: 20px;
+        width: 100%; /* Forza la tabella a stare nel contenitore */
+    }
+    .table-scroll { 
+        overflow-x: auto; 
+        -webkit-overflow-scrolling: touch; 
+        width: 100%; 
+    }
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        font-size: 11px; /* Leggermente più piccolo per mobile */
+        table-layout: auto;
+    }
+    th { 
+        background-color: #ffebee; 
+        color: #c62828; 
+        padding: 10px 4px; 
+        text-align: center; 
+        font-weight: bold; 
+        text-transform: uppercase;
+        font-size: 10px;
+    }
+    td { 
+        padding: 10px 4px; 
+        text-align: center; 
+        border-bottom: 1px solid #f0f0f0; 
+    }
+
+    /* Colonna Squadra: il "cuore" del fix */
+    th:nth-child(2), td:nth-child(2) { 
+        text-align: left; 
+        position: sticky; 
+        left: 0; 
+        background-color: white; 
+        z-index: 10;
+        border-right: 1px solid #eee;
+        
+        /* Gestione Nomi Lunghi */
+        white-space: normal;    /* Permette il ritorno a capo */
+        min-width: 110px;       /* Larghezza minima per il nome */
+        max-width: 150px;       /* Impedisce alla colonna di espandersi troppo */
+        line-height: 1.2;       /* Spaziatura riga per nomi su due linee */
+        word-wrap: break-word;  /* Rompe parole eccessivamente lunghe se necessario */
+    }
+    
+    /* Colonna Punti (PT): evidenziata */
+    th:nth-child(3), td:nth-child(3) { 
+        font-weight: 800; 
+        color: #000;
+        background-color: #fafafa;
+        min-width: 30px;
+    }
+
+    /* Altre colonne statistiche: compatte */
+    th:not(:nth-child(2)), td:not(:nth-child(2)) {
+        min-width: 25px;
+    }
+
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
+    .my-team-row td:nth-child(2) { background-color: #fff3e0 !important; } /* Fix per cella sticky */
 
     /* Match Cards */
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; }
@@ -3073,4 +3132,4 @@
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.73712810,14.56365930&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ASK%20ANGRI%201997%20vs%20VITOLO%20VOLLEY&dates=20260303T193000/20260303T213000&location=PALESTRA%20II%C2%B0%20CD%20-%20ANGRI%C2%A0ANGRI%20SAVIA%20LEONARDO%20DA%20VINCI&details=Campionato+Under%2014%20Gir.C%20S.Femminile" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2014%20Gir.C%20S.Femminile%2A%0A03/03/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20II%C2%B0%20CD%20-%20ANGRI%C2%A0ANGRI%20SAVIA%20LEONARDO%20DA%20VINCI%0AASK%20ANGRI%201997%20vs%20VITOLO%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
-    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v2.8 | Stagione 25/26 - Ver. Finale 🏁</span></div></body></html>
+    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v2.9 | Stagione 25/26 - Ver. Finale 🏁</span></div></body></html>
