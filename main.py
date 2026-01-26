@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v2.9
-# RELEASE NOTE: Classifiche Ottimizzate
+# SOFTWARE VERSION: v3.0
+# RELEASE NOTE: Visualizzazione Ottimizzata
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v2.9 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v3.0 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -74,11 +74,12 @@ def is_target_team(team_name):
         if alias.upper() in name_clean: return True
     return False
 
-# ================= CSS COMUNE =================
+# ================= CSS COMUNE TOTALE (v3.0 - Allineamento Perfetto & No-Overflow) =================
 CSS_BASE = """
 <style>
     /* Reset e Layout Base */
     * { box-sizing: border-box; }
+	
     html, body { 
         height: 100%; 
         margin: 0; 
@@ -86,9 +87,10 @@ CSS_BASE = """
         font-family: 'Roboto', sans-serif; 
         background-color: #f0f2f5; 
         color: #333;
+        overflow-x: hidden; /* Blocca scivolamento orizzontale */
     }
 
-    body { display: flex; flex-direction: column; overflow-x: hidden; }
+    body { display: flex; flex-direction: column; }
 
     /* Header */
     .app-header { 
@@ -116,15 +118,15 @@ CSS_BASE = """
     .instruction-text { font-weight: 700; color: #555; font-size: 11px; text-transform: uppercase; margin: 0; }
     .choice-card { position: relative; width: 92%; max-width: 450px; display: flex; justify-content: center; align-items: center; }
     .choice-img { width: 100%; height: auto; max-height: 58vh; object-fit: contain; display: block; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-	 
+  
     .click-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; border-radius: 15px; overflow: hidden; }
     .click-area { width: 50%; height: 100%; cursor: pointer; }
     .social-section { text-align: center; margin: 5px 0; } 
     .social-icons { display: flex; justify-content: center; gap: 30px; }
     .social-icon-img { width: 34px; height: 34px; }
-													  
+			   
 
-    /* --- MENU TABS (CORRETTO) --- */
+    /* --- MENU TABS --- */
 
     .tab-bar { 
         background-color: white; 
@@ -137,122 +139,132 @@ CSS_BASE = """
         box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
         border-bottom: 1px solid #eee; 
         flex-shrink: 0;
-        scrollbar-width: none; /* Nasconde scrollbar Firefox */
+        scrollbar-width: none; 
     }
-    .tab-bar::-webkit-scrollbar { display: none; } /* Nasconde scrollbar Chrome/Safari */
+    .tab-bar::-webkit-scrollbar { display: none; } 
 
     .tab-btn { 
         flex: 1; 
-        padding: 10px 8px; /* Padding ridotto */
+        padding: 10px 8px; 
         text-align: center; 
         background: none; 
         border: none; 
-        font-size: 11px; /* Font rimpicciolito come richiesto */
+        font-size: 11px; 
         font-weight: 600; 
         color: #666; 
         border-bottom: 3px solid transparent; 
         cursor: pointer; 
-        min-width: 85px; /* Larghezza minima ridotta per farne stare di più */
+        min-width: 85px; 
         text-transform: uppercase;
     }
 
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
     
     /* --- CONTENUTI --- */
-    .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
+    .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; width: 100%; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
 
-/* --- CLASSIFICHE OTTIMIZZATE (Fix Disallineamento) --- */
+    /* --- CLASSIFICHE FIXATE --- */
     .table-card { 
-        background: white; 
-        border-radius: 8px; 
-        overflow: hidden; 
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
-        margin-bottom: 20px;
-        width: 100%; /* Forza la tabella a stare nel contenitore */
+						   
+        background: white; border-radius: 8px; overflow: hidden; 
+						  
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; width: 100%; 
+							
+																   
     }
-    .table-scroll { 
-        overflow-x: auto; 
-        -webkit-overflow-scrolling: touch; 
-        width: 100%; 
-    }
+					
+						  
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
+					 
+	 
     table { 
-        width: 100%; 
-        border-collapse: collapse; 
-        font-size: 11px; /* Leggermente più piccolo per mobile */
-        table-layout: auto;
+					 
+        width: 100%; border-collapse: collapse; font-size: 11px; 
+        table-layout: fixed; /* Forza allineamento millimetrico */
+						   
     }
-    th { 
-        background-color: #ffebee; 
-        color: #c62828; 
-        padding: 10px 4px; 
-        text-align: center; 
-        font-weight: bold; 
-        text-transform: uppercase;
-        font-size: 10px;
-    }
-    td { 
-        padding: 10px 4px; 
-        text-align: center; 
-        border-bottom: 1px solid #f0f0f0; 
-    }
+    th, td { padding: 8px 4px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+    th { background-color: #ffebee; color: #c62828; font-weight: bold; text-transform: uppercase; font-size: 10px; }
+						
+						   
+							
+						   
+								  
+						
+	 
+		 
+						   
+							
+										  
+	 
 
-    /* Colonna Squadra: il "cuore" del fix */
+    /* Colonne Classifica */
+    th:nth-child(1), td:nth-child(1) { width: 30px; } /* Pos */
     th:nth-child(2), td:nth-child(2) { 
-        text-align: left; 
-        position: sticky; 
-        left: 0; 
-        background-color: white; 
-        z-index: 10;
-        border-right: 1px solid #eee;
-        
-        /* Gestione Nomi Lunghi */
-        white-space: normal;    /* Permette il ritorno a capo */
-        min-width: 110px;       /* Larghezza minima per il nome */
-        max-width: 150px;       /* Impedisce alla colonna di espandersi troppo */
-        line-height: 1.2;       /* Spaziatura riga per nomi su due linee */
-        word-wrap: break-word;  /* Rompe parole eccessivamente lunghe se necessario */
+        width: 120px; text-align: left; position: sticky; left: 0; 
+						  
+				 
+								 
+					
+        background-color: white; z-index: 10; border-right: 1px solid #eee;
+		
+								  
+        white-space: normal; word-wrap: break-word; line-height: 1.2;
+																  
+																				 
+																		   
+																					  
     }
-    
-    /* Colonna Punti (PT): evidenziata */
-    th:nth-child(3), td:nth-child(3) { 
-        font-weight: 800; 
-        color: #000;
-        background-color: #fafafa;
-        min-width: 30px;
-    }
+	
+										 
+    th:nth-child(3), td:nth-child(3) { width: 35px; font-weight: 800; background-color: #fafafa; } /* PT */
+    th:not(:nth-child(-n+3)), td:not(:nth-child(-n+3)) { width: 28px; font-size: 9px; }
+					
+								  
+						
+	 
 
-    /* Altre colonne statistiche: compatte */
-    th:not(:nth-child(2)), td:not(:nth-child(2)) {
-        min-width: 25px;
-    }
+											 
+												  
+						
+	 
 
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
-    .my-team-row td:nth-child(2) { background-color: #fff3e0 !important; } /* Fix per cella sticky */
+    .my-team-row td:nth-child(2) { background-color: #fff3e0 !important; }
 
-    /* Match Cards */
-    .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; }
+    /* --- MATCH CARDS FIXATE --- */
+    .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; width: 100%; }
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 10px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; }
-    .teams { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
-    .team-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-    .team-info { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; padding-right: 10px; }
+    
+    .teams { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+    .team-row { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; }
+    
+    /* Fix Nomi Squadre nel Calendario */
+    .team-info { 
+        flex: 1; min-width: 0; font-size: 14px; line-height: 1.2;
+        white-space: normal; word-wrap: break-word; /* Permette il ritorno a capo */
+    }
     .my-team-text { color: #d32f2f; font-weight: 700; }
-    .scores-wrapper { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-    .partials-inline { display: flex; flex-direction: row; gap: 3px; }
-    .partial-badge { width: 24px; height: 24px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; flex-shrink: 0; }
-    .set-total { width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 15px; flex-shrink: 0; }
+
+    .scores-wrapper { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .partials-inline { display: flex; flex-direction: row; gap: 2px; }
+    .partial-badge { width: 22px; height: 22px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; flex-shrink: 0; }
+    .set-total { width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; flex-shrink: 0; }
+    
     .bg-green { background-color: #2e7d32; } 
     .bg-red { background-color: #c62828; } 
     .bg-gray { background-color: #78909c; }
+
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
-    .gym-name { font-size: 10px; color: #666; width: 100%; margin-bottom: 5px; }
-    .action-buttons { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
-    .btn { text-decoration: none; padding: 5px 10px; border-radius: 12px; font-size: 9px; font-weight: bold; display: flex; align-items: center; gap: 3px; border: 1px solid transparent; }
+    .gym-name { font-size: 9px; color: #666; width: 100%; margin-bottom: 5px; flex: 1; }
+    .action-buttons { display: flex; gap: 5px; justify-content: flex-end; }
+    .btn { text-decoration: none; padding: 4px 8px; border-radius: 12px; font-size: 9px; font-weight: bold; display: flex; align-items: center; gap: 3px; border: 1px solid transparent; }
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
@@ -270,13 +282,13 @@ CSS_BASE = """
     .modal-title { font-size: 16px; font-weight: bold; color: #d32f2f; }
     .close-btn { background: #eee; border: none; font-size: 20px; padding: 0 8px; border-radius: 5px; cursor: pointer; }
 
-    /* Tools (Sort & Print) */
+    /* Tools */
     .calendar-controls { display: flex; gap: 8px; margin-bottom: 12px; justify-content: flex-end; }
     .btn-tool { font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; transition: 0.2s; }
     .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
 	
-    /* Footer Sottile */
-    .footer-counter { text-align: center; padding: 8px 0; background: white; border-top: 1px solid #eee; flex-shrink: 0; }
+    /* Footer */
+    .footer-counter { text-align: center; padding: 8px 0; background: white; border-top: 1px solid #eee; flex-shrink: 0; width: 100%; }
     .footer-counter img { height: 16px; margin-bottom: 2px; }
     .version-text { font-size: 9px; color: #999; margin: 0; font-family: monospace; }
     .footer-msg { font-size: 10px; color: #d32f2f; margin: 0; font-weight: bold; }
@@ -284,7 +296,7 @@ CSS_BASE = """
     /* iOS Popup */
     .ios-install-popup { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 12px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 320px; text-align: center; display: none; }
 
-    /* Print Stili */
+					 
     @media print {
         .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup { display: none !important; }
         body { background: white; color: black; }
@@ -335,56 +347,56 @@ CSS_BASE = """
         else window.location.href = "index.html";
     }
 
-    // Toggle Details Function
-    function toggleDetails(id) {
-        const details = document.getElementById('details-' + id);
-        const icon = document.getElementById('icon-' + id);
-        if (details) {
-            details.classList.toggle('open');
-            if(icon) icon.classList.toggle('rotated');
-        }
-    }
-    
-    // Sort & Print Logic
-    var originalOrder = {};
-    
+							  
+								
+																 
+														   
+					  
+											 
+													  
+		 
+	 
+	
+						 
+						   
+	
     function toggleSort(tabId) {
         const container = document.getElementById('calendar-container-' + tabId);
         const btn = document.getElementById('btn-sort-' + tabId);
         const isSorted = btn.getAttribute('data-sorted') === 'true';
-        
-        if (!originalOrder[tabId]) {
-            originalOrder[tabId] = container.innerHTML;
-        }
+		
+									
+        if (!originalOrder[tabId]) originalOrder[tabId] = container.innerHTML;
+		 
         
         if (!isSorted) {
             const cards = Array.from(container.querySelectorAll('.match-card'));
-            const headers = container.querySelectorAll('h3');
-            headers.forEach(h => h.style.display = 'none');
-            
-            cards.sort((a, b) => {
-                const da = a.getAttribute('data-date-iso') || '9999-99-99';
-                const db = b.getAttribute('data-date-iso') || '9999-99-99';
-                return da.localeCompare(db);
-            });
-            
+															 
+            container.querySelectorAll('h3').forEach(h => h.style.display = 'none');
+            cards.sort((a, b) => (a.getAttribute('data-date-iso') || '9999').localeCompare(b.getAttribute('data-date-iso') || '9999'));
+								  
+																		   
+																		   
+											
+			   
+			
             container.innerHTML = "";
             cards.forEach(card => container.appendChild(card));
-            
-            btn.innerHTML = "🔢 Ordina per Giornata";
+			
+            btn.innerHTML = "🔢 Per Giornata";
             btn.setAttribute('data-sorted', 'true');
             btn.classList.add('active');
         } else {
             container.innerHTML = originalOrder[tabId];
-            btn.innerHTML = "📅 Ordina per Data";
+            btn.innerHTML = "📅 Per Data";
             btn.setAttribute('data-sorted', 'false');
             btn.classList.remove('active');
         }
     }
     
-    function printCalendar() {
-        window.print();
-    }
+    var originalOrder = {};
+					   
+	 
 
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
@@ -399,17 +411,17 @@ CSS_BASE = """
             let nextMatches = {};
             
             document.querySelectorAll('.match-card.upcoming').forEach(card => {
-                const isMyTeam = card.getAttribute('data-my-team');
-                if(isMyTeam === 'true') {
+                if(card.getAttribute('data-my-team') === 'true') {
+										 
                     const dateStr = card.getAttribute('data-date-iso');
                     const campName = card.getAttribute('data-camp');
-                    if (dateStr && campName) {
-                        const parts = dateStr.split('-');
-                        const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
-                        if (matchDate >= today) {
-                            if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
-                                nextMatches[campName] = { date: matchDate, html: card.outerHTML };
-                            }
+											  
+                    const parts = dateStr.split('-');
+                    const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
+                    if (matchDate >= today) {
+                        if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
+                            nextMatches[campName] = { date: matchDate, html: card.outerHTML };
+							 
                         }
                     }
                 }
@@ -418,20 +430,21 @@ CSS_BASE = """
             let popupHTML = "";
             let count = 0;
             for (const [camp, data] of Object.entries(nextMatches)) {
-                // RIMOZIONE STRINGA S.FEMMINILE / S.MASCHILE DAL TITOLO MODALE
+																			   
                 const campPulito = camp.replace(' S.Femminile', '').replace(' S.Maschile', '');
-                popupHTML += `<h3>🏆 ${campPulito}</h3>`;
-                popupHTML += data.html;
+                popupHTML += `<h3 style="color:#d32f2f; font-size:14px; margin-top:10px; border-bottom:1px solid #eee">🏆 ${campPulito}</h3>` + data.html;
+									   
                 count++;
             }
             
             if (count > 0) {
                 const modalBody = document.getElementById('modal-body');
-                const calContainer = document.getElementById('btn-calendar');
-                if(modalBody && calContainer) {
+																			 
+                if(modalBody) {
                     modalBody.innerHTML = popupHTML;
-                    calContainer.classList.add('has-events');
-                    calContainer.style.display = 'inline-block';
+															 
+                    document.getElementById('btn-calendar').style.display = 'inline-block';
+                    document.getElementById('btn-calendar').classList.add('has-events');
                 }
             }
         }
