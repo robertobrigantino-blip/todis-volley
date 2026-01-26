@@ -1,6 +1,6 @@
 # ==============================================================================
 # SOFTWARE VERSION: v2.8
-# RELEASE NOTE: Fix Layout Landing Page
+# RELEASE NOTE: Fix Layout Landing Page and Internal Pages
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v2.8 | Stable Release 🏁"
+APP_VERSION = "v2.8 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -119,9 +119,7 @@ CSS_BASE = """
 	 
     .click-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; border-radius: 15px; overflow: hidden; }
     .click-area { width: 50%; height: 100%; cursor: pointer; }
-	
-    .social-section { text-align: center; margin: 5px 0; }
-					 
+    .social-section { text-align: center; margin: 5px 0; } 
     .social-icons { display: flex; justify-content: center; gap: 30px; }
     .social-icon-img { width: 34px; height: 34px; }
 													  
@@ -164,7 +162,6 @@ CSS_BASE = """
     .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
 
     /* Classifiche */
@@ -181,24 +178,18 @@ CSS_BASE = """
     .match-card.win { border-left-color: #2e7d32; } 
     .match-card.loss { border-left-color: #c62828; } 
     .match-card.upcoming { border-left-color: #ff9800; } 
-
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 10px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; }
-													  
-	
     .teams { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
     .team-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
     .team-info { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; padding-right: 10px; }
     .my-team-text { color: #d32f2f; font-weight: 700; }
-
     .scores-wrapper { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .partials-inline { display: flex; flex-direction: row; gap: 3px; }
     .partial-badge { width: 24px; height: 24px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; flex-shrink: 0; }
     .set-total { width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 15px; flex-shrink: 0; }
-
     .bg-green { background-color: #2e7d32; } 
     .bg-red { background-color: #c62828; } 
     .bg-gray { background-color: #78909c; }
-
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
     .gym-name { font-size: 10px; color: #666; width: 100%; margin-bottom: 5px; }
     .action-buttons { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
@@ -771,3 +762,4 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
+
