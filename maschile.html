@@ -1,15 +1,19 @@
 <!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Settore Maschile</title>
 <style>
     /* Reset e Layout Base */
-    body { 
-        font-family: 'Roboto', sans-serif; 
-        background-color: #f0f2f5; 
+    * { box-sizing: border-box; }
+    html, body { 
+        height: 100%; 
         margin: 0; 
         padding: 0; 
-        color: #333; 
+        font-family: 'Roboto', sans-serif; 
+        background-color: #f0f2f5; 
+        color: #333;
+    }
+    
+    body { 
         display: flex; 
         flex-direction: column; 
-        min-height: 100vh; 
         overflow-x: hidden;
     }
     
@@ -22,11 +26,11 @@
         align-items: center; 
         justify-content: space-between; 
         box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
-        position: sticky; 
-        top:0; 
-        z-index:1000; 
         height: 60px; 
-        flex-shrink: 0;
+        flex-shrink: 0; 
+        z-index: 1000;
+        position: sticky;
+        top: 0;
     }
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
@@ -35,56 +39,69 @@
     
     .nav-buttons { display: flex; gap: 8px; align-items: center; }
     .nav-icon-img { height: 42px; width: auto; transition: transform 0.1s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
-    .nav-icon-img:active { transform: scale(0.90); }
-    
-    /* LANDING PAGE - Ottimizzazione Spazio */
+    .nav-icon-img:active { transform: scale(0.9); }
+
+    /* --- LANDING PAGE (Senza Scroll) --- */
     .landing-container { 
-        flex-grow: 1; 
+        flex: 1; 
         display: flex; 
         flex-direction: column; 
-        justify-content: center; 
+        justify-content: space-between; /* Distribuisce header, card e social */
         align-items: center; 
-        padding: 10px 15px; 
-        gap: 12px; 
+        padding: 10px 0; 
     }
-    .instruction-text { font-weight: 500; color: #555; font-size: 13px; margin: 0; }
+    
+    .instruction-text { font-weight: 700; color: #555; font-size: 11px; text-transform: uppercase; margin-bottom: 5px; }
+    
     .choice-card { 
         position: relative; 
-        width: 85%; 
-        max-width: 380px; 
+        width: 92%; 
+        max-width: 420px; 
+        height: 52vh; /* Altezza dinamica basata sul display */
         border-radius: 15px; 
         overflow: hidden; 
         box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
         background: white; 
     }
-    .choice-img { width: 100%; display: block; height: auto; }
+    .choice-img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .click-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; }
     .click-area { width: 50%; height: 100%; cursor: pointer; }
 
-    /* Social Section Compatta */
-    .social-section { text-align: center; width: 100%; margin: 5px 0; }
-    .social-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: bold; }
+    .social-section { text-align: center; margin: 10px 0; }
+    .social-label { font-size: 10px; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 8px; display: block; }
     .social-icons { display: flex; justify-content: center; gap: 30px; }
-    .social-icon-img { width: 30px; height: 30px; transition: transform 0.2s; }
+    .social-icon-img { width: 34px; height: 34px; transition: transform 0.2s; }
     .social-icon-img:active { transform: scale(0.8); }
 
-    /* FOOTER Alzato e Compatto */
+    /* Footer Sottile */
     .footer-counter { 
         text-align: center; 
-        padding: 10px 0; 
-        border-top: 1px solid #eee; 
+        padding: 8px 0; 
         background: white; 
+        border-top: 1px solid #eee; 
         flex-shrink: 0; 
     }
-    .footer-counter img { height: 18px; vertical-align: middle; }
-    .version-text { font-size: 9px; color: #999; margin-top: 2px; display: block; font-family: monospace; }
-    .footer-msg { font-size: 10px; color: #777; margin-top: 2px; font-style: italic; }
+    .footer-counter img { height: 16px; margin-bottom: 2px; }
+    .version-text { font-size: 9px; color: #999; margin: 0; font-family: monospace; }
+    .footer-msg { font-size: 10px; color: #777; margin: 0; font-weight: bold; }
 
-    /* Stili per Pagine Contenuto (Classifiche/Risultati) */
-    .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; flex-shrink: 0; }
+    /* --- PAGINE INTERNE (Con Scroll) --- */
+    .tab-bar { 
+        background-color: white; 
+        display: flex; 
+        overflow-x: auto; 
+        white-space: nowrap; 
+        position: sticky; 
+        top: 60px; 
+        z-index: 99; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+        border-bottom: 1px solid #eee; 
+        flex-shrink: 0;
+    }
     .tab-btn { flex: 1; padding: 12px 15px; text-align: center; background: none; border: none; font-size: 13px; font-weight: 500; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 100px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
-    .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; flex-grow: 1; }
+    
+    .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     
@@ -111,27 +128,23 @@
     .teams { display: flex; flex-direction: column; gap: 6px; font-size: 14px; margin-bottom: 8px; }
     .team-row { display: flex; justify-content: space-between; align-items: center; }
     .my-team-text { color: #d32f2f; font-weight: 700; }
+    
+    /* Punteggi e Badge */
     .scores-wrapper { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
     .set-total { width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; }
     .bg-green { background-color: #2e7d32; } 
     .bg-red { background-color: #c62828; }
     .bg-gray { background-color: #78909c; }
     .partials-inline { display: flex; gap: 3px; }
-    .partial-badge { width: 22px; height: 22px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+    .partial-badge { width: 22px; height: 22px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; }
     
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
     .gym-name { font-size: 10px; color: #666; width: 100%; margin-bottom: 5px; }
     .action-buttons { display: flex; gap: 5px; width: 100%; justify-content: flex-end; }
-    .btn { text-decoration: none; padding: 4px 8px; border-radius: 12px; font-size: 9px; font-weight: bold; border: 1px solid transparent; }
+    .btn { text-decoration: none; padding: 5px 10px; border-radius: 12px; font-size: 9px; font-weight: bold; border: 1px solid transparent; display: flex; align-items: center; gap: 3px; }
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
     .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
-
-    /* CALENDARIO NOTIFICA */
-    .calendar-container { position: relative; display: none; }
-    .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
-    .calendar-container.has-events::after { content: ''; position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; }
-    @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
     /* Modali */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
@@ -140,15 +153,21 @@
     .modal-title { font-size: 16px; font-weight: bold; color: #d32f2f; }
     .close-btn { background: #eee; border: none; font-size: 20px; padding: 0 8px; border-radius: 5px; cursor: pointer; }
 
-    /* Controls Bar */
+    /* Strumenti Sorting */
     .calendar-controls { display: flex; gap: 8px; margin-bottom: 12px; justify-content: flex-end; }
-    .btn-tool { font-size: 10px; padding: 5px 10px; background: #fff; border: 1px solid #ccc; border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; }
+    .btn-tool { font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; }
     .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
 
-    /* IOS INSTALL TIP */
+    /* Notifica Calendario */
+    .calendar-container { position: relative; display: none; }
+    .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
+    .calendar-container.has-events::after { content: ''; position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; }
+    @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+    /* IOS Popup */
     .ios-install-popup { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 12px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 320px; text-align: center; display: none; }
 
-    /* PRINT STYLES */
+    /* PRINT */
     @media print {
         .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup { display: none !important; }
         body { background: white; color: black; }
@@ -299,7 +318,7 @@
         }
     };
 </script>
-</head><body><div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div><div id="modal-body"></div></div></div><div class="app-header"><div class="header-left" onclick="window.location.href='index.html'"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" class="logo-main"><div><h1>Settore Maschile</h1><div class="last-update">26/01 08:53</div></div></div><div class="nav-buttons"><a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/prossimi_appuntamenti.png" class="nav-icon-img"></span></a><a href="generale_m.html?from=maschile"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/all_result.png" class="nav-icon-img"></a><a href="segnapunti.html"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div></div><div class="tab-bar"><button id="btn-0" class="tab-btn active" onclick="openTab(0)">Serie D  Gir.C</button><button id="btn-1" class="tab-btn " onclick="openTab(1)">Under 19 Gir.A</button><button id="btn-2" class="tab-btn " onclick="openTab(2)">Under 17 Gir.B</button><button id="btn-3" class="tab-btn " onclick="openTab(3)">Under 15 Gir.B</button></div><div id="content-0" class="tab-content active"><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>POLISPORTIVA SPORT FOR LIFE</td><td><b>33</b></td><td>12</td><td>12</td><td>0</td><td>36</td><td>10</td></tr><tr ><td>2</td><td>NOCERA VOLLEY</td><td><b>29</b></td><td>12</td><td>10</td><td>2</td><td>32</td><td>16</td></tr><tr ><td>3</td><td>U.S. SALERNO OFFICIAL-MINERVA</td><td><b>26</b></td><td>12</td><td>9</td><td>3</td><td>31</td><td>17</td></tr><tr ><td>4</td><td>PALL BATTIPAGLIA</td><td><b>21</b></td><td>12</td><td>6</td><td>6</td><td>29</td><td>24</td></tr><tr ><td>5</td><td>NUOVA GS OLIMPICA</td><td><b>18</b></td><td>12</td><td>6</td><td>6</td><td>23</td><td>24</td></tr><tr ><td>6</td><td>ISV PRIMA COLTA</td><td><b>16</b></td><td>12</td><td>5</td><td>7</td><td>24</td><td>26</td></tr><tr class="my-team-row"><td>7</td><td>TODIS CS PASTENA VOLLEY</td><td><b>15</b></td><td>12</td><td>5</td><td>7</td><td>21</td><td>26</td></tr><tr ><td>8</td><td>ZETA VOLLEY STRIANO</td><td><b>11</b></td><td>12</td><td>4</td><td>8</td><td>18</td><td>31</td></tr><tr ><td>9</td><td>ASD ACCA VOLLEY EBOLI</td><td><b>7</b></td><td>12</td><td>2</td><td>10</td><td>16</td><td>33</td></tr><tr ><td>10</td><td>MURATE VOLLEY</td><td><b>4</b></td><td>12</td><td>1</td><td>11</td><td>12</td><td>35</td></tr></tbody></table></div></div><h2>📅 Calendario TODIS</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-0" data-sorted="false" onclick="toggleSort(0)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-0">
+</head><body><div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div><div id="modal-body"></div></div></div><div class="app-header"><div class="header-left" onclick="window.location.href='index.html'"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" class="logo-main"><div><h1>Settore Maschile</h1><div class="last-update">26/01 09:13</div></div></div><div class="nav-buttons"><a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/prossimi_appuntamenti.png" class="nav-icon-img"></span></a><a href="generale_m.html?from=maschile"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/all_result.png" class="nav-icon-img"></a><a href="segnapunti.html"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div></div><div class="tab-bar"><button id="btn-0" class="tab-btn active" onclick="openTab(0)">Serie D  Gir.C</button><button id="btn-1" class="tab-btn " onclick="openTab(1)">Under 19 Gir.A</button><button id="btn-2" class="tab-btn " onclick="openTab(2)">Under 17 Gir.B</button><button id="btn-3" class="tab-btn " onclick="openTab(3)">Under 15 Gir.B</button></div><div id="content-0" class="tab-content active"><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>POLISPORTIVA SPORT FOR LIFE</td><td><b>33</b></td><td>12</td><td>12</td><td>0</td><td>36</td><td>10</td></tr><tr ><td>2</td><td>NOCERA VOLLEY</td><td><b>29</b></td><td>12</td><td>10</td><td>2</td><td>32</td><td>16</td></tr><tr ><td>3</td><td>U.S. SALERNO OFFICIAL-MINERVA</td><td><b>26</b></td><td>12</td><td>9</td><td>3</td><td>31</td><td>17</td></tr><tr ><td>4</td><td>PALL BATTIPAGLIA</td><td><b>21</b></td><td>12</td><td>6</td><td>6</td><td>29</td><td>24</td></tr><tr ><td>5</td><td>NUOVA GS OLIMPICA</td><td><b>18</b></td><td>12</td><td>6</td><td>6</td><td>23</td><td>24</td></tr><tr ><td>6</td><td>ISV PRIMA COLTA</td><td><b>16</b></td><td>12</td><td>5</td><td>7</td><td>24</td><td>26</td></tr><tr class="my-team-row"><td>7</td><td>TODIS CS PASTENA VOLLEY</td><td><b>15</b></td><td>12</td><td>5</td><td>7</td><td>21</td><td>26</td></tr><tr ><td>8</td><td>ZETA VOLLEY STRIANO</td><td><b>11</b></td><td>12</td><td>4</td><td>8</td><td>18</td><td>31</td></tr><tr ><td>9</td><td>ASD ACCA VOLLEY EBOLI</td><td><b>7</b></td><td>12</td><td>2</td><td>10</td><td>16</td><td>33</td></tr><tr ><td>10</td><td>MURATE VOLLEY</td><td><b>4</b></td><td>12</td><td>1</td><td>11</td><td>12</td><td>35</td></tr></tbody></table></div></div><h2>📅 Calendario TODIS</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-0" data-sorted="false" onclick="toggleSort(0)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-0">
     <div class="match-card loss" data-date-iso="2025-10-26" data-camp="Serie D  Gir.C S.Maschile" data-my-team="true">
         <div class="match-header">
             <span class="date-badge">📅 26/10/2025 ⏰ 18:00</span> <span>|</span> <span>Giornata 1</span>
@@ -971,4 +990,4 @@
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.65583900,14.80636530&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20PALL%20BATTIPAGLIA&dates=20260303T180000/20260303T200000&location=SMS%20Giovanni%20XXIII-MERCATELLO%20%C2%A0SALERNO%20SAVia%20Parmenide&details=Campionato+Under%2015%20Gir.B%20S.Maschile" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2015%20Gir.B%20S.Maschile%2A%0A03/03/2026%20%E2%8F%B0%2018%3A00%0A%F0%9F%93%8D%20SMS%20Giovanni%20XXIII-MERCATELLO%20%C2%A0SALERNO%20SAVia%20Parmenide%0ATODIS%20PASTENA%20VOLLEY%20vs%20PALL%20BATTIPAGLIA" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
-    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v2.4 | Stable Release 🏁</span></div></body></html>
+    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v2.5 | Stable Release 🏁</span></div></body></html>
