@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v3.0
-# RELEASE NOTE: Visualizzazione Ottimizzata
+# SOFTWARE VERSION: v3.1
+# RELEASE NOTE: Visualizzazione Ottimizzata + Ripristino Print
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v3.0 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v3.1 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -247,6 +247,7 @@ CSS_BASE = """
     /* iOS Popup */
     .ios-install-popup { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 12px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 320px; text-align: center; display: none; }
 		 
+    /* Print Stili */      
     @media print {
         .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup { display: none !important; }
         body { background: white; color: black; }
@@ -257,22 +258,7 @@ CSS_BASE = """
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-            .then(registration => {
-                registration.onupdatefound = () => {
-                    const installingWorker = registration.installing;
-                    installingWorker.onstatechange = () => {
-                        if (installingWorker.state === 'installed') {
-                            if (navigator.serviceWorker.controller) {
-                                console.log('New content available; please refresh.');
-                            } else {
-                                console.log('Content is cached for offline use.');
-                            }
-                        }
-                    };
-                };
-            })
-            .catch(err => console.log('SW registration failed: ', err));
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed: ', err));
         });
     }
 
@@ -288,6 +274,7 @@ CSS_BASE = """
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
     function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
+    function printCalendar() { window.print(); } /* FUNZIONE STAMPA */
     
     function tornaAlSettore() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -296,15 +283,17 @@ CSS_BASE = """
         else if (origin === 'femminile') window.location.href = "femminile.html";
         else window.location.href = "index.html";
     }
-	
+
+    var originalOrder = {};
     function toggleSort(tabId) {
         const container = document.getElementById('calendar-container-' + tabId);
         const btn = document.getElementById('btn-sort-' + tabId);
-        const isSorted = btn.getAttribute('data-sorted') === 'true';		
+        const isSorted = btn.getAttribute('data-sorted') === 'true';
         if (!originalOrder[tabId]) originalOrder[tabId] = container.innerHTML;
+        
         if (!isSorted) {
             const cards = Array.from(container.querySelectorAll('.match-card'));
-															 
+				
             container.querySelectorAll('h3').forEach(h => h.style.display = 'none');
             cards.sort((a, b) => (a.getAttribute('data-date-iso') || '9999').localeCompare(b.getAttribute('data-date-iso') || '9999'));
             container.innerHTML = "";
@@ -319,13 +308,6 @@ CSS_BASE = """
             btn.classList.remove('active');
         }
     }
-    
-    var originalOrder = {};
-	
-    function printCalendar() {
-        window.print();
-    }
-	
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
@@ -753,5 +735,3 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
-
-
