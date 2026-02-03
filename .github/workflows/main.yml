@@ -2,8 +2,8 @@ name: Aggiorna Classifica Volley
 
 on:
   schedule:
-    # Esegue ogni due ore tra le 10:00 UTC e le 21:00 UTC
-    # (Corrisponde in Italia approx. 11:00 - 22:00)
+    # Esegue ogni due ore tra le 12:00 UTC e le 21:00 UTC
+    # (Corrisponde in Italia approx. 13:00 - 22:00)
     - cron: '0 12-21/2 * * *'
   workflow_dispatch: # Permette avvio manuale
 
