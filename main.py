@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v3.4
-# RELEASE NOTE: ios pop-up
+# SOFTWARE VERSION: v3.6
+# RELEASE NOTE: Golden Release PWA
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v3.4 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v3.6 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -74,7 +74,7 @@ def is_target_team(team_name):
         if alias.upper() in name_clean: return True
     return False
 
-# ================= CSS COMUNE TOTALE (v3.3 - Final Print & Click Fix) =================
+# ================= CSS COMUNE TOTALE (v3.6 - Golden Release PWA) =================
 CSS_BASE = """
 <style>
     /* Reset e Layout Base */
@@ -246,6 +246,11 @@ CSS_BASE = """
     .btn-tool:active { transform: scale(0.95); background: #f0f0f0; }
     .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
 	
+    /* Popups Installazione */
+    .install-popup { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.3); z-index: 3000; width: 90%; max-width: 350px; text-align: center; display: none; border: 2px solid #d32f2f; animation: slideUp 0.5s; }
+    @keyframes slideUp { from { transform: translate(-50%, 100%); } to { transform: translate(-50%, 0); } }
+    .btn-install { background: #d32f2f; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; width: 100%; }
+    
     /* Footer */
     .footer-counter { text-align: center; padding: 8px 0; background: white; border-top: 1px solid #eee; flex-shrink: 0; width: 100%; }
     .footer-counter img { height: 16px; margin-bottom: 2px; }
@@ -263,7 +268,7 @@ CSS_BASE = """
             display: block !important;
             background: white !important;
         }
-        .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup {
+        .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .install-popup, .ios-install-popup {
             display: none !important;
         }
         .tab-content {
@@ -304,19 +309,44 @@ CSS_BASE = """
         }
     }
 </style>
+
 <script>
-    /* Funzioni Globali */
-    function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
-    function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
-    function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
-    function printCalendar() { window.print(); } /* FUNZIONE STAMPA */
-    
+
+    /* LOGICA PWA & INSTALLAZIONE */
+    let deferredPrompt;
+
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed: ', err));
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed: ', err));
         });
     }
 
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // Mostra il popup Android se non siamo su iOS
+        if (!/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())) {
+            setTimeout(() => {
+                if (document.getElementById('android-popup')) 
+                    document.getElementById('android-popup').style.display = 'block';
+            }, 2000);
+        }
+    });
+
+    function installAndroidApp() {
+        if (deferredPrompt) {
+            document.getElementById('android-popup').style.display = 'none';
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                deferredPrompt = null;
+            });
+        }
+    }
+
+    function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+    function closePopup(id) { document.getElementById(id).style.display = 'none'; }
+    function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
+    function printCalendar() { window.print(); }
     function openTab(tabIndex) {
         var contents = document.getElementsByClassName("tab-content");
         for (var i = 0; i < contents.length; i++) contents[i].classList.remove("active");
@@ -371,19 +401,15 @@ CSS_BASE = """
             const today = new Date();
             today.setHours(0,0,0,0);
             let nextMatches = {};
-			
             document.querySelectorAll('.match-card.upcoming').forEach(card => {
-                if(card.getAttribute('data-my-team') === 'true') {	 
-										 
+                if(card.getAttribute('data-my-team') === 'true') {	 	 
                     const dateStr = card.getAttribute('data-date-iso');
                     const campName = card.getAttribute('data-camp'); 
-											  
                     const parts = dateStr.split('-');
                     const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
                     if (matchDate >= today) {
                         if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
                             nextMatches[campName] = { date: matchDate, html: card.outerHTML };
-							 
                         }
                     }
                 }
@@ -712,6 +738,15 @@ def genera_landing_page():
             <div class="footer-msg">{FOOTER_MSG}</div>
         </div>
         
+        <!-- POPUP ANDROID -->
+        <div id="android-popup" class="install-popup">
+            <div style="font-weight:bold; margin-bottom:5px;">Aggiungi alla Schermata Home</div>
+            <div style="font-size:12px;">Installa l'App per accedere velocemente ai risultati e classifiche!</div>
+            <button class="btn-install" onclick="installAndroidApp()">INSTALLA ORA</button>
+            <button onclick="closePopup('android-popup')" style="background:none; border:none; color:#999; margin-top:10px; font-size:11px;">Più tardi</button>
+        </div>
+        
+        <!-- POPUP IOS -->
         <div id="ios-popup" class="ios-install-popup">
             <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
             <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
@@ -804,5 +839,3 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
-
-
