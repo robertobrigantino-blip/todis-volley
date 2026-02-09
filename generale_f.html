@@ -2,11 +2,34 @@
 <style>
     /* Reset e Layout Base */
     * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; background-color: #f0f2f5; color: #333; overflow-x: hidden; }
+	
+    html, body { 
+        height: 100%; 
+        margin: 0; 
+        padding: 0; 
+        font-family: 'Roboto', sans-serif; 
+        background-color: #f0f2f5; 
+        color: #333;
+        overflow-x: hidden; /* Blocca scivolamento orizzontale */
+    }
+
     body { display: flex; flex-direction: column; }
 
     /* Header */
-    .app-header { background-color: #d32f2f; color: white; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); height: 60px; flex-shrink: 0; z-index: 1000; position: sticky; top: 0; }
+    .app-header { 
+        background-color: #d32f2f; 
+        color: white; 
+        padding: 0 15px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+        height: 60px; 
+        flex-shrink: 0; 
+        z-index: 1000;
+        position: sticky;
+        top: 0;
+    }
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 13px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }   
@@ -25,52 +48,108 @@
     .social-icon-img { width: 34px; height: 34px; }
 			   
     /* --- MENU TABS --- */
-    .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; flex-shrink: 0; scrollbar-width: none; }
+
+    .tab-bar { 
+        background-color: white; 
+        display: flex; 
+        overflow-x: auto; 
+        white-space: nowrap; 
+        position: sticky; 
+        top: 60px; 
+        z-index: 99; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+        border-bottom: 1px solid #eee; 
+        flex-shrink: 0;
+        scrollbar-width: none; 
+    }
     .tab-bar::-webkit-scrollbar { display: none; } 
-    .tab-btn { flex: 1; padding: 10px 8px; text-align: center; background: none; border: none; font-size: 11px; font-weight: 600; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 85px; text-transform: uppercase; }
+
+    .tab-btn { 
+        flex: 1; 
+        padding: 10px 8px; 
+        text-align: center; 
+        background: none; 
+        border: none; 
+        font-size: 11px; 
+        font-weight: 600; 
+        color: #666; 
+        border-bottom: 3px solid transparent; 
+        cursor: pointer; 
+        min-width: 85px; 
+        text-transform: uppercase;
+    }
+
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
     
     /* --- CONTENUTI --- */
     .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; width: 100%; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+	
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
 
-    /* --- CLASSIFICHE --- */
-    .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; width: 100%; }
+    /* --- CLASSIFICHE FIXATE --- */
+    .table-card { 			   
+        background: white; border-radius: 8px; overflow: hidden; 
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; width: 100%; 													   
+    }				  
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
-    table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
+    table { 			 
+        width: 100%; border-collapse: collapse; font-size: 11px; 
+        table-layout: fixed; /* Forza allineamento millimetrico */					   
+    }
     th, td { padding: 8px 4px; text-align: center; border-bottom: 1px solid #f0f0f0; }
     th { background-color: #ffebee; color: #c62828; font-weight: bold; text-transform: uppercase; font-size: 10px; }
-    th:nth-child(1), td:nth-child(1) { width: 30px; }
+
+    /* Colonne Classifica */
+    th:nth-child(1), td:nth-child(1) { width: 30px; } /* Pos */
     th:nth-child(2), td:nth-child(2) { 
-        width: 120px; text-align: left; position: sticky; left: 0; background-color: white; z-index: 10; border-right: 1px solid #eee;
+        width: 120px; text-align: left; position: sticky; left: 0; 
+        background-color: white; z-index: 10; border-right: 1px solid #eee;
         white-space: normal; word-wrap: break-word; line-height: 1.2;																		  
     }								 
-    th:nth-child(3), td:nth-child(3) { width: 35px; font-weight: 800; background-color: #fafafa; }
+    th:nth-child(3), td:nth-child(3) { width: 35px; font-weight: 800; background-color: #fafafa; } /* PT */
     th:not(:nth-child(-n+3)), td:not(:nth-child(-n+3)) { width: 28px; font-size: 9px; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
     .my-team-row td:nth-child(2) { background-color: #fff3e0 !important; }
 
-    /* --- MATCH CARDS --- */
+    /* --- MATCH CARDS FIXATE --- */
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; width: 100%; }
-    .match-card.win { border-left-color: #2e7d32; } .match-card.loss { border-left-color: #c62828; } .match-card.upcoming { border-left-color: #ff9800; } 
+    .match-card.win { border-left-color: #2e7d32; } 
+    .match-card.loss { border-left-color: #c62828; } 
+    .match-card.upcoming { border-left-color: #ff9800; } 
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 10px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; }
-    .team-row { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; margin-bottom: 8px; }
-    .team-info { flex: 1; min-width: 0; font-size: 14px; line-height: 1.2; white-space: normal; word-wrap: break-word; }
+    .teams { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+    .team-row { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; }
+    
+    /* Fix Nomi Squadre nel Calendario */
+    .team-info { 
+        flex: 1; min-width: 0; font-size: 14px; line-height: 1.2;
+        white-space: normal; word-wrap: break-word; /* Permette il ritorno a capo */
+    }
     .my-team-text { color: #d32f2f; font-weight: 700; }
+
     .scores-wrapper { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .partials-inline { display: flex; flex-direction: row; gap: 2px; }
     .partial-badge { width: 22px; height: 22px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; flex-shrink: 0; }
     .set-total { width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; flex-shrink: 0; }
-    .bg-green { background-color: #2e7d32; } .bg-red { background-color: #c62828; } .bg-gray { background-color: #78909c; }
+    .bg-green { background-color: #2e7d32; } 
+    .bg-red { background-color: #c62828; } 
+    .bg-gray { background-color: #78909c; }
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
     .gym-name { font-size: 9px; color: #666; width: 100%; margin-bottom: 5px; flex: 1; }
     .action-buttons { display: flex; gap: 5px; justify-content: flex-end; }
     .btn { text-decoration: none; padding: 4px 8px; border-radius: 12px; font-size: 9px; font-weight: bold; display: flex; align-items: center; gap: 3px; border: 1px solid transparent; }
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
-    .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
+    .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } 
+    .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
 
+    /* Notifiche Calendario */
+    .calendar-container { position: relative; display: none; }
+    .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
+    .calendar-container.has-events::after { content: ''; position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; }
+    @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+	
     /* Modali */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .modal-content { background: white; width: 90%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 15px; overflow-y: auto; position: relative; }
@@ -78,65 +157,104 @@
     .modal-title { font-size: 16px; font-weight: bold; color: #d32f2f; }
     .close-btn { background: #eee; border: none; font-size: 20px; padding: 0 8px; border-radius: 5px; cursor: pointer; }
 
-    /* Tools Bar */
-    .calendar-controls { display: flex; gap: 8px; margin-bottom: 12px; justify-content: flex-end; position: relative; z-index: 10; }
-    .btn-tool { font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; transition: 0.2s; z-index: 11; }
+    /* Tools Bar (Fix Cliccabilità) */
+    .calendar-controls { 
+        display: flex; gap: 8px; margin-bottom: 12px; 
+        justify-content: flex-end; position: relative; z-index: 10; 
+    }
+    .btn-tool { 
+        font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; 
+        border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; 
+        transition: 0.2s; position: relative; z-index: 11;
+    }
+    .btn-tool:active { transform: scale(0.95); background: #f0f0f0; }
     .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
 	
-    /* Popups Installazione */
-    .install-popup { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 15px; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.3); z-index: 3000; width: 90%; max-width: 350px; text-align: center; display: none; border: 2px solid #d32f2f; animation: slideUp 0.5s; }
-    @keyframes slideUp { from { transform: translate(-50%, 100%); } to { transform: translate(-50%, 0); } }
-    .btn-install { background: #d32f2f; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; width: 100%; }
-
     /* Footer */
     .footer-counter { text-align: center; padding: 8px 0; background: white; border-top: 1px solid #eee; flex-shrink: 0; width: 100%; }
     .footer-counter img { height: 16px; margin-bottom: 2px; }
     .version-text { font-size: 9px; color: #999; margin: 0; font-family: monospace; }
     .footer-msg { font-size: 10px; color: #d32f2f; margin: 0; font-weight: bold; }
 
+    /* iOS Popup */
+    .ios-install-popup { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 12px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 320px; text-align: center; display: none; }
+		 
+    /* --- STILI DI STAMPA MIGLIORATI --- */
     @media print {
-        html, body { height: auto !important; overflow: visible !important; display: block !important; background: white !important; }
-        .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .install-popup { display: none !important; }
-        .tab-content { display: none !important; }
-        .tab-content.active { display: block !important; width: 100% !important; height: auto !important; }
+        html, body {
+            height: auto !important;
+            overflow: visible !important;
+            display: block !important;
+            background: white !important;
+        }
+        .app-header, .tab-bar, .nav-buttons, .calendar-controls, .footer-counter, .modal-overlay, .btn, .action-buttons, .ios-install-popup {
+            display: none !important;
+        }
+        .tab-content {
+            display: none !important;
+        }
+        .tab-content.active {
+            display: block !important;
+            position: relative !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .table-scroll {
+            overflow: visible !important;
+        }
+        table {
+            table-layout: auto !important;
+            width: 100% !important;
+            border: 1px solid #000 !important;
+        }
+        th, td {
+            border: 1px solid #eee !important;
+            color: black !important;
+        }
+        .match-card {
+            page-break-inside: avoid;
+            break-inside: avoid;
+            border: 1px solid #ccc !important;
+            margin-bottom: 20px !important;
+            box-shadow: none !important;
+        }
+        .bg-green, .bg-red, .bg-gray, .partial-badge {
+            background-color: #f0f0f0 !important;
+            color: black !important;
+            border: 1px solid #ccc !important;
+        }
     }
 </style>
-
 <script>
-    /* LOGICA PWA & INSTALLAZIONE */
-    let deferredPrompt;
+    /* Funzioni Globali */
+    function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+    function closeIosPopup() { document.getElementById('ios-popup').style.display = 'none'; }
+    function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
+    function printCalendar() { window.print(); } /* FUNZIONE STAMPA */
+    
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed: ', err));
+            navigator.serviceWorker.register('sw.js')
+            .then(registration => {
+                registration.onupdatefound = () => {
+                    const installingWorker = registration.installing;
+                    installingWorker.onstatechange = () => {
+                        if (installingWorker.state === 'installed') {
+                            if (navigator.serviceWorker.controller) {
+                                console.log('New content available; please refresh.');
+                            } else {
+                                console.log('Content is cached for offline use.');
+                            }
+                        }
+                    };
+                };
+            })
+            .catch(err => console.log('SW registration failed: ', err));
         });
     }
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        // Mostra il popup Android se non siamo su iOS
-        if (!/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())) {
-            setTimeout(() => {
-                if (document.getElementById('android-popup')) 
-                    document.getElementById('android-popup').style.display = 'block';
-            }, 2000);
-        }
-    });
-
-    function installAndroidApp() {
-        if (deferredPrompt) {
-            document.getElementById('android-popup').style.display = 'none';
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-                deferredPrompt = null;
-            });
-        }
-    }
-
-    function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
-    function closePopup(id) { document.getElementById(id).style.display = 'none'; }
-    function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
-    function printCalendar() { window.print(); }
 
     function openTab(tabIndex) {
         var contents = document.getElementsByClassName("tab-content");
@@ -147,6 +265,10 @@
         document.getElementById("btn-" + tabIndex).classList.add("active");
     }
 
+																							  
+																							 
+																							 
+	
     function tornaAlSettore() {
         const urlParams = new URLSearchParams(window.location.search);
         const origin = urlParams.get('from');
@@ -156,13 +278,17 @@
     }
 			 
     var originalOrder = {};
+	
     function toggleSort(tabId) {
         const container = document.getElementById('calendar-container-' + tabId);
         const btn = document.getElementById('btn-sort-' + tabId);
         const isSorted = btn.getAttribute('data-sorted') === 'true';
+						
         if (!originalOrder[tabId]) originalOrder[tabId] = container.innerHTML;
+
         if (!isSorted) {
             const cards = Array.from(container.querySelectorAll('.match-card'));		
+				
             container.querySelectorAll('h3').forEach(h => h.style.display = 'none');
             cards.sort((a, b) => (a.getAttribute('data-date-iso') || '9999').localeCompare(b.getAttribute('data-date-iso') || '9999'));
             container.innerHTML = "";
@@ -178,6 +304,12 @@
         }
     }
 
+						   
+ 
+							  
+					   
+	 
+ 
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test( window.navigator.userAgent.toLowerCase() );
         const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
@@ -189,28 +321,39 @@
             const today = new Date();
             today.setHours(0,0,0,0);
             let nextMatches = {};
+			
             document.querySelectorAll('.match-card.upcoming').forEach(card => {
                 if(card.getAttribute('data-my-team') === 'true') {	 
+										 
                     const dateStr = card.getAttribute('data-date-iso');
                     const campName = card.getAttribute('data-camp'); 
+											  
                     const parts = dateStr.split('-');
                     const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
                     if (matchDate >= today) {
                         if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
                             nextMatches[campName] = { date: matchDate, html: card.outerHTML };
+							 
                         }
                     }
                 }
             });
+            
             let popupHTML = "";
+            let count = 0;
             for (const [camp, data] of Object.entries(nextMatches)) {
                 const campPulito = camp.replace(' S.Femminile', '').replace(' S.Maschile', '');
                 popupHTML += `<h3 style="color:#d32f2f; font-size:14px; margin-top:10px; border-bottom:1px solid #eee">🏆 ${campPulito}</h3>` + data.html;			   
+									   
+                count++;
             }
-            if (popupHTML !== "") {
+			
+            if (count > 0) {
                 const modalBody = document.getElementById('modal-body');										 
+																			 
                 if(modalBody) {
                     modalBody.innerHTML = popupHTML;							 
+															 
                     document.getElementById('btn-calendar').style.display = 'inline-block';
                     document.getElementById('btn-calendar').classList.add('has-events');
                 }
@@ -2990,4 +3133,4 @@
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.73712810,14.56365930&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20ASK%20ANGRI%20blu%20vs%20VITOLO%20VOLLEY&dates=20260303T193000/20260303T213000&location=PALESTRA%20II%C2%B0%20CD%20-%20ANGRI%C2%A0ANGRI%20SAVIA%20LEONARDO%20DA%20VINCI&details=Campionato+Under%2014%20Gir.C%20S.Femminile" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20Under%2014%20Gir.C%20S.Femminile%2A%0A03/03/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20II%C2%B0%20CD%20-%20ANGRI%C2%A0ANGRI%20SAVIA%20LEONARDO%20DA%20VINCI%0AASK%20ANGRI%20blu%20vs%20VITOLO%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
-    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v3.6 | Stagione 25/26 - Ver. Finale 🏁</span></div></body></html>
+    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v3.6.1 | Stagione 25/26 - Ver. Finale 🏁</span></div></body></html>
