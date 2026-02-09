@@ -5,6 +5,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <meta name="theme-color" content="#d32f2f">
         <title>TODIS PASTENA VOLLEY</title>
+		
+        <!-- PWA Meta Tags -->
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="PastenaVolley">					
+		
         <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
         <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
         <meta name="apple-mobile-web-app-capable" content="yes">
@@ -197,8 +204,8 @@
     }
     @keyframes slideUp { from { transform: translate(-50%, 150%); } to { transform: translate(-50%, 0); } }
     .btn-install-app { background: #d32f2f; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; margin: 10px 0; font-size: 14px; }
-																																   
-
+    .btn-close-popup { background: none; border: none; color: #999; text-decoration: underline; font-size: 12px; cursor: pointer; }
+	
     /* iOS Popup */
     .ios-install-popup { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 12px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 320px; text-align: center; display: none; }
 		 
@@ -307,6 +314,7 @@
             }, 3000);
         }
     });
+	
 
     function openTab(tabIndex) {
         var contents = document.getElementsByClassName("tab-content");
@@ -441,10 +449,18 @@
         
         <div class="footer-counter">
             <img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f" alt="Visite"><br>
-            <span class="version-text">v3.7.2 | Stagione 25/26 - Ver. Finale 🏁</span>
+            <span class="version-text">v3.7.3 | Stagione 25/26 - Ver. Finale 🏁</span>
             <div class="footer-msg">🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐</div>
         </div>
 
+        <!-- POPUP ANDROID -->
+        <div id="android-popup" class="install-popup">
+            <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Ufficiale</div>
+            <div style="font-size:13px; color:#555;">Accedi ai risultati più velocemente e usa l'app a tutto schermo!</div>
+            <button class="btn-install-app" onclick="triggerAndroidInstall()">INSTALLA ORA</button>
+            <button class="btn-close-popup" onclick="closePopup('android-popup')">Magari più tardi</button>
+        </div>
+						  
         <div id="ios-popup" class="ios-install-popup">
             <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
             <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
