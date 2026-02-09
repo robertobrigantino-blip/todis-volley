@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v3.7.2
-# RELEASE NOTE: ios/android pop-up
+# SOFTWARE VERSION: v3.7.3
+# RELEASE NOTE: ios pop-up
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v3.7.2 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v3.7.3 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -263,8 +263,8 @@ CSS_BASE = """
     }
     @keyframes slideUp { from { transform: translate(-50%, 150%); } to { transform: translate(-50%, 0); } }
     .btn-install-app { background: #d32f2f; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; margin: 10px 0; font-size: 14px; }
-																																   
-
+    .btn-close-popup { background: none; border: none; color: #999; text-decoration: underline; font-size: 12px; cursor: pointer; }
+	
     /* iOS Popup */
     .ios-install-popup { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: white; padding: 12px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 3000; width: 85%; max-width: 320px; text-align: center; display: none; }
 		 
@@ -373,6 +373,7 @@ CSS_BASE = """
             }, 3000);
         }
     });
+	
 
     function openTab(tabIndex) {
         var contents = document.getElementsByClassName("tab-content");
@@ -722,6 +723,13 @@ def genera_landing_page():
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <meta name="theme-color" content="#d32f2f">
         <title>{NOME_VISUALIZZATO}</title>
+		
+        <!-- PWA Meta Tags -->
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="PastenaVolley">					
+		
         <link rel="icon" type="image/png" href="{URL_LOGO}">
         <link rel="apple-touch-icon" href="{URL_LOGO}">
         <meta name="apple-mobile-web-app-capable" content="yes">
@@ -769,6 +777,14 @@ def genera_landing_page():
             <div class="footer-msg">{FOOTER_MSG}</div>
         </div>
 
+        <!-- POPUP ANDROID -->
+        <div id="android-popup" class="install-popup">
+            <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Ufficiale</div>
+            <div style="font-size:13px; color:#555;">Accedi ai risultati più velocemente e usa l'app a tutto schermo!</div>
+            <button class="btn-install-app" onclick="triggerAndroidInstall()">INSTALLA ORA</button>
+            <button class="btn-close-popup" onclick="closePopup('android-popup')">Magari più tardi</button>
+        </div>
+						  
         <div id="ios-popup" class="ios-install-popup">
             <div style="font-weight:bold; margin-bottom:10px;">Installa l'App</div>
             <div style="font-size:14px; margin-bottom:15px;">Per un'esperienza migliore e schermo intero:</div>
