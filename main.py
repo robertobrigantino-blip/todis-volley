@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v3.9
-# RELEASE NOTE: ios/android pop-up
+# SOFTWARE VERSION: v4.0
+# RELEASE NOTE: Layout Sets & Modal Fixed
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v3.9 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v4.0 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -74,8 +74,7 @@ def is_target_team(team_name):
         if alias.upper() in name_clean: return True
     return False
 
-# ================= CSS COMUNE TOTALE (v3.8 - Ultimate Golden Release) =================
-# ================= CSS COMUNE TOTALE (v3.9 - Modal & Notification Fix) =================
+# ================= CSS COMUNE TOTALE (v4.0 - Layout Sets & Modal Fixed) =================
 CSS_BASE = """
 <style>
     /* 1. RESET E LAYOUT BASE */
@@ -88,11 +87,9 @@ CSS_BASE = """
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 13px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }   
-    
     .nav-buttons { display: flex; gap: 8px; align-items: center; }
     .nav-icon-img { height: 42px; width: auto; transition: transform 0.1s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     
-    /* Pallino Giallo Lampeggiante */
     .calendar-container { position: relative; display: none; }
     .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
     .calendar-container.has-events::after { 
@@ -118,8 +115,8 @@ CSS_BASE = """
     .tab-btn { flex: 1; padding: 10px 8px; text-align: center; background: none; border: none; font-size: 11px; font-weight: 600; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 85px; text-transform: uppercase; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
     
-    /* 5. TABELLE CLASSIFICA */
-    .tab-content { display: none; padding: 15px; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; width: 100%; }
+    /* 5. TABELLE CLASSIFICA (Blindate) */
+    .tab-content { display: none; padding: 15px; width: 100%; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
@@ -136,17 +133,21 @@ CSS_BASE = """
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
     .my-team-row td:nth-child(2) { background-color: #fff3e0 !important; }
 
-    /* 6. MATCH CARDS */
+    /* 6. MATCH CARDS & LAYOUT SETS (FIX ORIZZONTALE) */
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; width: 100%; }
     .match-card.win { border-left-color: #2e7d32; } .match-card.loss { border-left-color: #c62828; } .match-card.upcoming { border-left-color: #ff9800; } 
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 10px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; }
     .team-row { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; margin-bottom: 8px; }
     .team-info { flex: 1; min-width: 0; font-size: 14px; line-height: 1.2; white-space: normal; word-wrap: break-word; }
     .my-team-text { color: #d32f2f; font-weight: 700; }
-    .scores-wrapper { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-    .partial-badge { width: 22px; height: 22px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; }
-    .set-total { width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; }
+
+    /* Fix Punteggi: Forza Allineamento Orizzontale */
+    .scores-wrapper { display: flex !important; flex-direction: row !important; align-items: center !important; gap: 6px; flex-shrink: 0; }
+    .partials-inline { display: flex !important; flex-direction: row !important; gap: 3px; }
+    .partial-badge { width: 22px; height: 22px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; flex-shrink: 0; }
+    .set-total { width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; flex-shrink: 0; }
     .bg-green { background-color: #2e7d32; } .bg-red { background-color: #c62828; } .bg-gray { background-color: #78909c; }
+
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
     .gym-name { font-size: 9px; color: #666; width: 100%; margin-bottom: 5px; flex: 1; }
     .action-buttons { display: flex; gap: 5px; justify-content: flex-end; }
@@ -154,11 +155,10 @@ CSS_BASE = """
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
 
-    /* 7. MODALI E FIX TESTATA MODAL */
+    /* 7. MODALI E TESTATA MODAL FIX */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .modal-content { background: white; width: 90%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 15px; overflow-y: auto; position: relative; }
-    
-    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; width: 100%; }
+    .modal-header { display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; width: 100%; }
     .modal-title { font-size: 16px; font-weight: bold; color: #d32f2f; margin: 0; }
     .close-btn { background: #eee; border: none; font-size: 22px; padding: 2px 10px; border-radius: 6px; color: #333; cursor: pointer; line-height: 1; }
 
@@ -172,27 +172,28 @@ CSS_BASE = """
     .btn-install-app { background: #d32f2f; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; margin: 10px 0; font-size: 14px; cursor: pointer; }
     .btn-close-popup { background: none; border: none; color: #999; text-decoration: underline; font-size: 12px; cursor: pointer; }
 
+    /* 9. FOOTER E PRINT */
     .footer-counter { text-align: center; padding: 8px 0; background: white; border-top: 1px solid #eee; flex-shrink: 0; width: 100%; }
     .footer-msg { font-size: 10px; color: #d32f2f; margin: 0; font-weight: bold; }
 
     @media print {
         html, body { height: auto !important; overflow: visible !important; display: block !important; background: white !important; }
-        .app-header, .tab-bar, .calendar-controls, .footer-counter, .install-popup, .btn-map, .btn-cal, .btn-wa { display: none !important; }
+        .app-header, .tab-bar, .calendar-controls, .footer-counter, .install-popup, .btn-map, .btn-cal, .btn-wa, .close-btn { display: none !important; }
         .tab-content { display: none !important; }
         .tab-content.active { display: block !important; width: 100% !important; height: auto !important; }
+        .match-card { page-break-inside: avoid; border: 1px solid #ccc !important; }
     }
 </style>
 
 <script>
-    /* 1. SERVICE WORKER */
+    /* PWA & INSTALLAZIONE */
+    let deferredPrompt;
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Error', err));
         });
     }
 
-    /* 2. LOGICA INSTALLAZIONE ANDROID */
-    let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
@@ -215,7 +216,7 @@ CSS_BASE = """
         }
     }
 
-    /* 3. FUNZIONI GENERALI */
+    /* FUNZIONI GENERALI */
     function closePopup(id) { document.getElementById(id).style.display = 'none'; }
     function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
@@ -272,7 +273,7 @@ CSS_BASE = """
             }, 3000);
         }
 
-        // --- LOGICA NOTIFICHE E PULIZIA MODAL ---
+        // LOGICA NOTIFICHE E PALLINO GIALLO
         if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
             const today = new Date(); today.setHours(0,0,0,0);
             let nextMatches = {};
@@ -301,7 +302,7 @@ CSS_BASE = """
                     const btnCal = document.getElementById('btn-calendar');
                     if(btnCal) {
                         btnCal.style.display = 'inline-block';
-                        btnCal.classList.add('has-events'); // ATTIVA PALLINO GIALLO
+                        btnCal.classList.add('has-events'); // ATTIVA PALLINO
                     }
                 }
             }
