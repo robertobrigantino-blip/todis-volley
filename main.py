@@ -1,5 +1,5 @@
 # ==============================================================================
-# SOFTWARE VERSION: v4.0
+# SOFTWARE VERSION: v4.1
 # RELEASE NOTE: Layout Sets & Modal Fixed
 # ==============================================================================
 
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v4.0 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v4.1 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -618,7 +618,7 @@ def genera_landing_page():
 
         <!-- POPUP ANDROID -->
         <div id="android-popup" class="install-popup">
-            <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Ufficiale</div>
+            <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Todis Volley</div>
             <div style="font-size:13px; color:#555;">Accedi ai risultati più velocemente e usa l'app a tutto schermo!</div>
             <button class="btn-install-app" onclick="triggerAndroidInstall()">INSTALLA ORA</button>
             <button class="btn-close-popup" onclick="closePopup('android-popup')">Magari più tardi</button>
@@ -718,4 +718,5 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
+
 
