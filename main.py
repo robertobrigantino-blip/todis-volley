@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v4.3
-# RELEASE NOTE: Inserimento Classifica Avusla
+# SOFTWARE VERSION: v4.3.1
+# RELEASE NOTE: Inserimento Classifica Avusla - FIX P/G in formato decimale
 # ==============================================================================
 
 import pandas as pd
@@ -19,10 +19,10 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v4.3 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v4.3.1 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
-FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
+FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
                                                                         
 TARGET_TEAM_ALIASES = [
     "TODIS PASTENA VOLLEY",
@@ -568,14 +568,19 @@ def scrape_data():
         try:
             url_avulsa = f"https://www.fipavsalerno.it/classifica.aspx?tipo=avulsa&CId={id_camp}"
             driver.get(url_avulsa)
-            tabs = pd.read_html(StringIO(driver.page_source))
+            
+            # AGGIUNTO: decimal=',' e thousands='.' per gestire i numeri italiani (2,9)
+            tabs = pd.read_html(StringIO(driver.page_source), decimal=',', thousands='.')
+            
             if tabs:
                 df_a = tabs[0]
-                # Pulizia nomi colonne per evitare problemi con indici
+                # Forza il dataframe a stringhe per evitare manipolazioni numeriche successive
+                df_a = df_a.astype(str)
                 df_a.columns = [f"col_{i}" for i in range(len(df_a.columns))]
                 df_a['Campionato_Ref'] = nome_camp 
                 all_avulse.append(df_a)
-        except: pass
+        except Exception as e:
+            print(f"Errore scraping avulsa {nome_camp}: {e}")
 
     driver.quit()
     df_res = pd.DataFrame(all_results)
@@ -694,21 +699,27 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
             html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
         html += '</tbody></table></div></div>'
 
-        # --- CLASSIFICA GENERALE AVULSA (Mappatura Corretta) ---
+# --- CLASSIFICA GENERALE AVULSA (Mappatura Corretta e Fix Decimali) ---
         if not df_avulse.empty and camp in df_avulse['Campionato_Ref'].unique():
             html += f"<h2 style='color: #1565c0; border-left-color: #1565c0;'>🏅 Classifica Generale (Corsa Finali)</h2>"
             df_a = df_avulse[df_avulse['Campionato_Ref'] == camp]
             html += '<div class="table-card" style="border: 1px solid #bbdefb;"><div class="table-scroll"><table><thead><tr style="background-color: #e3f2fd; color: #1565c0;"><th>Pos</th><th>Squadra</th><th>Pz.</th><th>P/G</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
             for _, r in df_a.iterrows():
-                # Mapping basato sulla struttura della tabella desktop fipav:
-                # 0:Pos, 1:Squadra, 2:Piazz, 3:P/PG, 4:Punti, 5:PG, 6:PV, 7:PP, 8:SF, 9:SS
                 squadra_nome = str(r['col_1'])
                 cls = 'class="my-team-row"' if is_target_team(squadra_nome) else ''
+                
+                # Funzione di pulizia per i decimali (es. 2.9 -> 2,9)
+                def format_dec(val):
+                    val = str(val).replace('nan', '-').strip()
+                    # Se il valore finisce con .0 lo puliamo (es 30.0 -> 30)
+                    if val.endswith('.0'): val = val[:-2]
+                    return val.replace('.', ',')
+
                 html += f"<tr {cls}>"
                 html += f"<td>{r['col_0']}</td>" # Pos
                 html += f"<td>{squadra_nome}</td>" # Squadra
                 html += f"<td>{r['col_2']}</td>" # Piazzamento
-                html += f"<td>{r['col_3']}</td>" # Punti/Gara
+                html += f"<td>{format_dec(r['col_3'])}</td>" # Punti/Gara (FIXATO)
                 html += f"<td><b>{r['col_4']}</b></td>" # Punti Totali
                 html += f"<td>{r['col_5']}</td>" # PG
                 html += f"<td>{r['col_6']}</td>" # PV
