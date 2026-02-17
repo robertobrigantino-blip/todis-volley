@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v4.1
-# RELEASE NOTE: Layout Sets & Modal Fixed
+# SOFTWARE VERSION: v4.2
+# RELEASE NOTE: Inserimento Classifica Avusla
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v4.1 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v4.2 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 15px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -63,6 +63,14 @@ CAMPIONATI_FEMMINILI = {
     "Under 18 Gir.B S.Femminile": "86850",
     "Under 16 Gir.A S.Femminile": "86853",
     "Under 14 Gir.C S.Femminile": "86860",
+}
+
+# Mappa dei campionati che hanno una classifica generale avulsa
+CAMPIONATI_AVULSI = {
+    "Under 14 Gir.C S.Femminile": "86858",
+    "Under 16 Gir.A S.Femminile": "86853",
+    "Under 18 Gir.B S.Femminile": "86849",
+    "Under 19 Gir.A S.Maschile": "86865",
 }
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
@@ -524,10 +532,14 @@ def scrape_data():
     chrome_options = Options()
     chrome_options.add_argument("--headless") 
     driver = webdriver.Chrome(options=chrome_options)
-    all_results, all_standings = [], []
+    all_results, all_standings, all_avulse = [], [], []
+    
+    # 1. Scraping Risultati e Classifiche Girone
     for nome_camp, id_camp in ALL_CAMPIONATI.items():
         base_url = "https://www.fipavsalerno.it/mobile/"
         if "Serie C" in nome_camp or "Serie D" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/"
+        
+        # Risultati
         driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}")
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         div_giornata = soup.find('div', style=lambda x: x and 'margin-top:7.5em' in x)
@@ -542,6 +554,8 @@ def scrape_data():
                     o = el.find('div', class_='squadraOspite').get_text(strip=True).replace(pt_o, '').strip()
                     d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, urljoin(base_url, el.get('href', '')))
                     all_results.append({'Campionato': nome_camp, 'Giornata': curr_giornata, 'Squadra Casa': c, 'Squadra Ospite': o, 'Punteggio': f"{pt_c}-{pt_o}" if pt_c else "", 'Data': d_ora, 'DataISO': d_iso, 'Impianto': luogo, 'Maps': maps, 'Set Casa': pt_c, 'Set Ospite': pt_o, 'Parziali': parziali})
+        
+        # Classifica Girone
         try:
             driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
             tabs = pd.read_html(StringIO(driver.page_source))
@@ -550,8 +564,23 @@ def scrape_data():
                 df_s['Campionato'] = nome_camp
                 all_standings.append(df_s)
         except: pass
+
+    # 2. Scraping Classifiche Avulse (Fasi Finali)
+    for nome_camp, id_camp in CAMPIONATI_AVULSI.items():
+        try:
+            url_avulsa = f"https://www.fipavsalerno.it/classifica.aspx?tipo=avulsa&CId={id_camp}"
+            driver.get(url_avulsa)
+            tabs = pd.read_html(StringIO(driver.page_source))
+            if tabs:
+                df_a = tabs[0]
+                df_a['Campionato_Ref'] = nome_camp # Colleghiamo l'avulsa al campionato
+                all_avulse.append(df_a)
+        except: pass
+
     driver.quit()
-    return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
+    df_standings = pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
+    df_avulse = pd.concat(all_avulse, ignore_index=True) if all_avulse else pd.DataFrame()
+    return pd.DataFrame(all_results), df_standings, df_avulse
 
 # ================= GENERATORI PAGINE =================
 def genera_landing_page():
@@ -638,7 +667,7 @@ def genera_landing_page():
     with open(FILE_LANDING, "w", encoding="utf-8") as f: 
         f.write(html)
 
-def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP"):
+def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, mode="APP"):
     page_title = "Settore Maschile" if "maschile" in filename else "Settore Femminile"
     origin = "maschile" if "maschile" in filename else "femminile"
     nav_links = f'<a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR_EVENTS}" class="nav-icon-img"></span></a><a href="{"generale_m.html" if origin=="maschile" else "generale_f.html"}?from={origin}"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
@@ -654,15 +683,28 @@ def genera_pagina_app(df_ris, df_class, filename, campionati_target, mode="APP")
 
     for i, camp in enumerate(campionati_disp):
         html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
-        html += f"<h2>🏆 Classifica</h2>"
+        
+        # SEZIONE 1: Classifica Girone
+        html += f"<h2>🏆 Classifica Girone</h2>"
         df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
         html += '<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
         for _, r in df_c.iterrows():
             cls = 'class="my-team-row"' if is_target_team(r['Squadra']) else ''
             html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
         html += '</tbody></table></div></div>'
+
+        # SEZIONE EXTRA: Classifica Avulsa (se esiste per questo campionato)
+        if not df_avulse.empty and camp in df_avulse['Campionato_Ref'].unique():
+            html += f"<h2 style='color: #1565c0; border-left-color: #1565c0;'>🏅 Classifica Generale (Corsa Finali)</h2>"
+            df_a = df_avulse[df_avulse['Campionato_Ref'] == camp]
+            html += '<div class="table-card" style="border: 1px solid #bbdefb;"><div class="table-scroll"><table><thead><tr style="background-color: #e3f2fd; color: #1565c0;"><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
+            for _, r in df_a.iterrows():
+                # Il desktop usa nomi colonne diversi, usiamo indici o rinominiamo per sicurezza
+                cls = 'class="my-team-row"' if is_target_team(r.iloc[1]) else ''
+                html += f"<tr {cls}><td>{r.iloc[0]}</td><td>{r.iloc[1]}</td><td><b>{r.iloc[2]}</b></td><td>{r.iloc[3]}</td><td>{r.iloc[4]}</td><td>{r.iloc[5]}</td><td>{r.iloc[6]}</td><td>{r.iloc[7]}</td></tr>"
+            html += '</tbody></table></div></div>'
         
-        # AGGIUNTA PULSANTI E CONTAINER PER SORTING
+        # SEZIONE 2: Calendario
         html += f"<h2>📅 Calendario TODIS</h2>"
         html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
         html += f'<div id="calendar-container-{i}">'
@@ -710,10 +752,10 @@ def genera_segnapunti():
     with open(FILE_SCORE, "w", encoding="utf-8") as f: f.write(html)
 
 if __name__ == "__main__":
-    df_ris, df_class = scrape_data()
+    df_ris, df_class, df_avulse = scrape_data() # Riceve 3 parametri
     genera_landing_page()
-    genera_pagina_app(df_ris, df_class, FILE_MALE, CAMPIONATI_MASCHILI)
-    genera_pagina_app(df_ris, df_class, FILE_FEMALE, CAMPIONATI_FEMMINILI)
+    genera_pagina_app(df_ris, df_class, df_avulse, FILE_MALE, CAMPIONATI_MASCHILI) # Passa df_avulse
+    genera_pagina_app(df_ris, df_class, df_avulse, FILE_FEMALE, CAMPIONATI_FEMMINILI) # Passa df_avulse
     genera_pagina_generale(df_ris, df_class, FILE_GEN_MALE, CAMPIONATI_MASCHILI, FILE_MALE)
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
