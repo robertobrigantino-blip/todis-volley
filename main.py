@@ -27,7 +27,8 @@ FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13p
 TARGET_TEAM_ALIASES = [
     "TODIS PASTENA VOLLEY",
     "TODIS CS PASTENA VOLLEY",
-    "TODIS C.S. PASTENA VOLLEY"
+    "TODIS C.S. PASTENA VOLLEY",
+    "CS PASTENA"
 ]
 
 FILE_LANDING = "index.html"      
