@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v4.3.1
-# RELEASE NOTE: Inserimento Classifica Avusla - FIX P/G in formato decimale
+# SOFTWARE VERSION: v4.4
+# RELEASE NOTE: Aggiunto Campionato U13 Femminile
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v4.3.1 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v4.4 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -63,6 +63,7 @@ CAMPIONATI_FEMMINILI = {
     "Under 18 Gir.B S.Femminile": "86850",
     "Under 16 Gir.A S.Femminile": "86853",
     "Under 14 Gir.C S.Femminile": "86860",
+    "Under 13 Gir.B S.Femminile": "88820",
 }
 
 # Mappa dei campionati che hanno una classifica generale avulsa
@@ -701,7 +702,7 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
 
 # --- CLASSIFICA GENERALE AVULSA (Mappatura Corretta e Fix Decimali) ---
         if not df_avulse.empty and camp in df_avulse['Campionato_Ref'].unique():
-            html += f"<h2 style='color: #1565c0; border-left-color: #1565c0;'>🏅 Classifica Generale (Corsa Finali)</h2>"
+            html += f"<h2 style='color: #1565c0; border-left-color: #1565c0;'>🏅 Classifica Generale (Corsa Alle Finali)</h2>"
             df_a = df_avulse[df_avulse['Campionato_Ref'] == camp]
             html += '<div class="table-card" style="border: 1px solid #bbdefb;"><div class="table-scroll"><table><thead><tr style="background-color: #e3f2fd; color: #1565c0;"><th>Pos</th><th>Squadra</th><th>Pz.</th><th>P/G</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
             for _, r in df_a.iterrows():
