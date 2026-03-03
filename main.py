@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v4.5
-# RELEASE NOTE: Aggiunto Campionato U13 Femminile
+# SOFTWARE VERSION: v4.6
+# RELEASE NOTE: Fix Scraping Classifiche Avulse Serie C/D (Campania)
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v4.5 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v4.6 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -69,9 +69,11 @@ CAMPIONATI_FEMMINILI = {
 
 # Mappa dei campionati che hanno una classifica generale avulsa
 CAMPIONATI_AVULSI = {
+    "Serie C  Gir.A S.Femminile": "85473",
     "Under 14 Gir.C S.Femminile": "86858",
     "Under 16 Gir.A S.Femminile": "86853",
     "Under 18 Gir.B S.Femminile": "86849",
+    "Serie D  Gir.C S.Maschile": "85620",
     "Under 19 Gir.A S.Maschile": "86865",
 }
 
@@ -790,4 +792,5 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
+
 
