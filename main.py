@@ -54,27 +54,27 @@ URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg
 # CAMPIONATI
 CAMPIONATI_MASCHILI = {
     "Serie D  Gir.C S.Maschile": "85622",
-    "Under 19 Gir.A S.Maschile": "86865",
-    "Under 17 Gir.B S.Maschile": "86864",
-    "Under 15 Gir.B S.Maschile": "86848",
+    "U19 Gir.A S.Maschile": "86865",
+    "U17 Gir.B S.Maschile": "86864",
+    "U15 Gir.B S.Maschile": "86848",
 }
 
 CAMPIONATI_FEMMINILI = {
     "Serie C  Gir.A S.Femminile": "85471",
-    "Under 18 Gir.B S.Femminile": "86850",
-    "Under 16 Gir.A S.Femminile": "86853",
-    "Under 14 Gir.C S.Femminile": "86860",
-    "Under 13 Gir.B S.Femminile": "88820",
+    "U18 Gir.B S.Femminile": "86850",
+    "U16 Gir.A S.Femminile": "86853",
+    "U14 Gir.C S.Femminile": "86860",
+    "U13 Gir.B S.Femminile": "88820",
 }
 
 # Mappa dei campionati che hanno una classifica generale avulsa
 CAMPIONATI_AVULSI = {
     "Serie C  Gir.A S.Femminile": "85473",
-    "Under 14 Gir.C S.Femminile": "86858",
-    "Under 16 Gir.A S.Femminile": "86853",
-    "Under 18 Gir.B S.Femminile": "86849",
+    "U14 Gir.C S.Femminile": "86858",
+    "U16 Gir.A S.Femminile": "86853",
+    "U18 Gir.B S.Femminile": "86849",
     "Serie D  Gir.C S.Maschile": "85620",
-    "Under 19 Gir.A S.Maschile": "86865",
+    "U19 Gir.A S.Maschile": "86865",
 }
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
@@ -792,5 +792,6 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
+
 
 
