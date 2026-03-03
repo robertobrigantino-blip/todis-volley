@@ -73,6 +73,7 @@ CAMPIONATI_AVULSI = {
     "U16 Gir.A S.Femminile": "86853",
     "U18 Gir.B S.Femminile": "86849",
     "U19 Gir.A S.Maschile": "86865",
+    "Serie C Gir.A S.Femminile": "85472",
 }
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
@@ -787,3 +788,4 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
+
