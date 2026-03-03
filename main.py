@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v4.4
-# RELEASE NOTE: Aggiunto Campionato U13 Femminile
+# SOFTWARE VERSION: v4.5
+# RELEASE NOTE: Classifica Avulsa Serie C
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v4.4 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v4.5 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -69,11 +69,11 @@ CAMPIONATI_FEMMINILI = {
 
 # Mappa dei campionati che hanno una classifica generale avulsa
 CAMPIONATI_AVULSI = {
-    "U14 Gir.C S.Femminile": "86858",
-    "U16 Gir.A S.Femminile": "86853",
-    "U18 Gir.B S.Femminile": "86849",
-    "U19 Gir.A S.Maschile": "86865",
-    "Serie C Gir.A S.Femminile": "85472",
+    "Serie C  Gir.A S.Femminile": "85471", # Aggiunta Serie C
+    "Under 14 Gir.C S.Femminile": "86858",
+    "Under 16 Gir.A S.Femminile": "86853",
+    "Under 18 Gir.B S.Femminile": "86849",
+    "Under 19 Gir.A S.Maschile": "86865",
 }
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
@@ -566,24 +566,40 @@ def scrape_data():
                 all_standings.append(df_s)
         except: pass
 
-    # 2. Scraping Classifiche Avulse (Sito Desktop - 15 colonne)
+    # 2. Scraping Classifiche Avulse con Fallback Multi-Dominio
     for nome_camp, id_camp in CAMPIONATI_AVULSI.items():
-        try:
-            url_avulsa = f"https://www.fipavsalerno.it/classifica.aspx?tipo=avulsa&CId={id_camp}"
-            driver.get(url_avulsa)
+        # Definiamo i due possibili domini
+        urls_da_provare = [
+            f"https://www.fipavsalerno.it/classifica.aspx?tipo=avulsa&CId={id_camp}",
+            f"https://www.fipavcampania.it/classifica.aspx?tipo=avulsa&CId={id_camp}"
+        ]
+        
+        # Se è Serie C o D, diamo la priorità al portale Campania
+        if "Serie C" in nome_camp or "Serie D" in nome_camp:
+            urls_da_provare.reverse() 
+
+        successo_campionato = False
+        for url in urls_da_provare:
+            if successo_campionato: break # Se abbiamo già trovato i dati, passa al prossimo campionato
             
-            # AGGIUNTO: decimal=',' e thousands='.' per gestire i numeri italiani (2,9)
-            tabs = pd.read_html(StringIO(driver.page_source), decimal=',', thousands='.')
-            
-            if tabs:
-                df_a = tabs[0]
-                # Forza il dataframe a stringhe per evitare manipolazioni numeriche successive
-                df_a = df_a.astype(str)
-                df_a.columns = [f"col_{i}" for i in range(len(df_a.columns))]
-                df_a['Campionato_Ref'] = nome_camp 
-                all_avulse.append(df_a)
-        except Exception as e:
-            print(f"Errore scraping avulsa {nome_camp}: {e}")
+            try:
+                driver.get(url)
+                # Attendiamo un istante per il caricamento della tabella
+                time.sleep(1) 
+                
+                tabs = pd.read_html(StringIO(driver.page_source), decimal=',', thousands='.')
+                
+                # Verifichiamo se la tabella esiste ed è quella corretta (almeno 5 righe e molte colonne)
+                if tabs and len(tabs[0]) > 0 and len(tabs[0].columns) > 5:
+                    df_a = tabs[0]
+                    df_a = df_a.astype(str)
+                    df_a.columns = [f"col_{i}" for i in range(len(df_a.columns))]
+                    df_a['Campionato_Ref'] = nome_camp 
+                    all_avulse.append(df_a)
+                    successo_campionato = True
+                    print(f"✅ Dati avulsi trovati per {nome_camp} su {url.split('/')[2]}")
+            except:
+                continue # Prova l'URL successivo se questo fallisce
 
     driver.quit()
     df_res = pd.DataFrame(all_results)
@@ -788,4 +804,3 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
-
