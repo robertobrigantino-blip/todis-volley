@@ -1,5 +1,5 @@
 # ==============================================================================
-# SOFTWARE VERSION: v4.4
+# SOFTWARE VERSION: v4.5
 # RELEASE NOTE: Aggiunto Campionato U13 Femminile
 # ==============================================================================
 
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v4.4 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v4.5 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -565,30 +565,33 @@ def scrape_data():
                 all_standings.append(df_s)
         except: pass
 
-    # 2. Scraping Classifiche Avulse (Sito Desktop - 15 colonne)
+    # 2. Scraping Classifiche Avulse (Multi-Dominio)
     for nome_camp, id_camp in CAMPIONATI_AVULSI.items():
         try:
-            url_avulsa = f"https://www.fipavsalerno.it/classifica.aspx?tipo=avulsa&CId={id_camp}"
-            driver.get(url_avulsa)
+            # Sceglie il dominio in base al tipo di campionato
+            dominio = "fipavcampania.it" if "Serie" in nome_camp else "fipavsalerno.it"
+            url_avulsa = f"https://www.{dominio}/classifica.aspx?tipo=avulsa&CId={id_camp}"
             
-            # AGGIUNTO: decimal=',' e thousands='.' per gestire i numeri italiani (2,9)
+            driver.get(url_avulsa)
+            time.sleep(1) # Attesa per caricamento tabelle desktop
+            
+            # Legge le tabelle gestendo decimali e migliaia
             tabs = pd.read_html(StringIO(driver.page_source), decimal=',', thousands='.')
             
             if tabs:
-                df_a = tabs[0]
-                # Forza il dataframe a stringhe per evitare manipolazioni numeriche successive
+                # Cerchiamo la tabella con più colonne (quella della classifica reale)
+                df_a = max(tabs, key=len) 
+                # Forza a stringa per preservare la formattazione visuale
                 df_a = df_a.astype(str)
                 df_a.columns = [f"col_{i}" for i in range(len(df_a.columns))]
                 df_a['Campionato_Ref'] = nome_camp 
                 all_avulse.append(df_a)
+                print(f"✅ Classifica Avulsa scaricata: {nome_camp} da {dominio}")
         except Exception as e:
-            print(f"Errore scraping avulsa {nome_camp}: {e}")
+            print(f"⚠️ Errore scraping avulsa {nome_camp}: {e}")
 
     driver.quit()
-    df_res = pd.DataFrame(all_results)
-    df_std = pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
-    df_avul = pd.concat(all_avulse, ignore_index=True) if all_avulse else pd.DataFrame()
-    return df_res, df_std, df_avul
+    return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame(), pd.concat(all_avulse, ignore_index=True) if all_avulse else pd.DataFrame()
 
 # ================= GENERATORI PAGINE =================
 def genera_landing_page():
@@ -787,3 +790,4 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
+
