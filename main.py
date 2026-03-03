@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v4.7
-# RELEASE NOTE: Classifica Avulsa Serie C e Serie D
+# SOFTWARE VERSION: v4.4
+# RELEASE NOTE: Aggiunto Campionato U13 Femminile
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v4.7 | Stagione 25/26 - Ver. Finale 🏁"
+APP_VERSION = "v4.4 | Stagione 25/26 - Ver. Finale 🏁"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -54,27 +54,25 @@ URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg
 # CAMPIONATI
 CAMPIONATI_MASCHILI = {
     "Serie D  Gir.C S.Maschile": "85622",
-    "U19 Gir.A S.Maschile": "86865",
-    "U17 Gir.B S.Maschile": "86864",
-    "U15 Gir.B S.Maschile": "86848",
+    "Under 19 Gir.A S.Maschile": "86865",
+    "Under 17 Gir.B S.Maschile": "86864",
+    "Under 15 Gir.B S.Maschile": "86848",
 }
 
 CAMPIONATI_FEMMINILI = {
     "Serie C  Gir.A S.Femminile": "85471",
-    "U18 Gir.B S.Femminile": "86850",
-    "U16 Gir.A S.Femminile": "86853",
-    "U14 Gir.C S.Femminile": "86860",
-    "U13 Gir.B S.Femminile": "88820",
+    "Under 18 Gir.B S.Femminile": "86850",
+    "Under 16 Gir.A S.Femminile": "86853",
+    "Under 14 Gir.C S.Femminile": "86860",
+    "Under 13 Gir.B S.Femminile": "88820",
 }
 
-# Mappa semplificata per il matching intelligente
+# Mappa dei campionati che hanno una classifica generale avulsa
 CAMPIONATI_AVULSI = {
-    "Serie C": "85471",
-    "Serie D": "85620",
-    "Under 14": "86858",
-    "Under 16": "86853",
-    "Under 18": "86849",
-    "Under 19": "86865",
+    "Under 14 Gir.C S.Femminile": "86858",
+    "Under 16 Gir.A S.Femminile": "86853",
+    "Under 18 Gir.B S.Femminile": "86849",
+    "Under 19 Gir.A S.Maschile": "86865",
 }
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
@@ -542,6 +540,7 @@ def scrape_data():
     for nome_camp, id_camp in ALL_CAMPIONATI.items():
         base_url = "https://www.fipavsalerno.it/mobile/"
         if "Serie C" in nome_camp or "Serie D" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/"
+        
         driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}")
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         div_giornata = soup.find('div', style=lambda x: x and 'margin-top:7.5em' in x)
@@ -556,6 +555,7 @@ def scrape_data():
                     o = el.find('div', class_='squadraOspite').get_text(strip=True).replace(pt_o, '').strip()
                     d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, urljoin(base_url, el.get('href', '')))
                     all_results.append({'Campionato': nome_camp, 'Giornata': curr_giornata, 'Squadra Casa': c, 'Squadra Ospite': o, 'Punteggio': f"{pt_c}-{pt_o}" if pt_c else "", 'Data': d_ora, 'DataISO': d_iso, 'Impianto': luogo, 'Maps': maps, 'Set Casa': pt_c, 'Set Ospite': pt_o, 'Parziali': parziali})
+        
         try:
             driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
             tabs = pd.read_html(StringIO(driver.page_source))
@@ -565,36 +565,30 @@ def scrape_data():
                 all_standings.append(df_s)
         except: pass
 
-    # 2. Scraping Classifiche Avulse (Matching Robusto)
-    for ref_key, id_camp in CAMPIONATI_AVULSI.items():
-        urls_da_provare = [
-            f"https://www.fipavsalerno.it/classifica.aspx?tipo=avulsa&CId={id_camp}",
-            f"https://www.fipavcampania.it/classifica.aspx?tipo=avulsa&CId={id_camp}"
-        ]
-        if "Serie" in ref_key: urls_da_provare.reverse() 
-
-        for url in urls_da_provare:
-            try:
-                driver.get(url)
-                time.sleep(2)
-                tabs = pd.read_html(StringIO(driver.page_source), decimal=',', thousands='.')
-                df_target = None
-                for t in tabs:
-                    if len(t.columns) >= 10:
-                        df_target = t
-                        break
-                if df_target is not None:
-                    df_target = df_target.astype(str)
-                    df_target.columns = [f"col_{i}" for i in range(len(df_target.columns))]
-                    df_target['Avulsa_Key'] = str(ref_key).strip().upper() # Salviamo in maiuscolo e pulito
-                    all_avulse.append(df_target)
-                    print(f"✅ Classifica Avulsa per {ref_key} scaricata.")
-                    break 
-            except: continue
+    # 2. Scraping Classifiche Avulse (Sito Desktop - 15 colonne)
+    for nome_camp, id_camp in CAMPIONATI_AVULSI.items():
+        try:
+            url_avulsa = f"https://www.fipavsalerno.it/classifica.aspx?tipo=avulsa&CId={id_camp}"
+            driver.get(url_avulsa)
+            
+            # AGGIUNTO: decimal=',' e thousands='.' per gestire i numeri italiani (2,9)
+            tabs = pd.read_html(StringIO(driver.page_source), decimal=',', thousands='.')
+            
+            if tabs:
+                df_a = tabs[0]
+                # Forza il dataframe a stringhe per evitare manipolazioni numeriche successive
+                df_a = df_a.astype(str)
+                df_a.columns = [f"col_{i}" for i in range(len(df_a.columns))]
+                df_a['Campionato_Ref'] = nome_camp 
+                all_avulse.append(df_a)
+        except Exception as e:
+            print(f"Errore scraping avulsa {nome_camp}: {e}")
 
     driver.quit()
-    df_avul_final = pd.concat(all_avulse, ignore_index=True) if all_avulse else pd.DataFrame()
-    return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame(), df_avul_final
+    df_res = pd.DataFrame(all_results)
+    df_std = pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
+    df_avul = pd.concat(all_avulse, ignore_index=True) if all_avulse else pd.DataFrame()
+    return df_res, df_std, df_avul
 
 # ================= GENERATORI PAGINE =================
 def genera_landing_page():
@@ -695,47 +689,49 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
     for i, camp in enumerate(campionati_disp): html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{camp.split(" S.")[0]}</button>'
     html += '</div>'
 
- for i, camp in enumerate(campionati_disp):
+    for i, camp in enumerate(campionati_disp):
         html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
         
         # --- CLASSIFICA GIRONE ---
         html += f"<h2>🏆 Classifica Girone</h2>"
         df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
-        # ... (Generazione tabella girone invariata) ...
+        html += '<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
+        for _, r in df_c.iterrows():
+            cls = 'class="my-team-row"' if is_target_team(r['Squadra']) else ''
+            html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
+        html += '</tbody></table></div></div>'
 
-        # --- CLASSIFICA GENERALE AVULSA (Matching Intelligente v4.5) ---
-        df_a = pd.DataFrame()
-        if not df_avulse.empty:
-            # Cerchiamo se una delle chiavi (es "UNDER 14") è contenuta nel nome tab (es "UNDER 14 GIR.C...")
-            nome_tab_upper = str(camp).upper()
-            for key in CAMPIONATI_AVULSI.keys():
-                key_upper = str(key).upper().strip()
-                if key_upper in nome_tab_upper:
-                    # Filtriamo df_avulse cercando la corrispondenza con Avulsa_Key
-                    df_a = df_avulse[df_avulse['Avulsa_Key'] == key_upper]
-                    break
-
-        if not df_a.empty:
-            html += f"<h2 style='color: #1565c0; border-left-color: #1565c0;'>🏅 Classifica Generale (Corsa Finali)</h2>"
+# --- CLASSIFICA GENERALE AVULSA (Mappatura Corretta e Fix Decimali) ---
+        if not df_avulse.empty and camp in df_avulse['Campionato_Ref'].unique():
+            html += f"<h2 style='color: #1565c0; border-left-color: #1565c0;'>🏅 Classifica Generale (Corsa Alle Finali)</h2>"
+            df_a = df_avulse[df_avulse['Campionato_Ref'] == camp]
             html += '<div class="table-card" style="border: 1px solid #bbdefb;"><div class="table-scroll"><table><thead><tr style="background-color: #e3f2fd; color: #1565c0;"><th>Pos</th><th>Squadra</th><th>Pz.</th><th>P/G</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
             for _, r in df_a.iterrows():
-                squadra_nome = str(r['col_1']).strip()
+                squadra_nome = str(r['col_1'])
                 cls = 'class="my-team-row"' if is_target_team(squadra_nome) else ''
                 
-                def format_pg(val):
-                    v = str(val).replace('nan', '-').strip().replace('.', ',')
-                    # Se il numero è collassato (es 29 invece di 2,9)
-                    if len(v) == 2 and ',' not in v and v.isdigit(): return f"{v[0]},{v[1]}"
-                    return v
+                # Funzione di pulizia per i decimali (es. 2.9 -> 2,9)
+                def format_dec(val):
+                    val = str(val).replace('nan', '-').strip()
+                    # Se il valore finisce con .0 lo puliamo (es 30.0 -> 30)
+                    if val.endswith('.0'): val = val[:-2]
+                    return val.replace('.', ',')
 
                 html += f"<tr {cls}>"
-                html += f"<td>{r['col_0']}</td><td>{squadra_nome}</td><td>{r['col_2']}</td>"
-                html += f"<td>{format_pg(r['col_3'])}</td><td><b>{r['col_4']}</b></td>"
-                html += f"<td>{r['col_5']}</td><td>{r['col_6']}</td><td>{r['col_7']}</td>"
-                html += f"<td>{r['col_8']}</td><td>{r['col_9']}</td></tr>"
+                html += f"<td>{r['col_0']}</td>" # Pos
+                html += f"<td>{squadra_nome}</td>" # Squadra
+                html += f"<td>{r['col_2']}</td>" # Piazzamento
+                html += f"<td>{format_dec(r['col_3'])}</td>" # Punti/Gara (FIXATO)
+                html += f"<td><b>{r['col_4']}</b></td>" # Punti Totali
+                html += f"<td>{r['col_5']}</td>" # PG
+                html += f"<td>{r['col_6']}</td>" # PV
+                html += f"<td>{r['col_7']}</td>" # PP
+                html += f"<td>{r['col_8']}</td>" # SF
+                html += f"<td>{r['col_9']}</td>" # SS
+                html += "</tr>"
             html += '</tbody></table></div></div>'
         
-        # --- CALENDARIO TODIS ---
+        # --- CALENDARIO ---
         html += f"<h2>📅 Calendario TODIS</h2>"
         html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
         html += f'<div id="calendar-container-{i}">'
@@ -791,6 +787,3 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
-
-
-
