@@ -73,6 +73,7 @@ CAMPIONATI_AVULSI = {
     "Under 14 Gir.C S.Femminile": "86858",
     "Under 16 Gir.A S.Femminile": "86853",
     "Under 18 Gir.B S.Femminile": "86849",
+    "Serie D  Gir.C S.Maschile": "85620", # Aggiunta Serie D
     "Under 19 Gir.A S.Maschile": "86865",
 }
 
@@ -804,3 +805,4 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
+
