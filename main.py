@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v4.7
-# RELEASE NOTE: Implementazione Fasi Finali Provinciali (Gestione Dinamica)
+# SOFTWARE VERSION: v4.8
+# RELEASE NOTE: Fix Scraping Calendario Fasi Finali (Rimozione vincolo contenitore Fipav)
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v4.7 | Stagione 25/26 - Fasi Finali 🏆"
+APP_VERSION = "v4.8 | Stagione 25/26 - Fasi Finali 🏆"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -581,20 +581,44 @@ def scrape_data():
         
         driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}")
         soup = BeautifulSoup(driver.page_source, 'html.parser')
-        div_giornata = soup.find('div', style=lambda x: x and 'margin-top:7.5em' in x)
-        curr_giornata = "N/D"
-        if div_giornata:
-            for el in div_giornata.children:
-                if el.name == 'div' and 'divGiornata' in el.get('class',[]): curr_giornata = el.get_text(strip=True)
-                elif el.name == 'a' and 'gara' in el.get('class',[]):
-                    pt_c = el.find('div', class_='setCasa').get_text(strip=True) if el.find('div', class_='setCasa') else ''
-                    pt_o = el.find('div', class_='setOspite').get_text(strip=True) if el.find('div', class_='setOspite') else ''
-                    c = el.find('div', class_='squadraCasa').get_text(strip=True).replace(pt_c, '').strip()
-                    o = el.find('div', class_='squadraOspite').get_text(strip=True).replace(pt_o, '').strip()
-                    d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, urljoin(base_url, el.get('href', '')))
-                    all_results.append({'Campionato': nome_camp, 'Giornata': curr_giornata, 'Squadra Casa': c, 'Squadra Ospite': o, 'Punteggio': f"{pt_c}-{pt_o}" if pt_c else "", 'Data': d_ora, 'DataISO': d_iso, 'Impianto': luogo, 'Maps': maps, 'Set Casa': pt_c, 'Set Ospite': pt_o, 'Parziali': parziali})
         
-        # Prova a scaricare la classifica (la fase finale potrebbe non averla, e in tal caso la salta serenamente)
+        # FIX: Scansioniamo in ordine tutti gli elementi pertinenti (senza dipendere da wrapper invisibili)
+        curr_giornata = "N/D"
+        elementi = soup.find_all(['div', 'a'])
+        
+        for el in elementi:
+            classi = el.get('class',[])
+            if el.name == 'div' and 'divGiornata' in classi:
+                curr_giornata = el.get_text(strip=True)
+            elif el.name == 'a' and 'gara' in classi:
+                pt_c = el.find('div', class_='setCasa').get_text(strip=True) if el.find('div', class_='setCasa') else ''
+                pt_o = el.find('div', class_='setOspite').get_text(strip=True) if el.find('div', class_='setOspite') else ''
+                c = el.find('div', class_='squadraCasa').get_text(strip=True).replace(pt_c, '').strip()
+                o = el.find('div', class_='squadraOspite').get_text(strip=True).replace(pt_o, '').strip()
+                
+                # Se siamo in FASI FINALI, aggiungiamo "🏆 Playoff -" davanti per distinguerlo meglio visivamente
+                giornata_label = curr_giornata
+                if nome_camp in FASI_FINALI and "Fase Finale" not in giornata_label and "Playoff" not in giornata_label:
+                    giornata_label = f"🏆 Playoff - {curr_giornata}"
+
+                d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, urljoin(base_url, el.get('href', '')))
+                
+                all_results.append({
+                    'Campionato': nome_camp, 
+                    'Giornata': giornata_label, 
+                    'Squadra Casa': c, 
+                    'Squadra Ospite': o, 
+                    'Punteggio': f"{pt_c}-{pt_o}" if pt_c else "", 
+                    'Data': d_ora, 
+                    'DataISO': d_iso, 
+                    'Impianto': luogo, 
+                    'Maps': maps, 
+                    'Set Casa': pt_c, 
+                    'Set Ospite': pt_o, 
+                    'Parziali': parziali
+                })
+        
+        # Prova a scaricare la classifica
         try:
             driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
             tabs = pd.read_html(StringIO(driver.page_source))
@@ -606,7 +630,7 @@ def scrape_data():
 
     # 3. Scraping Classifiche Avulse (Multi-Dominio)
     for nome_camp, id_camp in CAMPIONATI_AVULSI.items():
-        # Se siamo in Fase Finale, la classifica avulsa non ci interessa più (il campionato regolare è inibito)
+        # Se siamo in Fase Finale, la classifica avulsa non ci interessa più
         if nome_camp in FASI_FINALI:
             continue
             
