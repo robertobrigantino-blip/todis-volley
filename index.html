@@ -39,6 +39,24 @@
     }
     @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
 
+    /* BANNER FASI FINALI */
+    .fasi-finali-banner {
+        background: linear-gradient(135deg, #d32f2f 0%, #ff5252 100%);
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        font-weight: 800;
+        font-size: 13px;
+        text-align: center;
+        text-transform: uppercase;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        letter-spacing: 1px;
+        animation: pulse-banner 2s infinite;
+    }
+    @keyframes pulse-banner { 0% { transform: scale(1); } 50% { transform: scale(1.01); } 100% { transform: scale(1); } }
+
     /* 3. LANDING PAGE */
     .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 5px 0; overflow: hidden; }
     .instruction-text { font-weight: 700; color: #555; font-size: 11px; text-transform: uppercase; margin: 0; }
@@ -192,7 +210,7 @@
             cards.sort((a, b) => (a.getAttribute('data-date-iso') || '9999').localeCompare(b.getAttribute('data-date-iso') || '9999'));
             container.innerHTML = "";
             cards.forEach(card => container.appendChild(card));
-            btn.innerHTML = "🔢 Per Giornata";
+            btn.innerHTML = "🔢 Per Turno";
             btn.setAttribute('data-sorted', 'true');
             btn.classList.add('active');
         } else {
@@ -288,7 +306,7 @@
         
         <div class="footer-counter">
             <img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f" alt="Visite"><br>
-            <span class="version-text">v4.6 | Stagione 25/26 - Ver. Finale 🏁</span>
+            <span class="version-text">v4.7 | Stagione 25/26 - Fasi Finali 🏆</span>
             <div class="footer-msg">🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐</div>
         </div>
 
