@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v4.7
-# RELEASE NOTE: Fasi Finali Provinciali Support (Golden Banner & ID Override)
+# SOFTWARE VERSION: v4.8
+# RELEASE NOTE: Fasi Finali Support & NameError Fix
 # ==============================================================================
 
 import pandas as pd
@@ -19,104 +19,74 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v4.7 | Fasi Finali Provinciali 🏆"
+APP_VERSION = "v4.8 | Fasi Finali Provinciali 🏆"
 
-# MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
                                                                         
-TARGET_TEAM_ALIASES = [
-    "TODIS PASTENA VOLLEY",
-    "TODIS CS PASTENA VOLLEY",
-    "TODIS C.S. PASTENA VOLLEY",
-    "CS PASTENA"
-]
+TARGET_TEAM_ALIASES = ["TODIS PASTENA VOLLEY", "TODIS CS PASTENA VOLLEY", "TODIS C.S. PASTENA VOLLEY", "CS PASTENA"]
 
-FILE_LANDING = "index.html"      
-FILE_MALE = "maschile.html"      
-FILE_FEMALE = "femminile.html"   
-FILE_GEN_MALE = "generale_m.html"
-FILE_GEN_FEMALE = "generale_f.html"
-FILE_SCORE = "segnapunti.html"   
+FILE_LANDING, FILE_MALE, FILE_FEMALE = "index.html", "maschile.html", "femminile.html"
+FILE_GEN_MALE, FILE_GEN_FEMALE, FILE_SCORE = "generale_m.html", "generale_f.html", "segnapunti.html"
 
-# URL IMMAGINI
 REPO_URL = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/"
 URL_LOGO = REPO_URL + "logo.jpg"
 URL_SPLIT_IMG = REPO_URL + "scelta_campionato.jpg"
-
-# BOTTONI
 BTN_ALL_RESULTS = REPO_URL + "all_result.png"
 BTN_TODIS_RESULTS = REPO_URL + "todis_result.png"
 BTN_SCOREBOARD = REPO_URL + "tabellone_segnapunti.png"
 BTN_CALENDAR_EVENTS = REPO_URL + "prossimi_appuntamenti.png"
-
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
-# --- SEZIONE CAMPIONATI ORDINARI ---
+# CAMPIONATI ORDINARI (Gironi)
 CAMPIONATI_MASCHILI = {
     "Serie D  Gir.C S.Maschile": "85622",
-    "Under 19 Gir.A S.Maschile": "86865",
-    "Under 17 Gir.B S.Maschile": "86864",
-    "Under 15 Gir.B S.Maschile": "86848",
+    "U19 Gir.A S.Maschile": "86865",
+    "U17 Gir.B S.Maschile": "86864",
+    "U15 Gir.B S.Maschile": "86848",
 }
 
 CAMPIONATI_FEMMINILI = {
     "Serie C  Gir.A S.Femminile": "85471",
-    "Under 18 Gir.B S.Femminile": "86850",
-    "Under 16 Gir.A S.Femminile": "86853",
-    "Under 14 Gir.C S.Femminile": "86860",
-    "Under 13 Gir.B S.Femminile": "88820",
+    "U18 Gir.B S.Femminile": "86850",
+    "U16 Gir.A S.Femminile": "86853",
+    "U14 Gir.C S.Femminile": "86860",
+    "U13 Gir.B S.Femminile": "88820",
 }
 
-# --- NUOVA SEZIONE: FASI FINALI PROVINCIALI (Override) ---
-# Se un campionato è elencato qui, l'app userà questo ID per il calendario
-# e mostrerà il banner dorato delle Finali Provinciali.
+# OVERRIDE FASI FINALI (Inserisci qui il nome del girone e il nuovo ID delle finali)
 CAMPIONATI_FINALI = {
-    "Under 18 Gir.B S.Femminile": "89371",
-	"Under 19 Gir.A S.Maschile": "89301",
-    # Aggiungere qui altri campionati man mano che iniziano le fasi finali
+    "U18 Gir.B S.Femminile": "89371",
+	"U19 Gir.A S.Maschile": "89301",
 }
 
-# CLASSIFICHE AVULSE (Fasi Finali)
+# CLASSIFICHE AVULSE
 CAMPIONATI_AVULSI = {
     "Serie C  Gir.A S.Femminile": "85473",
-    "Under 14 Gir.C S.Femminile": "86858",
-    "Under 16 Gir.A S.Femminile": "86853",
-    "Under 18 Gir.B S.Femminile": "86849",
+    "U14 Gir.C S.Femminile": "86858",
+    "U16 Gir.A S.Femminile": "86853",
+    "U18 Gir.B S.Femminile": "86849",
     "Serie D  Gir.C S.Maschile": "85620",
-    "Under 19 Gir.A S.Maschile": "86865",
+    "U19 Gir.A S.Maschile": "86865",
 }
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 
-def is_target_team(team_name):
-    if pd.isna(team_name) or not str(team_name).strip(): return False
-    name_clean = str(team_name).upper().strip()
-    for alias in TARGET_TEAM_ALIASES:
-        if alias.upper() in name_clean: return True
-    return False
-
-# ================= CSS COMUNE (v4.7) =================
+# ================= CSS E SCRIPT =================
 CSS_BASE = """
 <style>
-    /* 1. RESET E LAYOUT BASE */
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; background-color: #f0f2f5; color: #333; overflow-x: hidden; }
     body { display: flex; flex-direction: column; }
-
-    /* 2. HEADER E NOTIFICA CALENDARIO */
     .app-header { background-color: #d32f2f; color: white; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); height: 60px; flex-shrink: 0; z-index: 1000; position: sticky; top: 0; }
     .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
     .app-header h1 { margin: 0; font-size: 13px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }   
     .nav-buttons { display: flex; gap: 8px; align-items: center; }
     .nav-icon-img { height: 42px; width: auto; transition: transform 0.1s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
-    
     .calendar-container { position: relative; display: none; }
     .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
     .calendar-container.has-events::after { content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; z-index: 11; }
     @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
-
-    /* 3. LANDING PAGE */
     .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 5px 0; overflow: hidden; }
     .instruction-text { font-weight: 700; color: #555; font-size: 11px; text-transform: uppercase; margin: 0; }
     .choice-card { position: relative; width: 92%; max-width: 450px; display: flex; justify-content: center; align-items: center; }
@@ -126,18 +96,16 @@ CSS_BASE = """
     .social-section { text-align: center; margin: 5px 0; } 
     .social-icons { display: flex; justify-content: center; gap: 30px; }
     .social-icon-img { width: 34px; height: 34px; }
-
-    /* 4. MENU TABS */
     .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; flex-shrink: 0; scrollbar-width: none; }
     .tab-bar::-webkit-scrollbar { display: none; } 
     .tab-btn { flex: 1; padding: 10px 8px; text-align: center; background: none; border: none; font-size: 11px; font-weight: 600; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 85px; text-transform: uppercase; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
-    
-    /* 5. TABELLE CLASSIFICA */
     .tab-content { display: none; padding: 15px; width: 100%; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
+    
+    .finals-banner { background: linear-gradient(45deg, #ffd700, #ff8f00); color: #000; padding: 12px; border-radius: 8px; text-align: center; font-weight: 900; margin-bottom: 15px; border: 2px solid #000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); text-transform: uppercase; font-size: 13px; letter-spacing: 1px; }
 
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; width: 100%; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
@@ -150,63 +118,37 @@ CSS_BASE = """
     th:not(:nth-child(-n+3)), td:not(:nth-child(-n+3)) { width: 28px; font-size: 9px; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
     .my-team-row td:nth-child(2) { background-color: #fff3e0 !important; }
-
-    /* 6. BANNER FASI FINALI */
-    .finals-banner {
-        background: linear-gradient(45deg, #ffd700, #ff8f00);
-        color: #000;
-        padding: 12px;
-        border-radius: 8px;
-        text-align: center;
-        font-weight: 900;
-        margin-bottom: 15px;
-        border: 2px solid #000;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        text-transform: uppercase;
-        font-size: 13px;
-        letter-spacing: 1px;
-    }
-
-    /* 7. MATCH CARDS */
+    
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; width: 100%; }
     .match-card.win { border-left-color: #2e7d32; } .match-card.loss { border-left-color: #c62828; } .match-card.upcoming { border-left-color: #ff9800; } 
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 10px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; }
     .team-row { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; margin-bottom: 8px; }
     .team-info { flex: 1; min-width: 0; font-size: 14px; line-height: 1.2; white-space: normal; word-wrap: break-word; }
     .my-team-text { color: #d32f2f; font-weight: 700; }
-
     .scores-wrapper { display: flex !important; flex-direction: row !important; align-items: center !important; gap: 6px; flex-shrink: 0; }
     .partials-inline { display: flex !important; flex-direction: row !important; gap: 3px; }
     .partial-badge { width: 22px; height: 22px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; flex-shrink: 0; }
     .set-total { width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; flex-shrink: 0; }
     .bg-green { background-color: #2e7d32; } .bg-red { background-color: #c62828; } .bg-gray { background-color: #78909c; }
-
     .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
     .gym-name { font-size: 9px; color: #666; width: 100%; margin-bottom: 5px; flex: 1; }
     .action-buttons { display: flex; gap: 5px; justify-content: flex-end; }
     .btn { text-decoration: none; padding: 4px 8px; border-radius: 12px; font-size: 9px; font-weight: bold; display: flex; align-items: center; gap: 3px; border: 1px solid transparent; }
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
-
-    /* 8. MODALI E POPUPS */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .modal-content { background: white; width: 90%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 15px; overflow-y: auto; position: relative; }
     .modal-header { display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; width: 100%; }
     .modal-title { font-size: 16px; font-weight: bold; color: #d32f2f; margin: 0; }
     .close-btn { background: #eee; border: none; font-size: 22px; padding: 2px 10px; border-radius: 6px; color: #333; cursor: pointer; line-height: 1; }
-
     .calendar-controls { display: flex; gap: 8px; margin-bottom: 12px; justify-content: flex-end; position: relative; z-index: 10; }
     .btn-tool { font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; transition: 0.2s; z-index: 11; }
     .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
-
     .install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 5000; width: 85%; max-width: 350px; text-align: center; display: none; border: 3px solid #d32f2f; animation: slideUp 0.5s ease-out; }
     @keyframes slideUp { from { transform: translate(-50%, 150%); } to { transform: translate(-50%, 0); } }
     .btn-install-app { background: #d32f2f; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; margin: 10px 0; font-size: 14px; cursor: pointer; }
-
-    /* 9. FOOTER */
     .footer-counter { text-align: center; padding: 8px 0; background: white; border-top: 1px solid #eee; flex-shrink: 0; width: 100%; }
     .footer-msg { font-size: 10px; color: #d32f2f; margin: 0; font-weight: bold; }
-
     @media print {
         html, body { height: auto !important; overflow: visible !important; display: block !important; background: white !important; }
         .app-header, .tab-bar, .calendar-controls, .footer-counter, .install-popup, .btn-map, .btn-cal, .btn-wa, .close-btn { display: none !important; }
@@ -214,43 +156,23 @@ CSS_BASE = """
         .tab-content.active { display: block !important; width: 100% !important; height: auto !important; }
     }
 </style>
-
 <script>
-    /* PWA */
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Error', err));
-        });
-    }
-
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Error', err)); }); }
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
+        e.preventDefault(); deferredPrompt = e;
         if (!/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())) {
-            setTimeout(() => { 
-                const p = document.getElementById('android-popup');
-                if(p) p.style.display = 'block'; 
-            }, 2000);
+            setTimeout(() => { const p = document.getElementById('android-popup'); if(p) p.style.display = 'block'; }, 2000);
         }
     });
-
     async function triggerAndroidInstall() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            await deferredPrompt.userChoice;
-            deferredPrompt = null;
-            closePopup('android-popup');
-        } else {
-            alert("Usa il menu di Chrome (3 puntini) e seleziona 'Installa App'.");
-        }
+        if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; closePopup('android-popup'); }
+        else { alert("Usa il menu di Chrome (3 puntini) e seleziona 'Installa App'."); }
     }
-
     function closePopup(id) { document.getElementById(id).style.display = 'none'; }
     function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
     function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
     function printCalendar() { window.print(); }
-
     function openTab(tabIndex) {
         var contents = document.getElementsByClassName("tab-content");
         for (var i = 0; i < contents.length; i++) contents[i].classList.remove("active");
@@ -259,7 +181,6 @@ CSS_BASE = """
         document.getElementById("content-" + tabIndex).classList.add("active");
         document.getElementById("btn-" + tabIndex).classList.add("active");
     }
-
     function tornaAlSettore() {
         const urlParams = new URLSearchParams(window.location.search);
         const origin = urlParams.get('from');
@@ -267,7 +188,6 @@ CSS_BASE = """
         else if (origin === 'femminile') window.location.href = "femminile.html";
         else window.location.href = "index.html";
     }
-
     var originalOrder = {};
     function toggleSort(tabId) {
         const container = document.getElementById('calendar-container-' + tabId);
@@ -290,17 +210,10 @@ CSS_BASE = """
             btn.classList.remove('active');
         }
     }
-
     window.onload = function() {
         const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
         const isStandalone = window.navigator.standalone === true;
-        if (isIos && !isStandalone) {
-            setTimeout(() => { 
-                const p = document.getElementById('ios-popup');
-                if(p) p.style.display = 'block'; 
-            }, 3000);
-        }
-
+        if (isIos && !isStandalone) { setTimeout(() => { const p = document.getElementById('ios-popup'); if(p) p.style.display = 'block'; }, 3000); }
         if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
             const today = new Date(); today.setHours(0,0,0,0);
             let nextMatches = {};
@@ -327,16 +240,85 @@ CSS_BASE = """
                 if(modalBody) {
                     modalBody.innerHTML = popupHTML;							 
                     const btnCal = document.getElementById('btn-calendar');
-                    if(btnCal) {
-                        btnCal.style.display = 'inline-block';
-                        btnCal.classList.add('has-events'); 
-                    }
+                    if(btnCal) { btnCal.style.display = 'inline-block'; btnCal.classList.add('has-events'); }
                 }
             }
         }
     };
 </script>
 """
+
+# ================= HELPER FUNCTIONS =================
+def create_google_calendar_link(row):
+    if not row['DataISO']: return ""
+    title = quote(f"🏐 {row['Squadra Casa']} vs {row['Squadra Ospite']}")
+    location = quote(row['Impianto']) if row['Impianto'] else ""
+    time_match = re.search(r'⏰\s*(\d{1,2}[:\.]\d{2})', row['Data'])
+    if time_match:
+        ora_str = time_match.group(1).replace('.', ':')
+        try:
+            dt_start = datetime.strptime(f"{row['DataISO']} {ora_str}", "%Y-%m-%d %H:%M")
+            dt_end = dt_start + timedelta(hours=2)
+            dates = f"{dt_start.strftime('%Y%m%dT%H%M00')}/{dt_end.strftime('%Y%m%dT%H%M00')}"
+        except: dates = f"{row['DataISO'].replace('-','')}T120000/{row['DataISO'].replace('-','')}T140000"
+    else:
+        date_clean = row['DataISO'].replace('-', '')
+        dates = f"{date_clean}/{date_clean}"
+    return f"https://www.google.com/calendar/render?action=TEMPLATE&text={title}&dates={dates}&location={location}&details=Campionato+{quote(row['Campionato'])}"
+
+def create_whatsapp_link(row):
+    if row['Punteggio']:
+        text = f"🏐 *Risultato {row['Campionato']}*\n{row['Squadra Casa']} {row['Set Casa']} - {row['Set Ospite']} {row['Squadra Ospite']}"
+    else:
+        text = f"📅 *Gara {row['Campionato']}*\n{row['Data']}\n📍 {row['Impianto']}\n{row['Squadra Casa']} vs {row['Squadra Ospite']}"
+    return f"https://wa.me/?text={quote(text)}"
+
+def crea_card_html(r, camp, is_focus_mode=False):
+    is_home = is_target_team(r['Squadra Casa'])
+    is_away = is_target_team(r['Squadra Ospite'])
+    is_my_match = is_home or is_away
+    cs = 'class="team-info my-team-text"' if is_home else 'class="team-info"'
+    os = 'class="team-info my-team-text"' if is_away else 'class="team-info"'
+    status_class = "upcoming"
+    sc_val = r['Set Casa'] if r['Set Casa'] else "-"
+    so_val = r['Set Ospite'] if r['Set Ospite'] else "-"
+
+    if r['Punteggio']:
+        try:
+            sc, so = int(r['Set Casa']), int(r['Set Ospite'])
+            bg_c = "bg-green" if sc > so else "bg-red"
+            bg_o = "bg-green" if so > sc else "bg-red"
+            if is_my_match: status_class = "win" if ((is_home and sc > so) or (is_away and so > sc)) else "loss"
+            else:
+                status_class = "played"
+                bg_c, bg_o = "bg-gray", "bg-gray"
+            if r['Parziali'] and str(r['Parziali']).strip():
+                matches = re.findall(r'(\d+)\s*-\s*(\d+)', str(r['Parziali']))
+                if matches:
+                    partials_c = "".join([f'<div class="partial-badge">{p[0]}</div>' for p in matches])
+                    partials_o = "".join([f'<div class="partial-badge">{p[1]}</div>' for p in matches])
+                    sc_val = f'<div class="scores-wrapper"><div class="partials-inline">{partials_c}</div><div class="set-total {bg_c}">{sc}</div></div>'
+                    so_val = f'<div class="scores-wrapper"><div class="partials-inline">{partials_o}</div><div class="set-total {bg_o}">{so}</div></div>'
+        except: status_class = "played"
+    
+    btns_html = f'<a href="{r["Maps"]}" target="_blank" class="btn btn-map">📍 Mappa</a>' if r['Maps'] else ""
+    if is_my_match or not is_focus_mode:
+        if not r['Punteggio']: btns_html += f'<a href="{create_google_calendar_link(r)}" target="_blank" class="btn btn-cal">📅</a>'
+        btns_html += f'<a href="{create_whatsapp_link(r)}" target="_blank" class="btn btn-wa">💬</a>'
+
+    return f"""
+    <div class="match-card {status_class}" data-date-iso="{r['DataISO']}" data-camp="{camp}" data-my-team="{str(is_my_match).lower()}">
+        <div class="match-header"><span>📅 {r['Data']}</span> <span>|</span> <span>{r['Giornata']}</span></div>
+        <div class="teams">
+            <div class="team-row"><span {cs}>{r['Squadra Casa']}</span>{sc_val}</div>
+            <div class="team-row"><span {os}>{r['Squadra Ospite']}</span>{so_val}</div>
+        </div>
+        <div class="match-footer" onclick="event.stopPropagation()">
+            <span class="gym-name">🏟️ {r['Impianto']}</span>
+            <div class="action-buttons">{btns_html}</div>
+        </div>
+    </div>
+    """
 
 # ================= SCRAPING =================
 def get_match_details_robust(driver, match_url):
@@ -369,14 +351,10 @@ def scrape_data():
     chrome_options = Options(); chrome_options.add_argument("--headless"); driver = webdriver.Chrome(options=chrome_options)
     all_results, all_standings, all_avulse = [], [], []
     
-    # 1. Scraping Risultati e Classifica Girone
     for nome_camp, id_camp in ALL_CAMPIONATI.items():
-        # LOGICA OVERRIDE: se il campionato è nelle FINALI, usa l'ID finale
         id_da_usare = CAMPIONATI_FINALI.get(nome_camp, id_camp)
-        
         base_url = "https://www.fipavsalerno.it/mobile/"
         if "Serie" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/"
-        
         try:
             driver.get(f"{base_url}risultati.asp?CampionatoId={id_da_usare}")
             soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -392,15 +370,12 @@ def scrape_data():
                         o = el.find('div', class_='squadraOspite').get_text(strip=True).replace(pt_o, '').strip()
                         d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, urljoin(base_url, el.get('href', '')))
                         all_results.append({'Campionato': nome_camp, 'Giornata': curr_giornata, 'Squadra Casa': c, 'Squadra Ospite': o, 'Punteggio': f"{pt_c}-{pt_o}" if pt_c else "", 'Data': d_ora, 'DataISO': d_iso, 'Impianto': luogo, 'Maps': maps, 'Set Casa': pt_c, 'Set Ospite': pt_o, 'Parziali': parziali})
-            
-            # La classifica rimane sempre quella del girone originale (o dell'ID passato)
             driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
             tabs = pd.read_html(StringIO(driver.page_source))
             if tabs:
                 df_s = tabs[0]; df_s['Campionato'] = nome_camp; all_standings.append(df_s)
         except: pass
 
-    # 2. Scraping Classifiche Avulse
     for nome_camp, id_camp in CAMPIONATI_AVULSI.items():
         try:
             dominio = "fipavcampania.it" if "Serie" in nome_camp else "fipavsalerno.it"
@@ -418,7 +393,7 @@ def scrape_data():
     driver.quit()
     return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame(), pd.concat(all_avulse, ignore_index=True) if all_avulse else pd.DataFrame()
 
-# ================= GENERATORI =================
+# ================= GENERATORI PAGINE =================
 def genera_landing_page():
     print(f"📄 Generazione Landing Page...")
     html = f"""<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><meta name="theme-color" content="#d32f2f"><title>{NOME_VISUALIZZATO}</title><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="icon" type="image/png" href="{URL_LOGO}"><link rel="apple-touch-icon" href="{URL_LOGO}"><link rel="manifest" href="manifest.json">{CSS_BASE}</head><body><div class="app-header"><div class="header-left"><img src="{URL_LOGO}" alt="Logo" class="logo-main"><h1>{NOME_VISUALIZZATO}</h1></div><div class="nav-buttons"><a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a></div></div><div class="landing-container"><div class="instruction-text">Seleziona il settore:</div><div class="choice-card"><img src="{URL_SPLIT_IMG}" alt="Campionato" class="choice-img"><div class="click-overlay"><a href="{FILE_MALE}" class="click-area"></a><a href="{FILE_FEMALE}" class="click-area"></a></div></div><div class="social-section"><div class="social-icons"><a href="https://www.facebook.com/111542261731361?ref=_xav_ig_profile_page_web" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" class="social-icon-img"></a><a href="https://www.instagram.com/asdcspastena_volley/" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" class="social-icon-img"></a></div></div></div><div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"><br><span class="version-text">{APP_VERSION}</span><div class="footer-msg">{FOOTER_MSG}</div></div><div id="android-popup" class="install-popup"><div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Ufficiale</div><div style="font-size:13px;">Accedi ai risultati più velocemente e usa l'app a tutto schermo!</div><button class="btn-install-app" onclick="triggerAndroidInstall()">INSTALLA ORA</button><button class="btn-close-popup" onclick="closePopup('android-popup')">Magari più tardi</button></div><div id="ios-popup" class="install-popup"><div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa su iPhone</div><div style="font-size:13px; margin-bottom:10px;">1. Premi <b>Condividi</b> <span style="font-size:18px">📤</span><br>2. Seleziona <b>"Aggiungi alla schermata Home"</b> ➕</div><button class="btn-install-app" onclick="closePopup('ios-popup')">HO CAPITO</button></div></body></html>"""
@@ -440,12 +415,8 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target):
 
     for i, camp in enumerate(campionati_disp):
         html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
-        
-        # BANNER FINALI
         if camp in CAMPIONATI_FINALI:
             html += f'<div class="finals-banner">🏆 Fasi Finali Provinciali</div>'
-
-        # CLASSIFICA GIRONE
         titolo_class = "🏆 Classifica Girone (Concluso)" if camp in CAMPIONATI_FINALI else "🏆 Classifica Girone"
         html += f"<h2>{titolo_class}</h2>"
         df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
@@ -455,7 +426,6 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target):
             html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
         html += '</tbody></table></div></div>'
 
-        # CLASSIFICA GENERALE
         if not df_avulse.empty and camp in df_avulse['Campionato_Ref'].unique():
             html += f"<h2 style='color: #1565c0; border-left-color: #1565c0;'>🏅 Classifica Generale (Ranking Finali)</h2>"
             df_a = df_avulse[df_avulse['Campionato_Ref'] == camp]
@@ -470,7 +440,6 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target):
                 html += f"<tr {cls}><td>{r['col_0']}</td><td>{squadra_nome}</td><td>{r['col_2']}</td><td>{format_pg(r['col_3'])}</td><td><b>{r['col_4']}</b></td><td>{r['col_5']}</td><td>{r['col_6']}</td><td>{r['col_7']}</td><td>{r['col_8']}</td><td>{r['col_9']}</td></tr>"
             html += '</tbody></table></div></div>'
         
-        # CALENDARIO (Visualizza le Finali se l'Override è attivo)
         titolo_cal = "📅 Calendario Fasi Finali" if camp in CAMPIONATI_FINALI else "📅 Calendario TODIS"
         html += f"<h2>{titolo_cal}</h2>"
         html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
@@ -478,7 +447,6 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target):
         df_todis = df_ris[(df_ris['Campionato'] == camp) & (df_ris['Squadra Casa'].apply(is_target_team) | df_ris['Squadra Ospite'].apply(is_target_team))]
         for _, r in df_todis.iterrows(): html += crea_card_html(r, camp, True)
         html += '</div></div>'
-
     html += f'<div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span></div></body></html>'
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
 
