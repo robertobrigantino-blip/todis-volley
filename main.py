@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v4.8
-# RELEASE NOTE: Fasi Finali Support & NameError Fix
+# SOFTWARE VERSION: v4.9
+# RELEASE NOTE: Fix NameError & Added U19M Finals Override
 # ==============================================================================
 
 import pandas as pd
@@ -17,13 +17,18 @@ import re
 from datetime import datetime, timedelta
 import os
 
-# ================= CONFIGURAZIONE =================
+# ================= 1. CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v4.8 | Fasi Finali Provinciali 🏆"
+APP_VERSION = "v4.9 | Fasi Finali Provinciali 🏆"
 
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
                                                                         
-TARGET_TEAM_ALIASES = ["TODIS PASTENA VOLLEY", "TODIS CS PASTENA VOLLEY", "TODIS C.S. PASTENA VOLLEY", "CS PASTENA"]
+TARGET_TEAM_ALIASES = [
+    "TODIS PASTENA VOLLEY",
+    "TODIS CS PASTENA VOLLEY",
+    "TODIS C.S. PASTENA VOLLEY",
+    "CS PASTENA"
+]
 
 FILE_LANDING, FILE_MALE, FILE_FEMALE = "index.html", "maschile.html", "femminile.html"
 FILE_GEN_MALE, FILE_GEN_FEMALE, FILE_SCORE = "generale_m.html", "generale_f.html", "segnapunti.html"
@@ -40,38 +45,118 @@ URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg
 # CAMPIONATI ORDINARI (Gironi)
 CAMPIONATI_MASCHILI = {
     "Serie D  Gir.C S.Maschile": "85622",
-    "U19 Gir.A S.Maschile": "86865",
-    "U17 Gir.B S.Maschile": "86864",
-    "U15 Gir.B S.Maschile": "86848",
+    "Under 19 Gir.A S.Maschile": "86865",
+    "Under 17 Gir.B S.Maschile": "86864",
+    "Under 15 Gir.B S.Maschile": "86848",
 }
 
 CAMPIONATI_FEMMINILI = {
     "Serie C  Gir.A S.Femminile": "85471",
-    "U18 Gir.B S.Femminile": "86850",
-    "U16 Gir.A S.Femminile": "86853",
-    "U14 Gir.C S.Femminile": "86860",
-    "U13 Gir.B S.Femminile": "88820",
+    "Under 18 Gir.B S.Femminile": "86850",
+    "Under 16 Gir.A S.Femminile": "86853",
+    "Under 14 Gir.C S.Femminile": "86860",
+    "Under 13 Gir.B S.Femminile": "88820",
 }
 
-# OVERRIDE FASI FINALI (Inserisci qui il nome del girone e il nuovo ID delle finali)
+# OVERRIDE FASI FINALI (Aggiornato con U19M)
 CAMPIONATI_FINALI = {
-    "U18 Gir.B S.Femminile": "89371",
-	"U19 Gir.A S.Maschile": "89301",
+    "Under 18 Gir.B S.Femminile": "89371",
+    "Under 19 Gir.A S.Maschile": "89301",
 }
 
 # CLASSIFICHE AVULSE
 CAMPIONATI_AVULSI = {
     "Serie C  Gir.A S.Femminile": "85473",
-    "U14 Gir.C S.Femminile": "86858",
-    "U16 Gir.A S.Femminile": "86853",
-    "U18 Gir.B S.Femminile": "86849",
+    "Under 14 Gir.C S.Femminile": "86858",
+    "Under 16 Gir.A S.Femminile": "86853",
+    "Under 18 Gir.B S.Femminile": "86849",
     "Serie D  Gir.C S.Maschile": "85620",
-    "U19 Gir.A S.Maschile": "86865",
+    "Under 19 Gir.A S.Maschile": "86865",
 }
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 
-# ================= CSS E SCRIPT =================
+# ================= 2. FUNZIONI HELPER (Definite prima degli usi) =================
+
+def is_target_team(team_name):
+    if pd.isna(team_name) or not str(team_name).strip(): return False
+    name_clean = str(team_name).upper().strip()
+    for alias in TARGET_TEAM_ALIASES:
+        if alias.upper() in name_clean: return True
+    return False
+
+def create_google_calendar_link(row):
+    if not row['DataISO']: return ""
+    title = quote(f"🏐 {row['Squadra Casa']} vs {row['Squadra Ospite']}")
+    location = quote(row['Impianto']) if row['Impianto'] else ""
+    time_match = re.search(r'⏰\s*(\d{1,2}[:\.]\d{2})', row['Data'])
+    if time_match:
+        ora_str = time_match.group(1).replace('.', ':')
+        try:
+            dt_start = datetime.strptime(f"{row['DataISO']} {ora_str}", "%Y-%m-%d %H:%M")
+            dt_end = dt_start + timedelta(hours=2)
+            dates = f"{dt_start.strftime('%Y%m%dT%H%M00')}/{dt_end.strftime('%Y%m%dT%H%M00')}"
+        except: dates = f"{row['DataISO'].replace('-','')}T120000/{row['DataISO'].replace('-','')}T140000"
+    else:
+        date_clean = row['DataISO'].replace('-', '')
+        dates = f"{date_clean}/{date_clean}"
+    return f"https://www.google.com/calendar/render?action=TEMPLATE&text={title}&dates={dates}&location={location}&details=Campionato+{quote(row['Campionato'])}"
+
+def create_whatsapp_link(row):
+    if row['Punteggio']:
+        text = f"🏐 *Risultato {row['Campionato']}*\n{row['Squadra Casa']} {row['Set Casa']} - {row['Set Ospite']} {row['Squadra Ospite']}"
+    else:
+        text = f"📅 *Gara {row['Campionato']}*\n{row['Data']}\n📍 {row['Impianto']}\n{row['Squadra Casa']} vs {row['Squadra Ospite']}"
+    return f"https://wa.me/?text={quote(text)}"
+
+def crea_card_html(r, camp, is_focus_mode=False):
+    is_home = is_target_team(r['Squadra Casa'])
+    is_away = is_target_team(r['Squadra Ospite'])
+    is_my_match = is_home or is_away
+    cs = 'class="team-info my-team-text"' if is_home else 'class="team-info"'
+    os = 'class="team-info my-team-text"' if is_away else 'class="team-info"'
+    status_class = "upcoming"
+    sc_val = r['Set Casa'] if r['Set Casa'] else "-"
+    so_val = r['Set Ospite'] if r['Set Ospite'] else "-"
+
+    if r['Punteggio']:
+        try:
+            sc, so = int(r['Set Casa']), int(r['Set Ospite'])
+            bg_c = "bg-green" if sc > so else "bg-red"
+            bg_o = "bg-green" if so > sc else "bg-red"
+            if is_my_match: status_class = "win" if ((is_home and sc > so) or (is_away and so > sc)) else "loss"
+            else:
+                status_class = "played"
+                bg_c, bg_o = "bg-gray", "bg-gray"
+            if r['Parziali'] and str(r['Parziali']).strip():
+                matches = re.findall(r'(\d+)\s*-\s*(\d+)', str(r['Parziali']))
+                if matches:
+                    partials_c = "".join([f'<div class="partial-badge">{p[0]}</div>' for p in matches])
+                    partials_o = "".join([f'<div class="partial-badge">{p[1]}</div>' for p in matches])
+                    sc_val = f'<div class="scores-wrapper"><div class="partials-inline">{partials_c}</div><div class="set-total {bg_c}">{sc}</div></div>'
+                    so_val = f'<div class="scores-wrapper"><div class="partials-inline">{partials_o}</div><div class="set-total {bg_o}">{so}</div></div>'
+        except: status_class = "played"
+    
+    btns_html = f'<a href="{r["Maps"]}" target="_blank" class="btn btn-map">📍 Mappa</a>' if r['Maps'] else ""
+    if is_my_match or not is_focus_mode:
+        if not r['Punteggio']: btns_html += f'<a href="{create_google_calendar_link(r)}" target="_blank" class="btn btn-cal">📅</a>'
+        btns_html += f'<a href="{create_whatsapp_link(r)}" target="_blank" class="btn btn-wa">💬</a>'
+
+    return f"""
+    <div class="match-card {status_class}" data-date-iso="{r['DataISO']}" data-camp="{camp}" data-my-team="{str(is_my_match).lower()}">
+        <div class="match-header"><span>📅 {r['Data']}</span> <span>|</span> <span>{r['Giornata']}</span></div>
+        <div class="teams">
+            <div class="team-row"><span {cs}>{r['Squadra Casa']}</span>{sc_val}</div>
+            <div class="team-row"><span {os}>{r['Squadra Ospite']}</span>{so_val}</div>
+        </div>
+        <div class="match-footer" onclick="event.stopPropagation()">
+            <span class="gym-name">🏟️ {r['Impianto']}</span>
+            <div class="action-buttons">{btns_html}</div>
+        </div>
+    </div>
+    """
+
+# ================= 3. CSS E SCRIPT =================
 CSS_BASE = """
 <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -248,79 +333,8 @@ CSS_BASE = """
 </script>
 """
 
-# ================= HELPER FUNCTIONS =================
-def create_google_calendar_link(row):
-    if not row['DataISO']: return ""
-    title = quote(f"🏐 {row['Squadra Casa']} vs {row['Squadra Ospite']}")
-    location = quote(row['Impianto']) if row['Impianto'] else ""
-    time_match = re.search(r'⏰\s*(\d{1,2}[:\.]\d{2})', row['Data'])
-    if time_match:
-        ora_str = time_match.group(1).replace('.', ':')
-        try:
-            dt_start = datetime.strptime(f"{row['DataISO']} {ora_str}", "%Y-%m-%d %H:%M")
-            dt_end = dt_start + timedelta(hours=2)
-            dates = f"{dt_start.strftime('%Y%m%dT%H%M00')}/{dt_end.strftime('%Y%m%dT%H%M00')}"
-        except: dates = f"{row['DataISO'].replace('-','')}T120000/{row['DataISO'].replace('-','')}T140000"
-    else:
-        date_clean = row['DataISO'].replace('-', '')
-        dates = f"{date_clean}/{date_clean}"
-    return f"https://www.google.com/calendar/render?action=TEMPLATE&text={title}&dates={dates}&location={location}&details=Campionato+{quote(row['Campionato'])}"
+# ================= 4. SCRAPING (Versione Robusta) =================
 
-def create_whatsapp_link(row):
-    if row['Punteggio']:
-        text = f"🏐 *Risultato {row['Campionato']}*\n{row['Squadra Casa']} {row['Set Casa']} - {row['Set Ospite']} {row['Squadra Ospite']}"
-    else:
-        text = f"📅 *Gara {row['Campionato']}*\n{row['Data']}\n📍 {row['Impianto']}\n{row['Squadra Casa']} vs {row['Squadra Ospite']}"
-    return f"https://wa.me/?text={quote(text)}"
-
-def crea_card_html(r, camp, is_focus_mode=False):
-    is_home = is_target_team(r['Squadra Casa'])
-    is_away = is_target_team(r['Squadra Ospite'])
-    is_my_match = is_home or is_away
-    cs = 'class="team-info my-team-text"' if is_home else 'class="team-info"'
-    os = 'class="team-info my-team-text"' if is_away else 'class="team-info"'
-    status_class = "upcoming"
-    sc_val = r['Set Casa'] if r['Set Casa'] else "-"
-    so_val = r['Set Ospite'] if r['Set Ospite'] else "-"
-
-    if r['Punteggio']:
-        try:
-            sc, so = int(r['Set Casa']), int(r['Set Ospite'])
-            bg_c = "bg-green" if sc > so else "bg-red"
-            bg_o = "bg-green" if so > sc else "bg-red"
-            if is_my_match: status_class = "win" if ((is_home and sc > so) or (is_away and so > sc)) else "loss"
-            else:
-                status_class = "played"
-                bg_c, bg_o = "bg-gray", "bg-gray"
-            if r['Parziali'] and str(r['Parziali']).strip():
-                matches = re.findall(r'(\d+)\s*-\s*(\d+)', str(r['Parziali']))
-                if matches:
-                    partials_c = "".join([f'<div class="partial-badge">{p[0]}</div>' for p in matches])
-                    partials_o = "".join([f'<div class="partial-badge">{p[1]}</div>' for p in matches])
-                    sc_val = f'<div class="scores-wrapper"><div class="partials-inline">{partials_c}</div><div class="set-total {bg_c}">{sc}</div></div>'
-                    so_val = f'<div class="scores-wrapper"><div class="partials-inline">{partials_o}</div><div class="set-total {bg_o}">{so}</div></div>'
-        except: status_class = "played"
-    
-    btns_html = f'<a href="{r["Maps"]}" target="_blank" class="btn btn-map">📍 Mappa</a>' if r['Maps'] else ""
-    if is_my_match or not is_focus_mode:
-        if not r['Punteggio']: btns_html += f'<a href="{create_google_calendar_link(r)}" target="_blank" class="btn btn-cal">📅</a>'
-        btns_html += f'<a href="{create_whatsapp_link(r)}" target="_blank" class="btn btn-wa">💬</a>'
-
-    return f"""
-    <div class="match-card {status_class}" data-date-iso="{r['DataISO']}" data-camp="{camp}" data-my-team="{str(is_my_match).lower()}">
-        <div class="match-header"><span>📅 {r['Data']}</span> <span>|</span> <span>{r['Giornata']}</span></div>
-        <div class="teams">
-            <div class="team-row"><span {cs}>{r['Squadra Casa']}</span>{sc_val}</div>
-            <div class="team-row"><span {os}>{r['Squadra Ospite']}</span>{so_val}</div>
-        </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ {r['Impianto']}</span>
-            <div class="action-buttons">{btns_html}</div>
-        </div>
-    </div>
-    """
-
-# ================= SCRAPING =================
 def get_match_details_robust(driver, match_url):
     data_ora_full, data_iso, luogo, link_maps, parziali_str = "Data da definire", "", "Impianto non definito", "", ""
     try:
@@ -351,7 +365,9 @@ def scrape_data():
     chrome_options = Options(); chrome_options.add_argument("--headless"); driver = webdriver.Chrome(options=chrome_options)
     all_results, all_standings, all_avulse = [], [], []
     
+    # 1. Risultati e Classifica Girone
     for nome_camp, id_camp in ALL_CAMPIONATI.items():
+        # Override se in Fasi Finali
         id_da_usare = CAMPIONATI_FINALI.get(nome_camp, id_camp)
         base_url = "https://www.fipavsalerno.it/mobile/"
         if "Serie" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/"
@@ -370,12 +386,14 @@ def scrape_data():
                         o = el.find('div', class_='squadraOspite').get_text(strip=True).replace(pt_o, '').strip()
                         d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, urljoin(base_url, el.get('href', '')))
                         all_results.append({'Campionato': nome_camp, 'Giornata': curr_giornata, 'Squadra Casa': c, 'Squadra Ospite': o, 'Punteggio': f"{pt_c}-{pt_o}" if pt_c else "", 'Data': d_ora, 'DataISO': d_iso, 'Impianto': luogo, 'Maps': maps, 'Set Casa': pt_c, 'Set Ospite': pt_o, 'Parziali': parziali})
+            
             driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
             tabs = pd.read_html(StringIO(driver.page_source))
             if tabs:
                 df_s = tabs[0]; df_s['Campionato'] = nome_camp; all_standings.append(df_s)
         except: pass
 
+    # 2. Classifiche Avulse
     for nome_camp, id_camp in CAMPIONATI_AVULSI.items():
         try:
             dominio = "fipavcampania.it" if "Serie" in nome_camp else "fipavsalerno.it"
@@ -393,7 +411,8 @@ def scrape_data():
     driver.quit()
     return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame(), pd.concat(all_avulse, ignore_index=True) if all_avulse else pd.DataFrame()
 
-# ================= GENERATORI PAGINE =================
+# ================= 5. GENERATORI PAGINE =================
+
 def genera_landing_page():
     print(f"📄 Generazione Landing Page...")
     html = f"""<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><meta name="theme-color" content="#d32f2f"><title>{NOME_VISUALIZZATO}</title><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="icon" type="image/png" href="{URL_LOGO}"><link rel="apple-touch-icon" href="{URL_LOGO}"><link rel="manifest" href="manifest.json">{CSS_BASE}</head><body><div class="app-header"><div class="header-left"><img src="{URL_LOGO}" alt="Logo" class="logo-main"><h1>{NOME_VISUALIZZATO}</h1></div><div class="nav-buttons"><a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a></div></div><div class="landing-container"><div class="instruction-text">Seleziona il settore:</div><div class="choice-card"><img src="{URL_SPLIT_IMG}" alt="Campionato" class="choice-img"><div class="click-overlay"><a href="{FILE_MALE}" class="click-area"></a><a href="{FILE_FEMALE}" class="click-area"></a></div></div><div class="social-section"><div class="social-icons"><a href="https://www.facebook.com/111542261731361?ref=_xav_ig_profile_page_web" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" class="social-icon-img"></a><a href="https://www.instagram.com/asdcspastena_volley/" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" class="social-icon-img"></a></div></div></div><div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"><br><span class="version-text">{APP_VERSION}</span><div class="footer-msg">{FOOTER_MSG}</div></div><div id="android-popup" class="install-popup"><div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Ufficiale</div><div style="font-size:13px;">Accedi ai risultati più velocemente e usa l'app a tutto schermo!</div><button class="btn-install-app" onclick="triggerAndroidInstall()">INSTALLA ORA</button><button class="btn-close-popup" onclick="closePopup('android-popup')">Magari più tardi</button></div><div id="ios-popup" class="install-popup"><div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa su iPhone</div><div style="font-size:13px; margin-bottom:10px;">1. Premi <b>Condividi</b> <span style="font-size:18px">📤</span><br>2. Seleziona <b>"Aggiungi alla schermata Home"</b> ➕</div><button class="btn-install-app" onclick="closePopup('ios-popup')">HO CAPITO</button></div></body></html>"""
@@ -422,7 +441,7 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target):
         df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
         html += '<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
         for _, r in df_c.iterrows():
-            cls = 'class="my-team-row"' if is_target_team(r['Squadra']) else ''
+            cls = 'class="my-team-row"' if is_target_team(r.get('Squadra')) else ''
             html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
         html += '</tbody></table></div></div>'
 
@@ -464,7 +483,7 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target):
         df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
         html += '<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
         for _, r in df_c.iterrows():
-            cls = 'class="my-team-row"' if is_target_team(r['Squadra']) else ''
+            cls = 'class="my-team-row"' if is_target_team(r.get('Squadra')) else ''
             html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
         html += '</tbody></table></div></div>'
         html += f'<h2>📅 Calendario</h2>'
@@ -481,6 +500,8 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target):
 def genera_segnapunti():
     html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Segnapunti</title>{SCOREBOARD_CODE}</head></html>'
     with open(FILE_SCORE, "w", encoding="utf-8") as f: f.write(html)
+
+# ================= 6. AVVIO =================
 
 if __name__ == "__main__":
     df_ris, df_class, df_avulse = scrape_data()
