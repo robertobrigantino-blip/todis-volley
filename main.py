@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v4.9
-# RELEASE NOTE: Fix NameError & Added U19M Finals Override
+# SOFTWARE VERSION: v5.0
+# RELEASE NOTE: Added Tournament Bracket Schema & Fixed SCOREBOARD_CODE error
 # ==============================================================================
 
 import pandas as pd
@@ -19,16 +19,11 @@ import os
 
 # ================= 1. CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v4.9 | Fasi Finali Provinciali 🏆"
+APP_VERSION = "v5.0 | Tabellone Finali 🏆"
 
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
                                                                         
-TARGET_TEAM_ALIASES = [
-    "TODIS PASTENA VOLLEY",
-    "TODIS CS PASTENA VOLLEY",
-    "TODIS C.S. PASTENA VOLLEY",
-    "CS PASTENA"
-]
+TARGET_TEAM_ALIASES = ["TODIS PASTENA VOLLEY", "TODIS CS PASTENA VOLLEY", "TODIS C.S. PASTENA VOLLEY", "CS PASTENA"]
 
 FILE_LANDING, FILE_MALE, FILE_FEMALE = "index.html", "maschile.html", "femminile.html"
 FILE_GEN_MALE, FILE_GEN_FEMALE, FILE_SCORE = "generale_m.html", "generale_f.html", "segnapunti.html"
@@ -49,7 +44,6 @@ CAMPIONATI_MASCHILI = {
     "Under 17 Gir.B S.Maschile": "86864",
     "Under 15 Gir.B S.Maschile": "86848",
 }
-
 CAMPIONATI_FEMMINILI = {
     "Serie C  Gir.A S.Femminile": "85471",
     "Under 18 Gir.B S.Femminile": "86850",
@@ -58,7 +52,7 @@ CAMPIONATI_FEMMINILI = {
     "Under 13 Gir.B S.Femminile": "88820",
 }
 
-# OVERRIDE FASI FINALI (Aggiornato con U19M)
+# OVERRIDE FASI FINALI
 CAMPIONATI_FINALI = {
     "Under 18 Gir.B S.Femminile": "89371",
     "Under 19 Gir.A S.Maschile": "89301",
@@ -76,7 +70,7 @@ CAMPIONATI_AVULSI = {
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 
-# ================= 2. FUNZIONI HELPER (Definite prima degli usi) =================
+# ================= 2. FUNZIONI HELPER =================
 
 def is_target_team(team_name):
     if pd.isna(team_name) or not str(team_name).strip(): return False
@@ -125,9 +119,7 @@ def crea_card_html(r, camp, is_focus_mode=False):
             bg_c = "bg-green" if sc > so else "bg-red"
             bg_o = "bg-green" if so > sc else "bg-red"
             if is_my_match: status_class = "win" if ((is_home and sc > so) or (is_away and so > sc)) else "loss"
-            else:
-                status_class = "played"
-                bg_c, bg_o = "bg-gray", "bg-gray"
+            else: status_class = "played"; bg_c, bg_o = "bg-gray", "bg-gray"
             if r['Parziali'] and str(r['Parziali']).strip():
                 matches = re.findall(r'(\d+)\s*-\s*(\d+)', str(r['Parziali']))
                 if matches:
@@ -156,7 +148,8 @@ def crea_card_html(r, camp, is_focus_mode=False):
     </div>
     """
 
-# ================= 3. CSS E SCRIPT =================
+# ================= 3. CODICE PAGINE (CSS / SCOREBOARD / BRACKET) =================
+
 CSS_BASE = """
 <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -172,25 +165,22 @@ CSS_BASE = """
     .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
     .calendar-container.has-events::after { content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; z-index: 11; }
     @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
-    .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 5px 0; overflow: hidden; }
-    .instruction-text { font-weight: 700; color: #555; font-size: 11px; text-transform: uppercase; margin: 0; }
-    .choice-card { position: relative; width: 92%; max-width: 450px; display: flex; justify-content: center; align-items: center; }
-    .choice-img { width: 100%; height: auto; max-height: 58vh; object-fit: contain; display: block; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-    .click-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; border-radius: 15px; overflow: hidden; }
-    .click-area { width: 50%; height: 100%; cursor: pointer; }
-    .social-section { text-align: center; margin: 5px 0; } 
-    .social-icons { display: flex; justify-content: center; gap: 30px; }
-    .social-icon-img { width: 34px; height: 34px; }
+    
+    /* Bracket Schema */
+    .bracket-container { width: 100%; overflow-x: auto; margin-bottom: 20px; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .bracket-table { width: 100%; border-collapse: collapse; min-width: 600px; font-size: 11px; }
+    .bracket-table th { background: #eee; border: 1px solid #ddd; padding: 5px; font-weight: bold; }
+    .bracket-table td { border: 1px solid #ddd; padding: 10px 5px; text-align: center; vertical-align: middle; height: 60px; }
+    .highlight-match { background-color: #ffff00; font-weight: bold; border: 2px solid #000 !important; color: #000; }
+
+    .finals-banner { background: linear-gradient(45deg, #ffd700, #ff8f00); color: #000; padding: 12px; border-radius: 8px; text-align: center; font-weight: 900; margin-bottom: 15px; border: 2px solid #000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); text-transform: uppercase; font-size: 13px; letter-spacing: 1px; }
     .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; flex-shrink: 0; scrollbar-width: none; }
     .tab-bar::-webkit-scrollbar { display: none; } 
     .tab-btn { flex: 1; padding: 10px 8px; text-align: center; background: none; border: none; font-size: 11px; font-weight: 600; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 85px; text-transform: uppercase; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
     .tab-content { display: none; padding: 15px; width: 100%; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
     .tab-content.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
-    
-    .finals-banner { background: linear-gradient(45deg, #ffd700, #ff8f00); color: #000; padding: 12px; border-radius: 8px; text-align: center; font-weight: 900; margin-bottom: 15px; border: 2px solid #000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); text-transform: uppercase; font-size: 13px; letter-spacing: 1px; }
 
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; width: 100%; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
@@ -203,7 +193,7 @@ CSS_BASE = """
     th:not(:nth-child(-n+3)), td:not(:nth-child(-n+3)) { width: 28px; font-size: 9px; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
     .my-team-row td:nth-child(2) { background-color: #fff3e0 !important; }
-    
+
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; width: 100%; }
     .match-card.win { border-left-color: #2e7d32; } .match-card.loss { border-left-color: #c62828; } .match-card.upcoming { border-left-color: #ff9800; } 
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 10px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; }
@@ -333,41 +323,147 @@ CSS_BASE = """
 </script>
 """
 
-# ================= 4. SCRAPING (Versione Robusta) =================
+SCOREBOARD_CODE = """
+<style>
+    body { background-color: #121212; color: white; overflow: hidden; margin: 0; padding: 0; }
+    .rotate-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; }
+    @media (orientation: portrait) { .rotate-overlay { display: flex; } .sb-container { display: none; } }
+    .sb-container { display: grid; grid-template-columns: 1fr 180px 1fr; height: 100vh; width: 100vw; }
+    .team-panel { display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; cursor: pointer; transition: background 0.2s; }
+    .team-home { background-color: #1e3a8a; border-right: 2px solid #333; }
+    .team-guest { background-color: #b91c1c; border-left: 2px solid #333; }
+    .team-home:active, .team-guest:active { opacity: 0.9; }
+    .team-name-input { background: transparent; border: none; color: rgba(255,255,255,0.8); font-size: 24px; font-weight: bold; text-align: center; width: 80%; margin-bottom: 10px; text-transform: uppercase; }
+    .score-display { font-size: 180px; font-weight: 800; line-height: 1; user-select: none; }
+    .service-ball { font-size: 30px; position: absolute; top: 20px; opacity: 0.1; transition: opacity 0.3s; }
+    .serving .service-ball { opacity: 1; }
+    .center-panel { background-color: #222; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 10px 5px; }
+    .sets-box { text-align: center; margin-top: 5px; }
+    .sets-label { font-size: 10px; color: #888; letter-spacing: 2px; }
+    .sets-score { font-size: 35px; font-weight: bold; color: #fff; }
+    .current-set-badge { background: #d32f2f; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-top: 5px; }
+    .timer-box { text-align: center; }
+    .timer-val { font-size: 28px; font-family: monospace; font-weight: bold; color: #fbbf24; }
+    .btn-timer { background: #444; border: none; color: white; padding: 5px 15px; border-radius: 5px; margin-top: 5px; cursor: pointer; }
+    .controls-bottom { display: flex; flex-direction: column; gap: 8px; width: 90%; margin-bottom: 10px; }
+    .btn-ctrl { padding: 8px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; color: white; font-size: 12px; text-decoration: none; text-align: center; display: block; box-sizing: border-box; font-family: inherit; }
+    .btn-reset { background: #546e7a; }
+    .btn-exit { background: #333; border: 1px solid #555; }
+    .btn-fs { background: #000; border: 1px solid #444; }
+    .fine-tune { display: flex; gap: 20px; margin-top: 10px; }
+    .btn-tune { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); background: transparent; color: white; font-size: 20px; cursor: pointer; }
+</style>
+<div class="rotate-overlay"><div style="font-size: 50px;">🔄</div><h2>Ruota il dispositivo</h2><p>Il segnapunti funziona in orizzontale</p></div>
+<div class="sb-container">
+    <div class="team-panel team-home" id="colHome" onclick="addPoint('Home')">
+        <div class="service-ball">🏐</div>
+        <input type="text" class="team-name-input" value="CASA">
+        <div class="score-display" id="scoreHome">0</div>
+        <div class="fine-tune">
+            <button class="btn-tune" onclick="adjScore('Home', -1); event.stopPropagation()">-</button>
+            <button class="btn-tune" onclick="adjScore('Home', 1); event.stopPropagation()">+</button>
+        </div>
+    </div>
+    <div class="center-panel">
+        <div class="sets-box"><div class="sets-label">SETS</div><div class="sets-score"><span id="setsHome">0</span> - <span id="setsGuest">0</span></div><div class="current-set-badge" id="setNum">SET 1</div></div>
+        <div class="timer-box"><div class="timer-val" id="timer">00:00</div><button class="btn-timer" onclick="toggleTimer()" id="btnTimer">START</button></div>
+        <div class="controls-bottom">
+            <button class="btn-ctrl" style="background:#2e7d32;" onclick="setServiceManual()">Battuta</button>
+            <button class="btn-ctrl btn-fs" onclick="toggleFullScreen()">⛶ Full</button>
+            <button class="btn-ctrl btn-reset" onclick="resetMatch()">Reset</button>
+            <a href="index.html" class="btn-ctrl btn-exit">Esci</a>
+        </div>
+    </div>
+    <div class="team-panel team-guest" id="colGuest" onclick="addPoint('Guest')">
+        <div class="service-ball">🏐</div>
+        <input type="text" class="team-name-input" value="OSPITI">
+        <div class="score-display" id="scoreGuest">0</div>
+        <div class="fine-tune">
+            <button class="btn-tune" onclick="adjScore('Guest', -1); event.stopPropagation()">-</button>
+            <button class="btn-tune" onclick="adjScore('Guest', 1); event.stopPropagation()">+</button>
+        </div>
+    </div>
+</div>
+<script>
+    let scoreH = 0, scoreG = 0; let setsH = 0, setsG = 0; let currentSet = 1; let timerInt = null; let seconds = 0; let serving = null; 
+    async function lockScreen() { try { await navigator.wakeLock.request('screen'); } catch(e){} }
+    document.addEventListener('click', lockScreen, {once:true});
+    function toggleFullScreen() { if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(e => { console.log(e); }); } else { if (document.exitFullscreen) document.exitFullscreen(); } }
+    function addPoint(team) { if(team === 'Home') scoreH++; else scoreG++; serving = team; updateUI(); checkSetWin(); }
+    function adjScore(team, delta) { if(team === 'Home') scoreH = Math.max(0, scoreH + delta); else scoreG = Math.max(0, scoreG + delta); updateUI(); }
+    function setServiceManual() { if (serving === 'Home') serving = 'Guest'; else serving = 'Home'; updateUI(); }
+    function checkSetWin() {
+        let limit = (currentSet === 5) ? 15 : 25;
+        if ((scoreH >= limit && scoreH >= scoreG + 2) || (scoreG >= limit && scoreG >= scoreH + 2)) {
+            let winner = (scoreH > scoreG) ? "CASA" : "OSPITI";
+            setTimeout(() => {
+                if (confirm(`SET TERMINATO!\\nVince: ${winner}\\n\\nIniziare il prossimo set?`)) {
+                    if (scoreH > scoreG) setsH++; else setsG++;
+                    if (setsH === 3 || setsG === 3) { alert(`PARTITA FINITA!\\nVince: ${winner}`); } 
+                    else { currentSet++; scoreH = 0; scoreG = 0; stopTimer(); seconds = 0; updateTimer(); updateUI(); }
+                }
+            }, 100);
+        }
+    }
+    function resetMatch() { if(!confirm("Sicuro di voler azzerare tutto?")) return; scoreH = 0; scoreG = 0; setsH = 0; setsG = 0; currentSet = 1; seconds = 0; stopTimer(); updateTimer(); updateUI(); }
+    function updateUI() {
+        document.getElementById('scoreHome').innerText = scoreH; document.getElementById('scoreGuest').innerText = scoreG;
+        document.getElementById('setsHome').innerText = setsH; document.getElementById('setsGuest').innerText = setsG;
+        document.getElementById('setNum').innerText = "SET " + currentSet;
+        document.getElementById('colHome').classList.remove('serving'); document.getElementById('colGuest').classList.remove('serving');
+        if(serving) document.getElementById('col' + serving).classList.add('serving');
+    }
+    function toggleTimer() { if(timerInt) stopTimer(); else startTimer(); }
+    function startTimer() { document.getElementById('btnTimer').innerText = "STOP"; document.getElementById('btnTimer').style.background = "#d32f2f"; timerInt = setInterval(() => { seconds++; updateTimer(); }, 1000); }
+    function stopTimer() { clearInterval(timerInt); timerInt = null; document.getElementById('btnTimer').innerText = "START"; document.getElementById('btnTimer').style.background = "#444"; }
+    function updateTimer() { const m = Math.floor(seconds / 60).toString().padStart(2, '0'); const s = (seconds % 60).toString().padStart(2, '0'); document.getElementById('timer').innerText = `${m}:${s}`; }
+</script>
+"""
 
-def get_match_details_robust(driver, match_url):
-    data_ora_full, data_iso, luogo, link_maps, parziali_str = "Data da definire", "", "Impianto non definito", "", ""
-    try:
-        driver.get(match_url)
-        WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-        clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
-        date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:\.]\d{2})', clean_text)
-        if date_pattern:
-            d, o = date_pattern.group(1), date_pattern.group(2)
-            data_ora_full = f"{d} ⏰ {o}"
-            try: data_iso = datetime.strptime(d, "%d/%m/%Y").strftime("%Y-%m-%d")
-            except: pass
-        imp = soup.find('div', class_='divImpianto')
-        if imp: luogo = imp.get_text(strip=True)
-        a_map = soup.find('a', href=lambda x: x and ('google.com/maps' in x or 'maps.google' in x))
-        if a_map: link_maps = a_map['href']
-        elif luogo != "Impianto non definito": link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(luogo)}"
-        div_casa = soup.find('div', id='risultatoCasa'); div_ospite = soup.find('div', id='risultatoOspite')
-        if div_casa and div_ospite:
-            nums_casa = [d.get_text(strip=True) for d in div_casa.find_all('div', class_='parziale') if re.search(r'\d+', d.get_text())]
-            nums_ospite = [d.get_text(strip=True) for d in div_ospite.find_all('div', class_='parziale') if re.search(r'\d+', d.get_text())]
-            parziali_str = ",".join([f"{nums_casa[i]}-{nums_ospite[i]}" for i in range(min(len(nums_casa), len(nums_ospite)))])
-    except: pass
-    return data_ora_full, data_iso, luogo, link_maps, parziali_str
+BRACKET_HTML = """
+<div class="bracket-container">
+    <table class="bracket-table">
+        <thead>
+            <tr>
+                <th>CAMPO 1</th>
+                <th>CAMPO 2</th>
+                <th>CAMPO 3</th>
+                <th>CAMPO 4</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="highlight-match">QF1: 1° Class. Avulsa vs 8° Class. Avulsa</td>
+                <td class="highlight-match">QF2: 2° Class. Avulsa vs 7° Class. Avulsa</td>
+                <td class="highlight-match">QF3: 3° Class. Avulsa vs 6° Class. Avulsa</td>
+                <td class="highlight-match">QF4: 4° Class. Avulsa vs 5° Class. Avulsa</td>
+            </tr>
+            <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr>
+                <td class="highlight-match">SF1: Vinc. QF1 vs Vinc. QF4</td>
+                <td class="highlight-match">SF2: Vinc. QF2 vs Vinc. QF3</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr>
+                <td class="highlight-match">FINALE 1°-2° POSTO: Vinc. SF1 vs Vinc. SF2</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+"""
+
+# ================= 4. SCRAPING =================
 
 def scrape_data():
     chrome_options = Options(); chrome_options.add_argument("--headless"); driver = webdriver.Chrome(options=chrome_options)
     all_results, all_standings, all_avulse = [], [], []
     
-    # 1. Risultati e Classifica Girone
     for nome_camp, id_camp in ALL_CAMPIONATI.items():
-        # Override se in Fasi Finali
         id_da_usare = CAMPIONATI_FINALI.get(nome_camp, id_camp)
         base_url = "https://www.fipavsalerno.it/mobile/"
         if "Serie" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/"
@@ -393,7 +489,6 @@ def scrape_data():
                 df_s = tabs[0]; df_s['Campionato'] = nome_camp; all_standings.append(df_s)
         except: pass
 
-    # 2. Classifiche Avulse
     for nome_camp, id_camp in CAMPIONATI_AVULSI.items():
         try:
             dominio = "fipavcampania.it" if "Serie" in nome_camp else "fipavsalerno.it"
@@ -414,7 +509,6 @@ def scrape_data():
 # ================= 5. GENERATORI PAGINE =================
 
 def genera_landing_page():
-    print(f"📄 Generazione Landing Page...")
     html = f"""<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><meta name="theme-color" content="#d32f2f"><title>{NOME_VISUALIZZATO}</title><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="icon" type="image/png" href="{URL_LOGO}"><link rel="apple-touch-icon" href="{URL_LOGO}"><link rel="manifest" href="manifest.json">{CSS_BASE}</head><body><div class="app-header"><div class="header-left"><img src="{URL_LOGO}" alt="Logo" class="logo-main"><h1>{NOME_VISUALIZZATO}</h1></div><div class="nav-buttons"><a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a></div></div><div class="landing-container"><div class="instruction-text">Seleziona il settore:</div><div class="choice-card"><img src="{URL_SPLIT_IMG}" alt="Campionato" class="choice-img"><div class="click-overlay"><a href="{FILE_MALE}" class="click-area"></a><a href="{FILE_FEMALE}" class="click-area"></a></div></div><div class="social-section"><div class="social-icons"><a href="https://www.facebook.com/111542261731361?ref=_xav_ig_profile_page_web" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" class="social-icon-img"></a><a href="https://www.instagram.com/asdcspastena_volley/" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" class="social-icon-img"></a></div></div></div><div class="footer-counter"><img src="{URL_COUNTER}" alt="Visite"><br><span class="version-text">{APP_VERSION}</span><div class="footer-msg">{FOOTER_MSG}</div></div><div id="android-popup" class="install-popup"><div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Ufficiale</div><div style="font-size:13px;">Accedi ai risultati più velocemente e usa l'app a tutto schermo!</div><button class="btn-install-app" onclick="triggerAndroidInstall()">INSTALLA ORA</button><button class="btn-close-popup" onclick="closePopup('android-popup')">Magari più tardi</button></div><div id="ios-popup" class="install-popup"><div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa su iPhone</div><div style="font-size:13px; margin-bottom:10px;">1. Premi <b>Condividi</b> <span style="font-size:18px">📤</span><br>2. Seleziona <b>"Aggiungi alla schermata Home"</b> ➕</div><button class="btn-install-app" onclick="closePopup('ios-popup')">HO CAPITO</button></div></body></html>"""
     with open(FILE_LANDING, "w", encoding="utf-8") as f: f.write(html)
 
@@ -436,6 +530,8 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target):
         html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
         if camp in CAMPIONATI_FINALI:
             html += f'<div class="finals-banner">🏆 Fasi Finali Provinciali</div>'
+            html += BRACKET_HTML # AGGIUNTA TABELLONE SCHEMATICO
+
         titolo_class = "🏆 Classifica Girone (Concluso)" if camp in CAMPIONATI_FINALI else "🏆 Classifica Girone"
         html += f"<h2>{titolo_class}</h2>"
         df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
@@ -500,8 +596,6 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target):
 def genera_segnapunti():
     html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Segnapunti</title>{SCOREBOARD_CODE}</head></html>'
     with open(FILE_SCORE, "w", encoding="utf-8") as f: f.write(html)
-
-# ================= 6. AVVIO =================
 
 if __name__ == "__main__":
     df_ris, df_class, df_avulse = scrape_data()
