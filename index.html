@@ -1,313 +1,64 @@
-<!DOCTYPE html>
-    <html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <meta name="theme-color" content="#d32f2f">
-        <title>TODIS PASTENA VOLLEY</title>
-        
-        <!-- PWA Meta Tags -->
-        <meta name="mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="apple-mobile-web-app-title" content="PastenaVolley">
-        
-        <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
-        <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
-        <link rel="manifest" href="manifest.json">
-        
-        
+<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>TODIS PASTENA VOLLEY</title><link rel="manifest" href="manifest.json">
 <style>
-    /* 1. RESET E LAYOUT BASE */
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; background-color: #f0f2f5; color: #333; overflow-x: hidden; }
     body { display: flex; flex-direction: column; }
-
-    /* 2. HEADER E NOTIFICA CALENDARIO */
     .app-header { background-color: #d32f2f; color: white; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); height: 60px; flex-shrink: 0; z-index: 1000; position: sticky; top: 0; }
-    .header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .header-left { display: flex; align-items: center; gap: 10px; }
     .app-header img.logo-main { height: 40px; width: 40px; border-radius: 50%; border: 2px solid white; object-fit: cover; }
-    .app-header h1 { margin: 0; font-size: 13px; text-transform: uppercase; line-height: 1.1; font-weight: 700; }   
+    .app-header h1 { margin: 0; font-size: 13px; text-transform: uppercase; font-weight: 700; }   
     .nav-buttons { display: flex; gap: 8px; align-items: center; }
-    .nav-icon-img { height: 42px; width: auto; transition: transform 0.1s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
-    
+    .nav-icon-img { height: 42px; width: auto; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); }
     .calendar-container { position: relative; display: none; }
-    .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
-    .calendar-container.has-events::after { 
-        content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; 
-        background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; z-index: 11; 
-    }
-    @keyframes pulse-icon { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
-
-    /* 3. LANDING PAGE */
-    .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 5px 0; overflow: hidden; }
-    .instruction-text { font-weight: 700; color: #555; font-size: 11px; text-transform: uppercase; margin: 0; }
-    .choice-card { position: relative; width: 92%; max-width: 450px; display: flex; justify-content: center; align-items: center; }
-    .choice-img { width: 100%; height: auto; max-height: 58vh; object-fit: contain; display: block; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-    .click-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; border-radius: 15px; overflow: hidden; }
+    .calendar-container.has-events { display: inline-block; animation: pulse 2s infinite; }
+    .calendar-container.has-events::after { content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+    .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 5px 0; }
+    .choice-card { position: relative; width: 92%; max-width: 450px; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .choice-img { width: 100%; height: auto; max-height: 58vh; object-fit: contain; display: block; }
+    .click-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; }
     .click-area { width: 50%; height: 100%; cursor: pointer; }
-    .social-section { text-align: center; margin: 5px 0; } 
-    .social-icons { display: flex; justify-content: center; gap: 30px; }
-    .social-icon-img { width: 34px; height: 34px; }
-
-    /* 4. MENU TABS */
-    .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; flex-shrink: 0; scrollbar-width: none; }
-    .tab-bar::-webkit-scrollbar { display: none; } 
-    .tab-btn { flex: 1; padding: 10px 8px; text-align: center; background: none; border: none; font-size: 11px; font-weight: 600; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 85px; text-transform: uppercase; }
-    .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
-    
-    /* 5. TABELLE CLASSIFICA (Blindate) */
-    .tab-content { display: none; padding: 15px; width: 100%; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
+    .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; border-bottom: 1px solid #eee; flex-shrink: 0; }
+    .tab-btn { flex: 1; padding: 10px 8px; font-size: 11px; font-weight: 600; color: #666; border: none; background: none; border-bottom: 3px solid transparent; min-width: 85px; text-transform: uppercase; }
+    .tab-btn.active { color: #d32f2f; border-bottom-color: #d32f2f; font-weight: bold; }
+    .tab-content { display: none; padding: 15px; width: 100%; max-width: 800px; margin: 0 auto; }
     .tab-content.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin-top: 15px; margin-bottom: 12px; }
-
+    h2 { color: #d32f2f; font-size: 16px; border-left: 4px solid #d32f2f; padding-left: 8px; margin: 15px 0; }
     .table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; width: 100%; }
-    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
+    .table-scroll { overflow-x: auto; width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
     th, td { padding: 8px 4px; text-align: center; border-bottom: 1px solid #f0f0f0; }
-    th { background-color: #ffebee; color: #c62828; font-weight: bold; text-transform: uppercase; font-size: 10px; }
-    th:nth-child(1), td:nth-child(1) { width: 30px; }
-    th:nth-child(2), td:nth-child(2) { width: 120px; text-align: left; position: sticky; left: 0; background-color: white; z-index: 10; border-right: 1px solid #eee; white-space: normal; word-wrap: break-word; line-height: 1.2; }
-    th:nth-child(3), td:nth-child(3) { width: 35px; font-weight: 800; background-color: #fafafa; }
-    th:not(:nth-child(-n+3)), td:not(:nth-child(-n+3)) { width: 28px; font-size: 9px; }
+    th { background-color: #ffebee; color: #c62828; font-weight: bold; }
+    td:nth-child(2) { text-align: left; width: 120px; position: sticky; left: 0; background: white; white-space: normal; line-height: 1.2; z-index: 2; }
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
-    .my-team-row td:nth-child(2) { background-color: #fff3e0 !important; }
-
-    /* 6. MATCH CARDS & LAYOUT SETS (FIX ORIZZONTALE) */
-    .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; width: 100%; }
-    .match-card.win { border-left-color: #2e7d32; } .match-card.loss { border-left-color: #c62828; } .match-card.upcoming { border-left-color: #ff9800; } 
-    .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 10px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; }
-    .team-row { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; margin-bottom: 8px; }
-    .team-info { flex: 1; min-width: 0; font-size: 14px; line-height: 1.2; white-space: normal; word-wrap: break-word; }
-    .my-team-text { color: #d32f2f; font-weight: 700; }
-
-    /* Fix Punteggi: Forza Allineamento Orizzontale */
-    .scores-wrapper { display: flex !important; flex-direction: row !important; align-items: center !important; gap: 6px; flex-shrink: 0; }
-    .partials-inline { display: flex !important; flex-direction: row !important; gap: 3px; }
-    .partial-badge { width: 22px; height: 22px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; flex-shrink: 0; }
-    .set-total { width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; flex-shrink: 0; }
-    .bg-green { background-color: #2e7d32; } .bg-red { background-color: #c62828; } .bg-gray { background-color: #78909c; }
-
-    .match-footer { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f5f5f5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
-    .gym-name { font-size: 9px; color: #666; width: 100%; margin-bottom: 5px; flex: 1; }
-    .action-buttons { display: flex; gap: 5px; justify-content: flex-end; }
-    .btn { text-decoration: none; padding: 4px 8px; border-radius: 12px; font-size: 9px; font-weight: bold; display: flex; align-items: center; gap: 3px; border: 1px solid transparent; }
-    .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
-    .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
-
-    /* 7. MODALI E TESTATA MODAL FIX */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-    .modal-content { background: white; width: 90%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 15px; overflow-y: auto; position: relative; }
-    .modal-header { display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; width: 100%; }
-    .modal-title { font-size: 16px; font-weight: bold; color: #d32f2f; margin: 0; }
-    .close-btn { background: #eee; border: none; font-size: 22px; padding: 2px 10px; border-radius: 6px; color: #333; cursor: pointer; line-height: 1; }
-
-    .calendar-controls { display: flex; gap: 8px; margin-bottom: 12px; justify-content: flex-end; position: relative; z-index: 10; }
-    .btn-tool { font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; transition: 0.2s; z-index: 11; }
-    .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
-
-    /* 8. INSTALL POPUPS */
-    .install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 5000; width: 85%; max-width: 350px; text-align: center; display: none; border: 3px solid #d32f2f; animation: slideUp 0.5s ease-out; }
-    @keyframes slideUp { from { transform: translate(-50%, 150%); } to { transform: translate(-50%, 0); } }
-    .btn-install-app { background: #d32f2f; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; margin: 10px 0; font-size: 14px; cursor: pointer; }
-    .btn-close-popup { background: none; border: none; color: #999; text-decoration: underline; font-size: 12px; cursor: pointer; }
-
-    /* 9. FOOTER E PRINT */
-    .footer-counter { text-align: center; padding: 8px 0; background: white; border-top: 1px solid #eee; flex-shrink: 0; width: 100%; }
-    .footer-msg { font-size: 10px; color: #d32f2f; margin: 0; font-weight: bold; }
-
-    @media print {
-        html, body { height: auto !important; overflow: visible !important; display: block !important; background: white !important; }
-        .app-header, .tab-bar, .calendar-controls, .footer-counter, .install-popup, .btn-map, .btn-cal, .btn-wa, .close-btn { display: none !important; }
-        .tab-content { display: none !important; }
-        .tab-content.active { display: block !important; width: 100% !important; height: auto !important; }
-        .match-card { page-break-inside: avoid; border: 1px solid #ccc !important; }
-    }
+    .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; border-left: 4px solid #ddd; position: relative; }
+    .match-card.win { border-left-color: #2e7d32; } .match-card.loss { border-left-color: #c62828; }
+    .team-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .scores-wrapper { display: flex; align-items: center; gap: 6px; }
+    .partials-inline { display: flex; gap: 2px; }
+    .partial-badge { width: 22px; height: 22px; background: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+    .set-total { width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+    .bg-green { background: #2e7d32; } .bg-red { background: #c62828; } .bg-gray { background: #78909c; }
+    .btn { text-decoration: none; padding: 4px 8px; border-radius: 12px; font-size: 9px; font-weight: bold; display: inline-flex; align-items: center; gap: 3px; border: 1px solid transparent; margin-left: 4px; }
+    .btn-map { background: #e3f2fd; color: #1565c0; } .btn-cal { background: #f3e5f5; color: #7b1fa2; } .btn-wa { background: #e8f5e9; color: #2e7d32; }
+    .bracket-container { width: 100%; overflow-x: auto; margin-bottom: 20px; background: white; padding: 10px; border-radius: 8px; }
+    .bracket-table { width: 100%; border-collapse: collapse; min-width: 500px; font-size: 10px; }
+    .bracket-table td { border: 1px solid #ddd; padding: 5px; text-align: center; background: #fafafa; }
+    .highlight-match { background: #ffff00 !important; font-weight: bold; border: 2px solid #000 !important; }
+    .install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 5000; width: 85%; text-align: center; display: none; border: 2px solid #d32f2f; }
+    .footer-counter { text-align: center; padding: 15px 0; background: white; border-top: 1px solid #eee; }
 </style>
-
 <script>
-    /* PWA & INSTALLAZIONE */
-    let deferredPrompt;
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Error', err));
-        });
-    }
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        if (!/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())) {
-            setTimeout(() => { 
-                const p = document.getElementById('android-popup');
-                if(p) p.style.display = 'block'; 
-            }, 2000);
-        }
-    });
-
-    async function triggerAndroidInstall() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            await deferredPrompt.userChoice;
-            deferredPrompt = null;
-            closePopup('android-popup');
-        } else {
-            alert("Usa il menu di Chrome (3 puntini) e seleziona 'Installa App'.");
-        }
-    }
-
-    /* FUNZIONI GENERALI */
-    function closePopup(id) { document.getElementById(id).style.display = 'none'; }
-    function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
-    function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
-    function printCalendar() { window.print(); }
-
-    function openTab(tabIndex) {
-        var contents = document.getElementsByClassName("tab-content");
-        for (var i = 0; i < contents.length; i++) contents[i].classList.remove("active");
-        var buttons = document.getElementsByClassName("tab-btn");
-        for (var i = 0; i < buttons.length; i++) buttons[i].classList.remove("active");
-        document.getElementById("content-" + tabIndex).classList.add("active");
-        document.getElementById("btn-" + tabIndex).classList.add("active");
-    }
-
-    function tornaAlSettore() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const origin = urlParams.get('from');
-        if (origin === 'maschile') window.location.href = "maschile.html";
-        else if (origin === 'femminile') window.location.href = "femminile.html";
-        else window.location.href = "index.html";
-    }
-
-    var originalOrder = {};
-    function toggleSort(tabId) {
-        const container = document.getElementById('calendar-container-' + tabId);
-        const btn = document.getElementById('btn-sort-' + tabId);
-        const isSorted = btn.getAttribute('data-sorted') === 'true';
-        if (!originalOrder[tabId]) originalOrder[tabId] = container.innerHTML;
-        if (!isSorted) {
-            const cards = Array.from(container.querySelectorAll('.match-card'));		
-            container.querySelectorAll('h3').forEach(h => h.style.display = 'none');
-            cards.sort((a, b) => (a.getAttribute('data-date-iso') || '9999').localeCompare(b.getAttribute('data-date-iso') || '9999'));
-            container.innerHTML = "";
-            cards.forEach(card => container.appendChild(card));
-            btn.innerHTML = "🔢 Per Giornata";
-            btn.setAttribute('data-sorted', 'true');
-            btn.classList.add('active');
-        } else {
-            container.innerHTML = originalOrder[tabId];
-            btn.innerHTML = "📅 Per Data";
-            btn.setAttribute('data-sorted', 'false');
-            btn.classList.remove('active');
-        }
-    }
-
-    window.onload = function() {
-        // Pop-up iOS
-        const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
-        const isStandalone = window.navigator.standalone === true;
-        if (isIos && !isStandalone) {
-            setTimeout(() => { 
-                const p = document.getElementById('ios-popup');
-                if(p) p.style.display = 'block'; 
-            }, 3000);
-        }
-
-        // LOGICA NOTIFICHE E PALLINO GIALLO
-        if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
-            const today = new Date(); today.setHours(0,0,0,0);
-            let nextMatches = {};
-            document.querySelectorAll('.match-card.upcoming').forEach(card => {
-                if(card.getAttribute('data-my-team') === 'true') {	 
-                    const dateStr = card.getAttribute('data-date-iso');
-                    const campName = card.getAttribute('data-camp'); 
-                    const parts = dateStr.split('-');
-                    const matchDate = new Date(parts[0], parts[1]-1, parts[2]);
-                    if (matchDate >= today) {
-                        if (!nextMatches[campName] || matchDate < nextMatches[campName].date) {
-                            nextMatches[campName] = { date: matchDate, html: card.outerHTML };
-                        }
-                    }
-                }
-            });
-            let popupHTML = "";
-            for (const [camp, data] of Object.entries(nextMatches)) {
-                const campPulito = camp.replace(' S.Femminile', '').replace(' S.Maschile', '');
-                popupHTML += `<h3 style="color:#d32f2f; font-size:14px; margin-top:10px; border-bottom:1px solid #eee">🏆 ${campPulito}</h3>` + data.html;			   
-            }
-            if (popupHTML !== "") {
-                const modalBody = document.getElementById('modal-body');										 
-                if(modalBody) {
-                    modalBody.innerHTML = popupHTML;							 
-                    const btnCal = document.getElementById('btn-calendar');
-                    if(btnCal) {
-                        btnCal.style.display = 'inline-block';
-                        btnCal.classList.add('has-events'); // ATTIVA PALLINO
-                    }
-                }
-            }
-        }
+    function openTab(i){ document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.getElementById('content-'+i).classList.add('active'); document.getElementById('btn-'+i).classList.add('active'); }
+    function closePopup(id){ document.getElementById(id).style.display='none'; }
+    function openModal(){ document.getElementById('modal-overlay').style.display='flex'; }
+    function closeModal(){ document.getElementById('modal-overlay').style.display='none'; }
+    function printCalendar(){ window.print(); }
+    window.onload = function(){
+        if(navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) return;
+        const isIos = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
+        const p = isIos ? document.getElementById('ios-popup') : document.getElementById('android-popup');
+        if(p) setTimeout(()=>p.style.display='block', 3000);
     };
 </script>
-
-    </head>
-    <body>
-        <div class="app-header">
-            <div class="header-left">
-                <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" alt="Logo" class="logo-main">
-                <div><h1>TODIS PASTENA VOLLEY</h1></div>
-            </div>
-            <div class="nav-buttons">
-                <a href="segnapunti.html" title="Segnapunti"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a>
-            </div>
-        </div>
-        
-        <div class="landing-container">
-            <div class="instruction-text">Seleziona il settore:</div>
-            
-            <div class="choice-card">
-                <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/scelta_campionato.jpg" alt="Scelta Campionato" class="choice-img">
-                <div class="click-overlay">
-                    <a href="maschile.html" class="click-area"></a>
-                    <a href="femminile.html" class="click-area"></a>
-                </div>
-            </div>
-
-            <div class="social-section">
-                <div class="social-icons">
-                    <a href="https://www.facebook.com/111542261731361?ref=_xav_ig_profile_page_web" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" class="social-icon-img" alt="Facebook">
-                    </a>
-                    <a href="https://www.instagram.com/asdcspastena_volley/" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" class="social-icon-img" alt="Instagram">
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="footer-counter">
-            <img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f" alt="Visite"><br>
-            <span class="version-text">v4.6 | Stagione 25/26 - Ver. Finale 🏁</span>
-            <div class="footer-msg">🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐</div>
-        </div>
-
-        <!-- POPUP ANDROID -->
-        <div id="android-popup" class="install-popup">
-            <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Todis Volley</div>
-            <div style="font-size:13px; color:#555;">Accedi ai risultati più velocemente e usa l'app a tutto schermo!</div>
-            <button class="btn-install-app" onclick="triggerAndroidInstall()">INSTALLA ORA</button>
-            <button class="btn-close-popup" onclick="closePopup('android-popup')">Magari più tardi</button>
-        </div>
-
-        <!-- POPUP IOS -->
-        <div id="ios-popup" class="install-popup">
-            <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa su iPhone</div>
-            <div style="font-size:13px; color:#555; margin-bottom:10px;">
-                1. Premi il tasto <b>Condividi</b> <span style="font-size:18px">📤</span> (in basso al centro)<br>
-                2. Scorri e seleziona <b>"Aggiungi alla schermata Home"</b> <span style="font-size:18px">➕</span>
-            </div>
-            <button class="btn-install-app" onclick="closePopup('ios-popup')">HO CAPITO</button>
-        </div>
-    </body>
-    </html>
+</head><body><div class="app-header"><div class="header-left"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" class="logo-main"><h1>TODIS PASTENA VOLLEY</h1></div><div class="nav-buttons"><a href="segnapunti.html"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div></div><div class="landing-container"><div class="choice-card"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/scelta_campionato.jpg" class="choice-img"><div class="click-overlay"><a href="maschile.html" class="click-area"></a><a href="femminile.html" class="click-area"></a></div></div><div class="social-section"><div class="social-icons"><a href="https://facebook.com/111542261731361" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" class="social-icon-img"></a><a href="https://instagram.com/asdcspastena_volley/" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" class="social-icon-img"></a></div></div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v5.1 | Golden Release 🏆</span><div class="footer-msg">🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐</div></div><div id="android-popup" class="install-popup"><b>Installa l'App Ufficiale</b><br><button class="btn-install-app" onclick="alert('Usa il menu di Chrome > Installa App')">INSTALLA</button><br><button onclick="closePopup('android-popup')" style="border:none;background:none;color:#999">Più tardi</button></div></body></html>
