@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v4.8
-# RELEASE NOTE: Fix Scraping Calendario Fasi Finali (Rimozione vincolo contenitore Fipav)
+# SOFTWARE VERSION: v4.9
+# RELEASE NOTE: Rimozione Classifica per Fasi Finali a eliminazione diretta
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v4.8 | Stagione 25/26 - Fasi Finali 🏆"
+APP_VERSION = "v4.9 | Stagione 25/26 - Fasi Finali 🏆"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -582,7 +582,7 @@ def scrape_data():
         driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}")
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         
-        # FIX: Scansioniamo in ordine tutti gli elementi pertinenti (senza dipendere da wrapper invisibili)
+        # FIX: Scansioniamo in ordine tutti gli elementi pertinenti
         curr_giornata = "N/D"
         elementi = soup.find_all(['div', 'a'])
         
@@ -618,15 +618,16 @@ def scrape_data():
                     'Parziali': parziali
                 })
         
-        # Prova a scaricare la classifica
-        try:
-            driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
-            tabs = pd.read_html(StringIO(driver.page_source))
-            if tabs:
-                df_s = tabs[0]
-                df_s['Campionato'] = nome_camp
-                all_standings.append(df_s)
-        except: pass
+        # Prova a scaricare la classifica (la saltiamo completamente se è una fase finale)
+        if nome_camp not in FASI_FINALI:
+            try:
+                driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
+                tabs = pd.read_html(StringIO(driver.page_source))
+                if tabs:
+                    df_s = tabs[0]
+                    df_s['Campionato'] = nome_camp
+                    all_standings.append(df_s)
+            except: pass
 
     # 3. Scraping Classifiche Avulse (Multi-Dominio)
     for nome_camp, id_camp in CAMPIONATI_AVULSI.items():
@@ -769,8 +770,8 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
         if camp in FASI_FINALI:
             html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
 
-        # --- CLASSIFICA GIRONE (Appare solo se esiste una classifica estraibile per questa fase) ---
-        if not df_class.empty and 'Campionato' in df_class.columns:
+        # --- CLASSIFICA GIRONE (Salta se è in Fase Finale) ---
+        if camp not in FASI_FINALI and not df_class.empty and 'Campionato' in df_class.columns:
             df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
             if not df_c.empty:
                 html += f"<h2>🏆 Classifica Girone</h2>"
@@ -780,8 +781,8 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
                     html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
                 html += '</tbody></table></div></div>'
 
-        # --- CLASSIFICA GENERALE AVULSA (Esclusa in automatico in fase finale dallo scraper) ---
-        if not df_avulse.empty and camp in df_avulse['Campionato_Ref'].unique():
+        # --- CLASSIFICA GENERALE AVULSA (Esclusa in automatico in fase finale) ---
+        if camp not in FASI_FINALI and not df_avulse.empty and camp in df_avulse['Campionato_Ref'].unique():
             html += f"<h2 style='color: #1565c0; border-left-color: #1565c0;'>🏅 Classifica Generale</h2>"
             df_a = df_avulse[df_avulse['Campionato_Ref'] == camp]
             html += '<div class="table-card" style="border: 1px solid #bbdefb;"><div class="table-scroll"><table><thead><tr style="background-color: #e3f2fd; color: #1565c0;"><th>Pos</th><th>Squadra</th><th>Pz.</th><th>P/G</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
@@ -832,7 +833,8 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
         if camp in FASI_FINALI:
             html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
 
-        if not df_class.empty and 'Campionato' in df_class.columns:
+        # Classifica non inserita se Fasi Finali
+        if camp not in FASI_FINALI and not df_class.empty and 'Campionato' in df_class.columns:
             df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
             if not df_c.empty:
                 html += f'<h2>🏆 Classifica</h2>'
