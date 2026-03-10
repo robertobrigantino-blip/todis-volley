@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v5.0
-# RELEASE NOTE: Gestione Fine Stagione (Immagini Dedicate e Banner Conclusivo)
+# SOFTWARE VERSION: v5.1
+# RELEASE NOTE: Implementazione Play Out Salvezza (con classifiche)
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v5.0 | Stagione 25/26 - Finali & End Season 🏁🏆"
+APP_VERSION = "v5.1 | Stagione 25/26 - Play Out & Finali 🛡️🏆"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -69,15 +69,19 @@ CAMPIONATI_FEMMINILI = {
     "U13 Gir.B S.Femminile": "88820",
 }
 
-# ================= FASI FINALI PROVINCIALI =================
+# ================= FASI FINALI PROVINCIALI (ELIMINAZIONE DIRETTA) =================
 FASI_FINALI = {
     "U18 Gir.B S.Femminile": "89371",
     "U19 Gir.A S.Maschile": "89301",
 }
 
+# ================= PLAY OUT SALVEZZA (MINI-GIRONI CON CLASSIFICA) =================
+PLAY_OUT = {
+    "Serie C  Gir.A S.Femminile": "88812",
+    "Serie D  Gir.C S.Maschile": "88826",
+}
+
 # ================= CAMPIONATI FINITI (STAGIONE CONCLUSA) =================
-# Le squadre inserite qui vedranno disabilitata la notifica eventi futuri, 
-# presenteranno una locandina dedicata e un banner di "Stagione Conclusa"
 CAMPIONATI_FINITI =[
     "U17 Gir.B S.Maschile",
     "U15 Gir.B S.Maschile"
@@ -581,11 +585,13 @@ def scrape_data():
     driver = webdriver.Chrome(options=chrome_options)
     all_results, all_standings, all_avulse = [], [],[]
     
-    # 1. Preparazione degli ID (Sostituzione con Fasi Finali se attive)
+    # 1. Preparazione degli ID (Sostituzione con Fasi Finali o Play Out se attive)
     campionati_to_scrape = {}
     for nome, cid in ALL_CAMPIONATI.items():
         if nome in FASI_FINALI:
             campionati_to_scrape[nome] = FASI_FINALI[nome] # Sostituisce la regular season con la fase finale
+        elif nome in PLAY_OUT:
+            campionati_to_scrape[nome] = PLAY_OUT[nome] # Sostituisce la regular season con i play out
         else:
             campionati_to_scrape[nome] = cid
 
@@ -611,10 +617,12 @@ def scrape_data():
                 c = el.find('div', class_='squadraCasa').get_text(strip=True).replace(pt_c, '').strip()
                 o = el.find('div', class_='squadraOspite').get_text(strip=True).replace(pt_o, '').strip()
                 
-                # Se siamo in FASI FINALI, aggiungiamo "🏆 Playoff -" davanti per distinguerlo meglio visivamente
+                # Se siamo in FASI FINALI o PLAY OUT, aggiungiamo l'etichetta speciale
                 giornata_label = curr_giornata
                 if nome_camp in FASI_FINALI and "Fase Finale" not in giornata_label and "Playoff" not in giornata_label:
                     giornata_label = f"🏆 Playoff - {curr_giornata}"
+                elif nome_camp in PLAY_OUT and "Play" not in giornata_label:
+                    giornata_label = f"🛡️ Play Out - {curr_giornata}"
 
                 d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, urljoin(base_url, el.get('href', '')))
                 
@@ -633,7 +641,7 @@ def scrape_data():
                     'Parziali': parziali
                 })
         
-        # Prova a scaricare la classifica (la saltiamo completamente se è una fase finale)
+        # Prova a scaricare la classifica (la saltiamo completamente SOLO se è una fase finale a eliminazione diretta)
         if nome_camp not in FASI_FINALI:
             try:
                 driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
@@ -646,8 +654,8 @@ def scrape_data():
 
     # 3. Scraping Classifiche Avulse (Multi-Dominio)
     for nome_camp, id_camp in CAMPIONATI_AVULSI.items():
-        # Se siamo in Fase Finale o Campionato Finito, la classifica avulsa non ci interessa più da calcolare
-        if nome_camp in FASI_FINALI or nome_camp in CAMPIONATI_FINITI:
+        # Se siamo in Fase Finale, in Play Out o Campionato Finito, la classifica avulsa non ci interessa più
+        if nome_camp in FASI_FINALI or nome_camp in CAMPIONATI_FINITI or nome_camp in PLAY_OUT:
             continue
             
         try:
@@ -775,6 +783,7 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
     for i, camp in enumerate(campionati_disp): 
         tab_label = camp.split(" S.")[0]
         if camp in FASI_FINALI: tab_label += " 🏆"
+        elif camp in PLAY_OUT: tab_label += " 🛡️"
         elif camp in CAMPIONATI_FINITI: tab_label += " 🏁"
         html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{tab_label}</button>'
     html += '</div>'
@@ -782,27 +791,32 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
     for i, camp in enumerate(campionati_disp):
         html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
         
-        # --- BANNER E IMMAGINI (Fasi Finali o Campionati Conclusi) ---
+        # --- BANNER E IMMAGINI ---
         if camp in FASI_FINALI:
             html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
+        elif camp in PLAY_OUT:
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT SALVEZZA 🛡️</div>'
         elif camp in CAMPIONATI_FINITI:
             img_url = URL_SUNDAY_MALE if "Maschile" in camp else URL_SUNDAY_FEMALE
             html += f'<div class="season-ended-container"><img src="{img_url}" class="season-ended-img" alt="Stagione Conclusa"></div>'
             html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #607d8b 0%, #37474f 100%);">🏁 STAGIONE REGOLARE CONCLUSA 🏁</div>'
 
-        # --- CLASSIFICA GIRONE (Salta se è in Fase Finale) ---
+        # --- CLASSIFICA GIRONE (Salta se è in Fase Finale a eliminazione diretta) ---
         if camp not in FASI_FINALI and not df_class.empty and 'Campionato' in df_class.columns:
             df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
             if not df_c.empty:
-                html += f"<h2>🏆 Classifica Definitiva</h2>" if camp in CAMPIONATI_FINITI else f"<h2>🏆 Classifica Girone</h2>"
+                if camp in PLAY_OUT: html += f"<h2>🛡️ Classifica Play Out</h2>"
+                elif camp in CAMPIONATI_FINITI: html += f"<h2>🏆 Classifica Definitiva</h2>"
+                else: html += f"<h2>🏆 Classifica Girone</h2>"
+                
                 html += '<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
                 for _, r in df_c.iterrows():
                     cls = 'class="my-team-row"' if is_target_team(r['Squadra']) else ''
                     html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
                 html += '</tbody></table></div></div>'
 
-        # --- CLASSIFICA GENERALE AVULSA (Esclusa in automatico in fase finale e in campionati conclusi) ---
-        if camp not in FASI_FINALI and camp not in CAMPIONATI_FINITI and not df_avulse.empty and camp in df_avulse['Campionato_Ref'].unique():
+        # --- CLASSIFICA GENERALE AVULSA (Esclusa in automatico nei casi extra) ---
+        if camp not in FASI_FINALI and camp not in PLAY_OUT and camp not in CAMPIONATI_FINITI and not df_avulse.empty and camp in df_avulse['Campionato_Ref'].unique():
             html += f"<h2 style='color: #1565c0; border-left-color: #1565c0;'>🏅 Classifica Generale</h2>"
             df_a = df_avulse[df_avulse['Campionato_Ref'] == camp]
             html += '<div class="table-card" style="border: 1px solid #bbdefb;"><div class="table-scroll"><table><thead><tr style="background-color: #e3f2fd; color: #1565c0;"><th>Pos</th><th>Squadra</th><th>Pz.</th><th>P/G</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
@@ -818,6 +832,7 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
         
         # --- CALENDARIO ---
         if camp in FASI_FINALI: html += f"<h2>🏆 Calendario Fasi Finali TODIS</h2>"
+        elif camp in PLAY_OUT: html += f"<h2>🛡️ Calendario Play Out TODIS</h2>"
         elif camp in CAMPIONATI_FINITI: html += f"<h2>📚 Archivio Calendario TODIS</h2>"
         else: html += f"<h2>📅 Calendario TODIS</h2>"
         
@@ -845,6 +860,7 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
     for i, camp in enumerate(campionati_disp): 
         tab_label = camp.split(" S.")[0]
         if camp in FASI_FINALI: tab_label += " 🏆"
+        elif camp in PLAY_OUT: tab_label += " 🛡️"
         elif camp in CAMPIONATI_FINITI: tab_label += " 🏁"
         html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{tab_label}</button>'
     html += '</div>'
@@ -854,6 +870,8 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
         
         if camp in FASI_FINALI:
             html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
+        elif camp in PLAY_OUT:
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT SALVEZZA 🛡️</div>'
         elif camp in CAMPIONATI_FINITI:
             img_url = URL_SUNDAY_MALE if "Maschile" in camp else URL_SUNDAY_FEMALE
             html += f'<div class="season-ended-container"><img src="{img_url}" class="season-ended-img" alt="Stagione Conclusa"></div>'
@@ -863,7 +881,10 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
         if camp not in FASI_FINALI and not df_class.empty and 'Campionato' in df_class.columns:
             df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
             if not df_c.empty:
-                html += f'<h2>🏆 Classifica Definitiva</h2>' if camp in CAMPIONATI_FINITI else f'<h2>🏆 Classifica</h2>'
+                if camp in PLAY_OUT: html += f'<h2>🛡️ Classifica Play Out</h2>'
+                elif camp in CAMPIONATI_FINITI: html += f'<h2>🏆 Classifica Definitiva</h2>'
+                else: html += f'<h2>🏆 Classifica</h2>'
+                
                 html += '<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
                 for _, r in df_c.iterrows():
                     cls = 'class="my-team-row"' if is_target_team(r['Squadra']) else ''
@@ -871,6 +892,7 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
                 html += '</tbody></table></div></div>'
         
         if camp in FASI_FINALI: html += f'<h2>🏆 Calendario Fasi Finali</h2>'
+        elif camp in PLAY_OUT: html += f'<h2>🛡️ Calendario Play Out</h2>'
         elif camp in CAMPIONATI_FINITI: html += f'<h2>📚 Archivio Calendario</h2>'
         else: html += f'<h2>📅 Calendario</h2>'
 
