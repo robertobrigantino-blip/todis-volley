@@ -2,13 +2,16 @@ name: Aggiorna Classifica Volley
 
 on:
   schedule:
-    # Esegue ogni due ore tra le 12:00 UTC e le 21:00 UTC
-    # (Corrisponde in Italia approx. 13:00 - 22:00)
-    - cron: '0 12-21/2 * * *'
+    # Esegue ogni ora tra le 10:00 UTC e le 21:00 UTC
+    - cron: '0 10-21/1 * * *'
   workflow_dispatch: # Permette avvio manuale
 
 permissions:
   contents: write
+
+# VARIABILE D'AMBIENTE CHE RISOLVE IL WARNING DI NODE.JS 20
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -18,12 +21,11 @@ jobs:
       - name: Checkout del codice
         uses: actions/checkout@v4
 
+      # Aggiornato alla v5
       - name: Imposta Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
-
-      # RIMOSSO IL PASSAGGIO CHE DAVA ERRORE (Chrome è già incluso)
 
       - name: Installa Dipendenze
         run: |
