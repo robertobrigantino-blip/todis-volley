@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v5.1
-# RELEASE NOTE: Implementazione Play Out Salvezza (con classifiche)
+# SOFTWARE VERSION: v5.2
+# RELEASE NOTE: Inserimento Disclaimer Legale FIPAV e Fix UI Menu
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v5.1 | Stagione 25/26 - Play Out & Finali 🛡️🏆"
+APP_VERSION = "v5.2 | Stagione 25/26 - Play Out & Finali 🛡️🏆"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -151,7 +151,7 @@ CSS_BASE = """
     .season-ended-container { text-align: center; margin: 5px 0 15px 0; }
     .season-ended-img { width: 100%; max-width: 450px; height: auto; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
 
-    /* 3. LANDING PAGE */
+    /* 3. LANDING PAGE E DISCLAIMER */
     .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 5px 0; overflow: hidden; }
     .instruction-text { font-weight: 700; color: #555; font-size: 11px; text-transform: uppercase; margin: 0; }
     .choice-card { position: relative; width: 92%; max-width: 450px; display: flex; justify-content: center; align-items: center; }
@@ -161,8 +161,11 @@ CSS_BASE = """
     .social-section { text-align: center; margin: 5px 0; } 
     .social-icons { display: flex; justify-content: center; gap: 30px; }
     .social-icon-img { width: 34px; height: 34px; }
+    
+    /* DISCLAIMER FIPAV */
+    .disclaimer-box { font-size: 9px; color: #888; text-align: center; margin: 10px 20px 5px 20px; line-height: 1.3; font-weight: 400; max-width: 500px; }
 
-    /* 4. MENU TABS */
+    /* 4. MENU TABS (FIX SCROLLING SMARTPHONE) */
     .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; flex-shrink: 0; scrollbar-width: none; }
     .tab-bar::-webkit-scrollbar { display: none; } 
     .tab-btn { flex: 1; padding: 10px 4px; text-align: center; background: none; border: none; font-size: 10px; font-weight: 700; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 60px; text-transform: uppercase; letter-spacing: -0.3px; }
