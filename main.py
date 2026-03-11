@@ -57,16 +57,16 @@ URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg
 CAMPIONATI_MASCHILI = {
     "Serie D S.Maschile": "85622",
     "U19 S.Maschile": "86865",
-    "U17 Gir.B S.Maschile": "86864",
-    "U15 Gir.B S.Maschile": "86848",
+    "U17 Gr.B S.Maschile": "86864",
+    "U15 Gr.B S.Maschile": "86848",
 }
 
 CAMPIONATI_FEMMINILI = {
     "Serie C S.Femminile": "85471",
     "U18 S.Femminile": "86850",
-    "U16 Gir.A S.Femminile": "86853",
-    "U14 Gir.C S.Femminile": "86860",
-    "U13 Gir.B S.Femminile": "88820",
+    "U16 Gr.A S.Femminile": "86853",
+    "U14 Gr.C S.Femminile": "86860",
+    "U13 Gr.B S.Femminile": "88820",
 }
 
 # ================= FASI FINALI PROVINCIALI (ELIMINAZIONE DIRETTA) =================
@@ -83,15 +83,15 @@ PLAY_OUT = {
 
 # ================= CAMPIONATI FINITI (STAGIONE CONCLUSA) =================
 CAMPIONATI_FINITI =[
-    "U17 Gir.B S.Maschile",
-    "U15 Gir.B S.Maschile"
+    "U17 Gr.B S.Maschile",
+    "U15 Gr.B S.Maschile"
 ]
 
 # Mappa dei campionati che hanno una classifica generale avulsa
 CAMPIONATI_AVULSI = {
     "Serie C S.Femminile": "85473",
-    "U14 Gir.C S.Femminile": "86858",
-    "U16 Gir.A S.Femminile": "86853",
+    "U14 Gr.C S.Femminile": "86858",
+    "U16 Gr.A S.Femminile": "86853",
     "U18 S.Femminile": "86849",
     "Serie D S.Maschile": "85620",
     "U19 S.Maschile": "86865",
@@ -795,7 +795,7 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
         if camp in FASI_FINALI:
             html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
         elif camp in PLAY_OUT:
-            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT SALVEZZA 🛡️</div>'
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT 🛡️</div>'
         elif camp in CAMPIONATI_FINITI:
             img_url = URL_SUNDAY_MALE if "Maschile" in camp else URL_SUNDAY_FEMALE
             html += f'<div class="season-ended-container"><img src="{img_url}" class="season-ended-img" alt="Stagione Conclusa"></div>'
