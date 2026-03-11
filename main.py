@@ -737,6 +737,9 @@ def genera_landing_page():
                     </a>
                 </div>
             </div>
+            <div class="disclaimer-box">
+                <b>Disclaimer:</b> Questa Web App non è ufficiale e non intende sostituirsi ai portali FIPAV. È uno strumento gratuito creato per facilitare la consultazione dei dati delle squadre della nostra società. Tutti i dati mostrati sono di pubblico dominio; nessun dato personale, sensibile o riservato viene prelevato.
+            </div>
         </div>
         
         <div class="footer-counter">
