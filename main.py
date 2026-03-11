@@ -55,15 +55,15 @@ URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg
 
 # ================= CAMPIONATI (STAGIONE REGOLARE) =================
 CAMPIONATI_MASCHILI = {
-    "Serie D Gir.C S.Maschile": "85622",
-    "U19 Gir.A S.Maschile": "86865",
+    "Serie D S.Maschile": "85622",
+    "U19 S.Maschile": "86865",
     "U17 Gir.B S.Maschile": "86864",
     "U15 Gir.B S.Maschile": "86848",
 }
 
 CAMPIONATI_FEMMINILI = {
-    "Serie C Gir.A S.Femminile": "85471",
-    "U18 Gir.B S.Femminile": "86850",
+    "Serie C S.Femminile": "85471",
+    "U18 S.Femminile": "86850",
     "U16 Gir.A S.Femminile": "86853",
     "U14 Gir.C S.Femminile": "86860",
     "U13 Gir.B S.Femminile": "88820",
@@ -71,14 +71,14 @@ CAMPIONATI_FEMMINILI = {
 
 # ================= FASI FINALI PROVINCIALI (ELIMINAZIONE DIRETTA) =================
 FASI_FINALI = {
-    "U18 Gir.B S.Femminile": "89371",
-    "U19 Gir.A S.Maschile": "89301",
+    "U18 S.Femminile": "89371",
+    "U19 S.Maschile": "89301",
 }
 
 # ================= PLAY OUT SALVEZZA (MINI-GIRONI CON CLASSIFICA) =================
 PLAY_OUT = {
-    "Serie C Gir.A S.Femminile": "88812",
-    "Serie D Gir.C S.Maschile": "88826",
+    "Serie C S.Femminile": "88812",
+    "Serie D S.Maschile": "88826",
 }
 
 # ================= CAMPIONATI FINITI (STAGIONE CONCLUSA) =================
@@ -89,12 +89,12 @@ CAMPIONATI_FINITI =[
 
 # Mappa dei campionati che hanno una classifica generale avulsa
 CAMPIONATI_AVULSI = {
-    "Serie C Gir.A S.Femminile": "85473",
+    "Serie C S.Femminile": "85473",
     "U14 Gir.C S.Femminile": "86858",
     "U16 Gir.A S.Femminile": "86853",
-    "U18 Gir.B S.Femminile": "86849",
-    "Serie D Gir.C S.Maschile": "85620",
-    "U19 Gir.A S.Maschile": "86865",
+    "U18 S.Femminile": "86849",
+    "Serie D S.Maschile": "85620",
+    "U19 S.Maschile": "86865",
 }
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
@@ -871,7 +871,7 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
         if camp in FASI_FINALI:
             html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
         elif camp in PLAY_OUT:
-            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT SALVEZZA 🛡️</div>'
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT 🛡️</div>'
         elif camp in CAMPIONATI_FINITI:
             img_url = URL_SUNDAY_MALE if "Maschile" in camp else URL_SUNDAY_FEMALE
             html += f'<div class="season-ended-container"><img src="{img_url}" class="season-ended-img" alt="Stagione Conclusa"></div>'
@@ -921,4 +921,3 @@ if __name__ == "__main__":
     genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
     genera_segnapunti()
     print(f"✅ Generazione {APP_VERSION} completata!")
-
