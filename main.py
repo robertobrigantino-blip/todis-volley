@@ -64,7 +64,7 @@ CAMPIONATI_MASCHILI = {
 CAMPIONATI_FEMMINILI = {
     "Serie C S.Femminile": "85471",
     "U18 S.Femminile": "86850",
-    "U16 Gr.A S.Femminile": "86853",
+    "U16 S.Femminile": "86853",
     "U14 Gr.C S.Femminile": "86860",
     "U13 Gr.B S.Femminile": "88820",
 }
@@ -92,7 +92,7 @@ CAMPIONATI_FINITI =[
 CAMPIONATI_AVULSI = {
     "Serie C S.Femminile": "85473",
     "U14 Gr.C S.Femminile": "86858",
-    "U16 Gr.A S.Femminile": "86853",
+    "U16 S.Femminile": "86853",
     "U18 S.Femminile": "86849",
     "Serie D S.Maschile": "85620",
     "U19 S.Maschile": "86865",
