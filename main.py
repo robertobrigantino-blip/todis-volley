@@ -1,5 +1,5 @@
 # ==============================================================================
-# SOFTWARE VERSION: v5.2
+# SOFTWARE VERSION: v5.3
 # RELEASE NOTE: Inserimento Disclaimer Legale FIPAV e Fix UI Menu
 # ==============================================================================
 
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v5.2 | Stagione 25/26 - Play Out & Finali 🛡️🏆"
+APP_VERSION = "v5.3 | Stagione 25/26 - Play Out & Finali 🛡️🏆"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -73,6 +73,7 @@ CAMPIONATI_FEMMINILI = {
 FASI_FINALI = {
     "U18 S.Femminile": "89371",
     "U19 S.Maschile": "89301",
+    "U16 S.Femminile": "89774",
 }
 
 # ================= PLAY OUT SALVEZZA (MINI-GIRONI CON CLASSIFICA) =================
@@ -738,7 +739,7 @@ def genera_landing_page():
                 </div>
             </div>
             <div class="disclaimer-box">
-                <b>Disclaimer:</b> Questa Web App non è ufficiale e non intende sostituirsi ai portali FIPAV. È uno strumento gratuito creato per facilitare la consultazione dei dati delle squadre della nostra società. Tutti i dati mostrati sono di pubblico dominio; nessun dato personale, sensibile o riservato viene prelevato.
+                <b>Disclaimer:</b> Questa Web App non è ufficiale e non intende sostituirsi ai portali FIPAV. È uno strumento gratuito creato per facilitare la consultazione dei dati delle squadre della ASD CS Pastena. Tutti i dati mostrati sono di pubblico dominio; nessun dato personale, sensibile o riservato viene prelevato.
             </div>
         </div>
         
