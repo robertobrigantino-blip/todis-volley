@@ -65,7 +65,7 @@ CAMPIONATI_FEMMINILI = {
     "Serie C S.Femminile": "85471",
     "U18 S.Femminile": "86850",
     "U16 S.Femminile": "86853",
-    "U14 Gr.C S.Femminile": "86860",
+    "U14 S.Femminile": "86860",
     "U13 Gr.B S.Femminile": "88820",
 }
 
@@ -74,6 +74,7 @@ FASI_FINALI = {
     "U18 S.Femminile": "89371",
     "U19 S.Maschile": "89301",
     "U16 S.Femminile": "89774",
+    "U14 S.Femminile": "89775",
 }
 
 # ================= PLAY OUT SALVEZZA (MINI-GIRONI CON CLASSIFICA) =================
@@ -91,7 +92,7 @@ CAMPIONATI_FINITI =[
 # Mappa dei campionati che hanno una classifica generale avulsa
 CAMPIONATI_AVULSI = {
     "Serie C S.Femminile": "85473",
-    "U14 Gr.C S.Femminile": "86858",
+    "U14 S.Femminile": "86858",
     "U16 S.Femminile": "86853",
     "U18 S.Femminile": "86849",
     "Serie D S.Maschile": "85620",
