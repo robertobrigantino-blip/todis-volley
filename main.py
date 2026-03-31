@@ -87,7 +87,8 @@ PLAY_OUT = {
 CAMPIONATI_FINITI =[
     "U17 Gr.B S.Maschile",
     "U15 Gr.B S.Maschile",
-    "U18 S.Femminile"
+    "U18 S.Femminile",
+    "U19 S.Maschile"
 ]
 
 # Mappa dei campionati che hanno una classifica generale avulsa
