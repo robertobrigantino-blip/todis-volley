@@ -86,7 +86,8 @@ PLAY_OUT = {
 # ================= CAMPIONATI FINITI (STAGIONE CONCLUSA) =================
 CAMPIONATI_FINITI =[
     "U17 Gr.B S.Maschile",
-    "U15 Gr.B S.Maschile"
+    "U15 Gr.B S.Maschile",
+    "U18 S.Femminile",
 ]
 
 # Mappa dei campionati che hanno una classifica generale avulsa
