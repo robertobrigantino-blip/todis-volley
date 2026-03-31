@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v5.3
-# RELEASE NOTE: Inserimento Disclaimer Legale FIPAV e Fix UI Menu
+# SOFTWARE VERSION: v5.4
+# RELEASE NOTE: Fix priorità grafica per campionati PlayOff/PlayOut conclusi
 # ==============================================================================
 
 import pandas as pd
@@ -74,7 +74,7 @@ FASI_FINALI = {
     "U18 S.Femminile": "89371",
     "U19 S.Maschile": "89301",
     "U16 S.Femminile": "89774",
-    "U14 S.Femminile": "89775",
+    "U14 S.Femminile": "89775",                         
 }
 
 # ================= PLAY OUT SALVEZZA (MINI-GIRONI CON CLASSIFICA) =================
@@ -740,6 +740,7 @@ def genera_landing_page():
                     </a>
                 </div>
             </div>
+            
             <div class="disclaimer-box">
                 <b>Disclaimer:</b> Questa Web App non è ufficiale e non intende sostituirsi ai portali FIPAV. È uno strumento gratuito creato per facilitare la consultazione dei dati delle squadre della ASD CS Pastena. Tutti i dati mostrati sono di pubblico dominio; nessun dato personale, sensibile o riservato viene prelevato.
             </div>
@@ -791,9 +792,11 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
     html += '<div class="tab-bar">'
     for i, camp in enumerate(campionati_disp): 
         tab_label = camp.split(" S.")[0]
-        if camp in FASI_FINALI: tab_label += " 🏆"
+        # Priorità visiva modificata: Finita > Fasi Finali > Play Out
+        if camp in CAMPIONATI_FINITI: tab_label += " 🏁"
+        elif camp in FASI_FINALI: tab_label += " 🏆"
         elif camp in PLAY_OUT: tab_label += " 🛡️"
-        elif camp in CAMPIONATI_FINITI: tab_label += " 🏁"
+                                                            
         html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{tab_label}</button>'
     html += '</div>'
 
@@ -801,21 +804,25 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
         html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
         
         # --- BANNER E IMMAGINI ---
-        if camp in FASI_FINALI:
+        if camp in CAMPIONATI_FINITI:
+            img_url = URL_SUNDAY_MALE if "Maschile" in camp else URL_SUNDAY_FEMALE
+            html += f'<div class="season-ended-container"><img src="{img_url}" class="season-ended-img" alt="Stagione Conclusa"></div>'
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #607d8b 0%, #37474f 100%);">🏁 STAGIONE CONCLUSA 🏁</div>'
+        elif camp in FASI_FINALI:
             html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
         elif camp in PLAY_OUT:
             html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT 🛡️</div>'
-        elif camp in CAMPIONATI_FINITI:
-            img_url = URL_SUNDAY_MALE if "Maschile" in camp else URL_SUNDAY_FEMALE
-            html += f'<div class="season-ended-container"><img src="{img_url}" class="season-ended-img" alt="Stagione Conclusa"></div>'
-            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #607d8b 0%, #37474f 100%);">🏁 STAGIONE REGOLARE CONCLUSA 🏁</div>'
+                                       
+                                                                                  
+                                                                                                                                       
+                                                                                                                                                                        
 
         # --- CLASSIFICA GIRONE (Salta se è in Fase Finale a eliminazione diretta) ---
         if camp not in FASI_FINALI and not df_class.empty and 'Campionato' in df_class.columns:
             df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
             if not df_c.empty:
-                if camp in PLAY_OUT: html += f"<h2>🛡️ Classifica Play Out</h2>"
-                elif camp in CAMPIONATI_FINITI: html += f"<h2>🏆 Classifica Definitiva</h2>"
+                if camp in CAMPIONATI_FINITI: html += f"<h2>🏆 Classifica Definitiva</h2>"
+                elif camp in PLAY_OUT: html += f"<h2>🛡️ Classifica Play Out</h2>"
                 else: html += f"<h2>🏆 Classifica Girone</h2>"
                 
                 html += '<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
@@ -840,9 +847,10 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
             html += '</tbody></table></div></div>'
         
         # --- CALENDARIO ---
-        if camp in FASI_FINALI: html += f"<h2>🏆 Calendario Fasi Finali TODIS</h2>"
+        if camp in CAMPIONATI_FINITI: html += f"<h2>📚 Archivio Calendario TODIS</h2>"
+        elif camp in FASI_FINALI: html += f"<h2>🏆 Calendario Fasi Finali TODIS</h2>"
         elif camp in PLAY_OUT: html += f"<h2>🛡️ Calendario Play Out TODIS</h2>"
-        elif camp in CAMPIONATI_FINITI: html += f"<h2>📚 Archivio Calendario TODIS</h2>"
+                                                                                          
         else: html += f"<h2>📅 Calendario TODIS</h2>"
         
         html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
@@ -868,30 +876,35 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
     html += '<div class="tab-bar">'
     for i, camp in enumerate(campionati_disp): 
         tab_label = camp.split(" S.")[0]
-        if camp in FASI_FINALI: tab_label += " 🏆"
+        if camp in CAMPIONATI_FINITI: tab_label += " 🏁"
+        elif camp in FASI_FINALI: tab_label += " 🏆"
         elif camp in PLAY_OUT: tab_label += " 🛡️"
-        elif camp in CAMPIONATI_FINITI: tab_label += " 🏁"
+                                                            
         html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{tab_label}</button>'
     html += '</div>'
 
     for i, camp in enumerate(campionati_disp):
         html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
         
-        if camp in FASI_FINALI:
+        if camp in CAMPIONATI_FINITI:
+            img_url = URL_SUNDAY_MALE if "Maschile" in camp else URL_SUNDAY_FEMALE
+            html += f'<div class="season-ended-container"><img src="{img_url}" class="season-ended-img" alt="Stagione Conclusa"></div>'
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #607d8b 0%, #37474f 100%);">🏁 STAGIONE CONCLUSA 🏁</div>'
+        elif camp in FASI_FINALI:
             html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
         elif camp in PLAY_OUT:
             html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT 🛡️</div>'
-        elif camp in CAMPIONATI_FINITI:
-            img_url = URL_SUNDAY_MALE if "Maschile" in camp else URL_SUNDAY_FEMALE
-            html += f'<div class="season-ended-container"><img src="{img_url}" class="season-ended-img" alt="Stagione Conclusa"></div>'
-            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #607d8b 0%, #37474f 100%);">🏁 STAGIONE REGOLARE CONCLUSA 🏁</div>'
+                                       
+                                                                                  
+                                                                                                                                       
+                                                                                                                                                                        
 
         # Classifica non inserita se Fasi Finali
         if camp not in FASI_FINALI and not df_class.empty and 'Campionato' in df_class.columns:
             df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
             if not df_c.empty:
-                if camp in PLAY_OUT: html += f'<h2>🛡️ Classifica Play Out</h2>'
-                elif camp in CAMPIONATI_FINITI: html += f'<h2>🏆 Classifica Definitiva</h2>'
+                if camp in CAMPIONATI_FINITI: html += f'<h2>🏆 Classifica Definitiva</h2>'
+                elif camp in PLAY_OUT: html += f'<h2>🛡️ Classifica Play Out</h2>'
                 else: html += f'<h2>🏆 Classifica</h2>'
                 
                 html += '<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
@@ -900,9 +913,10 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
                     html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
                 html += '</tbody></table></div></div>'
         
-        if camp in FASI_FINALI: html += f'<h2>🏆 Calendario Fasi Finali</h2>'
+        if camp in CAMPIONATI_FINITI: html += f'<h2>📚 Archivio Calendario</h2>'
+        elif camp in FASI_FINALI: html += f'<h2>🏆 Calendario Fasi Finali</h2>'
         elif camp in PLAY_OUT: html += f'<h2>🛡️ Calendario Play Out</h2>'
-        elif camp in CAMPIONATI_FINITI: html += f'<h2>📚 Archivio Calendario</h2>'
+                                                                                    
         else: html += f'<h2>📅 Calendario</h2>'
 
         html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
