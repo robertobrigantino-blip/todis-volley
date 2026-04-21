@@ -89,6 +89,7 @@ CAMPIONATI_FINITI =[
     "U15 Gr.B S.Maschile",
     "U16 S.Femminile",
     "U18 S.Femminile",
+    "U14 S.Femminile",
     "U19 S.Maschile"
 ]
 
