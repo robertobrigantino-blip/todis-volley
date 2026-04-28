@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v5.4
-# RELEASE NOTE: Fix priorità grafica per campionati PlayOff/PlayOut conclusi
+# SOFTWARE VERSION: v5.5
+# RELEASE NOTE: Modalità Freeze per fine stagione totale (Sunday.png)
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v5.4 | Stagione 25/26 - Play Out & Finali 🛡️🏆"
+APP_VERSION = "v5.5 | Stagione 25/26 - Archivio Storico ❄️"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -44,6 +44,7 @@ URL_LOGO = REPO_URL + "logo.jpg"
 URL_SPLIT_IMG = REPO_URL + "scelta_campionato.jpg"
 URL_SUNDAY_MALE = REPO_URL + "Sunday_Male.png"
 URL_SUNDAY_FEMALE = REPO_URL + "Sunday_Female.png"
+URL_SUNDAY_ALL = REPO_URL + "Sunday.png"  # Immagine per il Freeze Totale
 
 # BOTTONI
 BTN_ALL_RESULTS = REPO_URL + "all_result.png"
@@ -353,7 +354,7 @@ CSS_BASE = """
                 }
             });
             let popupHTML = "";
-            for (const [camp, data] of Object.entries(nextMatches)) {
+            for (const[camp, data] of Object.entries(nextMatches)) {
                 const campPulito = camp.replace(' S.Femminile', '').replace(' S.Maschile', '');
                 popupHTML += `<h3 style="color:#d32f2f; font-size:14px; margin-top:10px; border-bottom:1px solid #eee">🏆 ${campPulito}</h3>` + data.html;			   
             }
@@ -689,8 +690,12 @@ def scrape_data():
     return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame(), pd.concat(all_avulse, ignore_index=True) if all_avulse else pd.DataFrame()
 
 # ================= GENERATORI PAGINE =================
-def genera_landing_page():
+def genera_landing_page(is_frozen=False):
     print(f"📄 Generazione Landing Page...")
+    
+    # Selettore Immagine Dinamico (Split o Freeze)
+    img_scelta = URL_SUNDAY_ALL if is_frozen else URL_SPLIT_IMG
+    
     html = f"""<!DOCTYPE html>
     <html lang="it">
     <head>
@@ -726,10 +731,10 @@ def genera_landing_page():
             <div class="instruction-text">Seleziona il settore:</div>
             
             <div class="choice-card">
-                <img src="{URL_SPLIT_IMG}" alt="Scelta Campionato" class="choice-img">
+                <img src="{img_scelta}" alt="Scelta Campionato" class="choice-img">
                 <div class="click-overlay">
-                    <a href="{FILE_MALE}" class="click-area"></a>
-                    <a href="{FILE_FEMALE}" class="click-area"></a>
+                    <a href="{FILE_MALE}" class="click-area" title="Archivio Maschile"></a>
+                    <a href="{FILE_FEMALE}" class="click-area" title="Archivio Femminile"></a>
                 </div>
             </div>
 
@@ -799,7 +804,6 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
         if camp in CAMPIONATI_FINITI: tab_label += " 🏁"
         elif camp in FASI_FINALI: tab_label += " 🏆"
         elif camp in PLAY_OUT: tab_label += " 🛡️"
-                                                            
         html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{tab_label}</button>'
     html += '</div>'
 
@@ -815,10 +819,6 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
             html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
         elif camp in PLAY_OUT:
             html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT 🛡️</div>'
-                                       
-                                                                                  
-                                                                                                                                       
-                                                                                                                                                                        
 
         # --- CLASSIFICA GIRONE (Salta se è in Fase Finale a eliminazione diretta) ---
         if camp not in FASI_FINALI and not df_class.empty and 'Campionato' in df_class.columns:
@@ -853,7 +853,6 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
         if camp in CAMPIONATI_FINITI: html += f"<h2>📚 Archivio Calendario TODIS</h2>"
         elif camp in FASI_FINALI: html += f"<h2>🏆 Calendario Fasi Finali TODIS</h2>"
         elif camp in PLAY_OUT: html += f"<h2>🛡️ Calendario Play Out TODIS</h2>"
-                                                                                          
         else: html += f"<h2>📅 Calendario TODIS</h2>"
         
         html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
@@ -882,7 +881,6 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
         if camp in CAMPIONATI_FINITI: tab_label += " 🏁"
         elif camp in FASI_FINALI: tab_label += " 🏆"
         elif camp in PLAY_OUT: tab_label += " 🛡️"
-                                                            
         html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{tab_label}</button>'
     html += '</div>'
 
@@ -897,10 +895,6 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
             html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
         elif camp in PLAY_OUT:
             html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT 🛡️</div>'
-                                       
-                                                                                  
-                                                                                                                                       
-                                                                                                                                                                        
 
         # Classifica non inserita se Fasi Finali
         if camp not in FASI_FINALI and not df_class.empty and 'Campionato' in df_class.columns:
@@ -919,7 +913,6 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
         if camp in CAMPIONATI_FINITI: html += f'<h2>📚 Archivio Calendario</h2>'
         elif camp in FASI_FINALI: html += f'<h2>🏆 Calendario Fasi Finali</h2>'
         elif camp in PLAY_OUT: html += f'<h2>🛡️ Calendario Play Out</h2>'
-                                                                                    
         else: html += f'<h2>📅 Calendario</h2>'
 
         html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
@@ -939,11 +932,22 @@ def genera_segnapunti():
     with open(FILE_SCORE, "w", encoding="utf-8") as f: f.write(html)
 
 if __name__ == "__main__":
-    df_ris, df_class, df_avulse = scrape_data()
-    genera_landing_page()
-    genera_pagina_app(df_ris, df_class, df_avulse, FILE_MALE, CAMPIONATI_MASCHILI)
-    genera_pagina_app(df_ris, df_class, df_avulse, FILE_FEMALE, CAMPIONATI_FEMMINILI)
-    genera_pagina_generale(df_ris, df_class, FILE_GEN_MALE, CAMPIONATI_MASCHILI, FILE_MALE)
-    genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
-    genera_segnapunti()
+    # Verifica se TUTTI i campionati sono stati inseriti in CAMPIONATI_FINITI
+    is_frozen = all(camp in CAMPIONATI_FINITI for camp in ALL_CAMPIONATI)
+    
+    if is_frozen:
+        print("❄️ TUTTI I CAMPIONATI SONO TERMINATI: APPLICAZIONE IN FREEZE MODE ❄️")
+        # Genera unicamente la Landing Page (con la nuova immagine) e il Segnapunti
+        genera_landing_page(is_frozen=True)
+        genera_segnapunti()
+    else:
+        # Funzionamento Standard
+        df_ris, df_class, df_avulse = scrape_data()
+        genera_landing_page(is_frozen=False)
+        genera_pagina_app(df_ris, df_class, df_avulse, FILE_MALE, CAMPIONATI_MASCHILI)
+        genera_pagina_app(df_ris, df_class, df_avulse, FILE_FEMALE, CAMPIONATI_FEMMINILI)
+        genera_pagina_generale(df_ris, df_class, FILE_GEN_MALE, CAMPIONATI_MASCHILI, FILE_MALE)
+        genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
+        genera_segnapunti()
+        
     print(f"✅ Generazione {APP_VERSION} completata!")
