@@ -102,6 +102,7 @@ CAMPIONATI_AVULSI = {
     "U18 S.Femminile": "86849",
     "Serie D S.Maschile": "85620",
     "U19 S.Maschile": "86865",
+    "U13 Gr.B S.Femminile": "88820",
 }
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
