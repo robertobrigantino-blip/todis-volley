@@ -67,7 +67,7 @@ CAMPIONATI_FEMMINILI = {
     "U18 S.Femminile": "86850",
     "U16 S.Femminile": "86853",
     "U14 S.Femminile": "86860",
-    "U13 Gr.B S.Femminile": "88820",
+    "U13 S.Femminile": "88820",
 }
 
 # ================= FASI FINALI PROVINCIALI (ELIMINAZIONE DIRETTA) =================
@@ -75,7 +75,8 @@ FASI_FINALI = {
     "U18 S.Femminile": "89371",
     "U19 S.Maschile": "89301",
     "U16 S.Femminile": "89774",
-    "U14 S.Femminile": "89775",                         
+    "U14 S.Femminile": "89775",
+    "U13 S.Femminile": "91725",
 }
 
 # ================= PLAY OUT SALVEZZA (MINI-GIRONI CON CLASSIFICA) =================
@@ -102,7 +103,7 @@ CAMPIONATI_AVULSI = {
     "U18 S.Femminile": "86849",
     "Serie D S.Maschile": "85620",
     "U19 S.Maschile": "86865",
-    "U13 Gr.B S.Femminile": "88820",
+    "U13 S.Femminile": "88820",
 }
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
