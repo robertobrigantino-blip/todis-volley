@@ -87,6 +87,7 @@ PLAY_OUT = {
 
 # ================= CAMPIONATI FINITI (STAGIONE CONCLUSA) =================
 CAMPIONATI_FINITI =[
+    "Serie D S.Maschile",
     "U17 Gr.B S.Maschile",
     "U15 Gr.B S.Maschile",
     "U16 S.Femminile",
