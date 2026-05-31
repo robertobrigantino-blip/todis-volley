@@ -90,6 +90,7 @@ CAMPIONATI_FINITI =[
     "Serie D S.Maschile",
     "U17 Gr.B S.Maschile",
     "U15 Gr.B S.Maschile",
+    "Serie C S.Femminile",
     "U16 S.Femminile",
     "U18 S.Femminile",
     "U14 S.Femminile",
