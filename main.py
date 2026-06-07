@@ -94,6 +94,7 @@ CAMPIONATI_FINITI =[
     "U16 S.Femminile",
     "U18 S.Femminile",
     "U14 S.Femminile",
+    "U13 S.Femminile",
     "U19 S.Maschile"
 ]
 
