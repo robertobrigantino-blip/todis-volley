@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v5.5
-# RELEASE NOTE: Modalità Freeze per fine stagione totale (Sunday.png)
+# SOFTWARE VERSION: v5.6
+# RELEASE NOTE: Implementazione Fasi Finali Regionali (Switch Dominio automatico)
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v5.5 | Stagione 25/26 - Archivio Storico ❄️"
+APP_VERSION = "v5.6 | Stagione 25/26 - Finali Regionali 🌟"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -70,13 +70,19 @@ CAMPIONATI_FEMMINILI = {
     "U13 S.Femminile": "88820",
 }
 
+# ================= FASI FINALI REGIONALI =================
+# Le squadre qui passano automaticamente dal portale Fipav Salerno a Fipav Campania
+FINALI_REGIONALI = {
+    "U13 S.Femminile": "91859",
+}
+
 # ================= FASI FINALI PROVINCIALI (ELIMINAZIONE DIRETTA) =================
 FASI_FINALI = {
     "U18 S.Femminile": "89371",
     "U19 S.Maschile": "89301",
     "U16 S.Femminile": "89774",
     "U14 S.Femminile": "89775",
-    "U13 S.Femminile": "91725",
+                               
 }
 
 # ================= PLAY OUT SALVEZZA (MINI-GIRONI CON CLASSIFICA) =================
@@ -86,6 +92,7 @@ PLAY_OUT = {
 }
 
 # ================= CAMPIONATI FINITI (STAGIONE CONCLUSA) =================
+
 CAMPIONATI_FINITI =[
     "Serie D S.Maschile",
     "U17 Gr.B S.Maschile",
@@ -94,7 +101,7 @@ CAMPIONATI_FINITI =[
     "U16 S.Femminile",
     "U18 S.Femminile",
     "U14 S.Femminile",
-    "U13 S.Femminile",
+                      
     "U19 S.Maschile"
 ]
 
@@ -600,20 +607,26 @@ def scrape_data():
     driver = webdriver.Chrome(options=chrome_options)
     all_results, all_standings, all_avulse = [], [],[]
     
-    # 1. Preparazione degli ID (Sostituzione con Fasi Finali o Play Out se attive)
+    # 1. Preparazione degli ID (Sostituzione in base alla Fase Attuale)
     campionati_to_scrape = {}
     for nome, cid in ALL_CAMPIONATI.items():
-        if nome in FASI_FINALI:
-            campionati_to_scrape[nome] = FASI_FINALI[nome] # Sostituisce la regular season con la fase finale
+        if nome in FINALI_REGIONALI:
+            campionati_to_scrape[nome] = FINALI_REGIONALI[nome] # Priorità 1: Regionali
+        elif nome in FASI_FINALI:
+            campionati_to_scrape[nome] = FASI_FINALI[nome]      # Priorità 2: Finali Provinciali
         elif nome in PLAY_OUT:
-            campionati_to_scrape[nome] = PLAY_OUT[nome] # Sostituisce la regular season con i play out
+            campionati_to_scrape[nome] = PLAY_OUT[nome]         # Priorità 3: Play Out
         else:
             campionati_to_scrape[nome] = cid
 
     # 2. Scraping Match e Classifiche Standard
     for nome_camp, id_camp in campionati_to_scrape.items():
-        base_url = "https://www.fipavsalerno.it/mobile/"
-        if "Serie C" in nome_camp or "Serie D" in nome_camp: base_url = "https://www.fipavcampania.it/mobile/"
+        
+        # LOGICA DOMINIO: Le regionali, la Serie C e la Serie D risiedono su fipavcampania
+        if "Serie C" in nome_camp or "Serie D" in nome_camp or nome_camp in FINALI_REGIONALI:
+            base_url = "https://www.fipavcampania.it/mobile/"
+        else:
+            base_url = "https://www.fipavsalerno.it/mobile/"
         
         driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}")
         soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -634,7 +647,9 @@ def scrape_data():
                 
                 # Se siamo in FASI FINALI o PLAY OUT, aggiungiamo l'etichetta speciale
                 giornata_label = curr_giornata
-                if nome_camp in FASI_FINALI and "Fase Finale" not in giornata_label and "Playoff" not in giornata_label:
+                if nome_camp in FINALI_REGIONALI and "Regionali" not in giornata_label:
+                    giornata_label = f"🌟 Finali Regionali - {curr_giornata}"
+                elif nome_camp in FASI_FINALI and "Fase Finale" not in giornata_label and "Playoff" not in giornata_label:
                     giornata_label = f"🏆 Playoff - {curr_giornata}"
                 elif nome_camp in PLAY_OUT and "Play" not in giornata_label:
                     giornata_label = f"🛡️ Play Out - {curr_giornata}"
@@ -656,8 +671,8 @@ def scrape_data():
                     'Parziali': parziali
                 })
         
-        # Prova a scaricare la classifica (la saltiamo completamente SOLO se è una fase finale a eliminazione diretta)
-        if nome_camp not in FASI_FINALI:
+        # Prova a scaricare la classifica (saltata per Regionali ed Eliminazione Diretta)
+        if nome_camp not in FASI_FINALI and nome_camp not in FINALI_REGIONALI:
             try:
                 driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
                 tabs = pd.read_html(StringIO(driver.page_source))
@@ -669,12 +684,12 @@ def scrape_data():
 
     # 3. Scraping Classifiche Avulse (Multi-Dominio)
     for nome_camp, id_camp in CAMPIONATI_AVULSI.items():
-        # Se siamo in Fase Finale, in Play Out o Campionato Finito, la classifica avulsa non ci interessa più
-        if nome_camp in FASI_FINALI or nome_camp in CAMPIONATI_FINITI or nome_camp in PLAY_OUT:
+        # Selettore esclusione classifiche avulse per fasi successive o concluse
+        if nome_camp in FINALI_REGIONALI or nome_camp in FASI_FINALI or nome_camp in CAMPIONATI_FINITI or nome_camp in PLAY_OUT:
             continue
             
         try:
-            dominio = "fipavcampania.it" if "Serie" in nome_camp else "fipavsalerno.it"
+            dominio = "fipavcampania.it" if ("Serie" in nome_camp or nome_camp in FINALI_REGIONALI) else "fipavsalerno.it"
             url_avulsa = f"https://www.{dominio}/classifica.aspx?tipo=avulsa&CId={id_camp}"
             
             driver.get(url_avulsa)
@@ -805,8 +820,9 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
     html += '<div class="tab-bar">'
     for i, camp in enumerate(campionati_disp): 
         tab_label = camp.split(" S.")[0]
-        # Priorità visiva modificata: Finita > Fasi Finali > Play Out
+        # Priorità visiva modificata: Finita > Regionali > Provinciali > Play Out
         if camp in CAMPIONATI_FINITI: tab_label += " 🏁"
+        elif camp in FINALI_REGIONALI: tab_label += " 🌟"
         elif camp in FASI_FINALI: tab_label += " 🏆"
         elif camp in PLAY_OUT: tab_label += " 🛡️"
         html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{tab_label}</button>'
@@ -820,13 +836,15 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
             img_url = URL_SUNDAY_MALE if "Maschile" in camp else URL_SUNDAY_FEMALE
             html += f'<div class="season-ended-container"><img src="{img_url}" class="season-ended-img" alt="Stagione Conclusa"></div>'
             html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #607d8b 0%, #37474f 100%);">🏁 STAGIONE CONCLUSA 🏁</div>'
+        elif camp in FINALI_REGIONALI:
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%);">🌟 Fasi Finali Regionali 🌟</div>'
         elif camp in FASI_FINALI:
             html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
         elif camp in PLAY_OUT:
             html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT 🛡️</div>'
 
         # --- CLASSIFICA GIRONE (Salta se è in Fase Finale a eliminazione diretta) ---
-        if camp not in FASI_FINALI and not df_class.empty and 'Campionato' in df_class.columns:
+        if camp not in FASI_FINALI and camp not in FINALI_REGIONALI and not df_class.empty and 'Campionato' in df_class.columns:
             df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
             if not df_c.empty:
                 if camp in CAMPIONATI_FINITI: html += f"<h2>🏆 Classifica Definitiva</h2>"
@@ -840,7 +858,7 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
                 html += '</tbody></table></div></div>'
 
         # --- CLASSIFICA GENERALE AVULSA (Esclusa in automatico nei casi extra) ---
-        if camp not in FASI_FINALI and camp not in PLAY_OUT and camp not in CAMPIONATI_FINITI and not df_avulse.empty and camp in df_avulse['Campionato_Ref'].unique():
+        if camp not in FASI_FINALI and camp not in FINALI_REGIONALI and camp not in PLAY_OUT and camp not in CAMPIONATI_FINITI and not df_avulse.empty and camp in df_avulse['Campionato_Ref'].unique():
             html += f"<h2 style='color: #1565c0; border-left-color: #1565c0;'>🏅 Classifica Generale</h2>"
             df_a = df_avulse[df_avulse['Campionato_Ref'] == camp]
             html += '<div class="table-card" style="border: 1px solid #bbdefb;"><div class="table-scroll"><table><thead><tr style="background-color: #e3f2fd; color: #1565c0;"><th>Pos</th><th>Squadra</th><th>Pz.</th><th>P/G</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
@@ -856,6 +874,7 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
         
         # --- CALENDARIO ---
         if camp in CAMPIONATI_FINITI: html += f"<h2>📚 Archivio Calendario TODIS</h2>"
+        elif camp in FINALI_REGIONALI: html += f"<h2>🌟 Calendario Finali Regionali TODIS</h2>"
         elif camp in FASI_FINALI: html += f"<h2>🏆 Calendario Fasi Finali TODIS</h2>"
         elif camp in PLAY_OUT: html += f"<h2>🛡️ Calendario Play Out TODIS</h2>"
         else: html += f"<h2>📅 Calendario TODIS</h2>"
@@ -884,6 +903,7 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
     for i, camp in enumerate(campionati_disp): 
         tab_label = camp.split(" S.")[0]
         if camp in CAMPIONATI_FINITI: tab_label += " 🏁"
+        elif camp in FINALI_REGIONALI: tab_label += " 🌟"
         elif camp in FASI_FINALI: tab_label += " 🏆"
         elif camp in PLAY_OUT: tab_label += " 🛡️"
         html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{tab_label}</button>'
@@ -896,13 +916,15 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
             img_url = URL_SUNDAY_MALE if "Maschile" in camp else URL_SUNDAY_FEMALE
             html += f'<div class="season-ended-container"><img src="{img_url}" class="season-ended-img" alt="Stagione Conclusa"></div>'
             html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #607d8b 0%, #37474f 100%);">🏁 STAGIONE CONCLUSA 🏁</div>'
+        elif camp in FINALI_REGIONALI:
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%);">🌟 Fasi Finali Regionali 🌟</div>'
         elif camp in FASI_FINALI:
             html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
         elif camp in PLAY_OUT:
             html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT 🛡️</div>'
 
         # Classifica non inserita se Fasi Finali
-        if camp not in FASI_FINALI and not df_class.empty and 'Campionato' in df_class.columns:
+        if camp not in FASI_FINALI and camp not in FINALI_REGIONALI and not df_class.empty and 'Campionato' in df_class.columns:
             df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
             if not df_c.empty:
                 if camp in CAMPIONATI_FINITI: html += f'<h2>🏆 Classifica Definitiva</h2>'
@@ -916,6 +938,7 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
                 html += '</tbody></table></div></div>'
         
         if camp in CAMPIONATI_FINITI: html += f'<h2>📚 Archivio Calendario</h2>'
+        elif camp in FINALI_REGIONALI: html += f'<h2>🌟 Calendario Finali Regionali</h2>'
         elif camp in FASI_FINALI: html += f'<h2>🏆 Calendario Fasi Finali</h2>'
         elif camp in PLAY_OUT: html += f'<h2>🛡️ Calendario Play Out</h2>'
         else: html += f'<h2>📅 Calendario</h2>'
