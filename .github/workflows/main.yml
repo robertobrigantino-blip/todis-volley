@@ -1,9 +1,11 @@
 name: Aggiorna Classifica Volley
 
 on:
-  schedule:
-    # Esegue ogni due tra le 10:00 UTC e le 21:00 UTC
-    - cron: '0 10-21/3 * * *'
+  # L'esecuzione automatica (cron) è disabilitata per fine stagione.
+  # Per riattivarla l'anno prossimo, basterà togliere il '#' dalle 3 righe qui sotto:
+  # schedule:
+  #   # Esegue ogni ora tra le 10:00 UTC e le 21:00 UTC
+  #   - cron: '0 10-21/1 * * *'
   workflow_dispatch: # Permette avvio manuale
 
 permissions:
