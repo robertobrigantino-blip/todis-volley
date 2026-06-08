@@ -81,8 +81,7 @@ FASI_FINALI = {
     "U18 S.Femminile": "89371",
     "U19 S.Maschile": "89301",
     "U16 S.Femminile": "89774",
-    "U14 S.Femminile": "89775",
-                               
+    "U14 S.Femminile": "89775",                             
 }
 
 # ================= PLAY OUT SALVEZZA (MINI-GIRONI CON CLASSIFICA) =================
@@ -101,7 +100,7 @@ CAMPIONATI_FINITI =[
     "U16 S.Femminile",
     "U18 S.Femminile",
     "U14 S.Femminile",
-                      
+    "U13 S.Femminile",
     "U19 S.Maschile"
 ]
 
