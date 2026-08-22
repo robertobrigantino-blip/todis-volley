@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v5.6 | Stagione 25/26 - Finali Regionali 🌟"
+APP_VERSION = "v5.6 | Stagione 26/27"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -56,63 +56,63 @@ URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg
 
 # ================= CAMPIONATI (STAGIONE REGOLARE) =================
 CAMPIONATI_MASCHILI = {
-    "Serie D S.Maschile": "85622",
-    "U19 S.Maschile": "86865",
-    "U17 Gr.B S.Maschile": "86864",
-    "U15 Gr.B S.Maschile": "86848",
+ #   "Serie D S.Maschile": "85622",
+ #   "U19 S.Maschile": "86865",
+ #   "U17 Gr.B S.Maschile": "86864",
+ #  "U15 Gr.B S.Maschile": "86848",
 }
 
 CAMPIONATI_FEMMINILI = {
-    "Serie C S.Femminile": "85471",
-    "U18 S.Femminile": "86850",
-    "U16 S.Femminile": "86853",
-    "U14 S.Femminile": "86860",
-    "U13 S.Femminile": "88820",
+    "Serie C S.Femminile": "92741",
+   # "U18 S.Femminile": "86850",
+   # "U16 S.Femminile": "86853",
+   # "U14 S.Femminile": "86860",
+   # "U13 S.Femminile": "88820",
 }
 
 # ================= FASI FINALI REGIONALI =================
 # Le squadre qui passano automaticamente dal portale Fipav Salerno a Fipav Campania
 FINALI_REGIONALI = {
-    "U13 S.Femminile": "91859",
+    # "U13 S.Femminile": "91859",
 }
 
 # ================= FASI FINALI PROVINCIALI (ELIMINAZIONE DIRETTA) =================
 FASI_FINALI = {
-    "U18 S.Femminile": "89371",
-    "U19 S.Maschile": "89301",
-    "U16 S.Femminile": "89774",
-    "U14 S.Femminile": "89775",                             
+    # "U18 S.Femminile": "89371",
+    # "U19 S.Maschile": "89301",
+    # "U16 S.Femminile": "89774",
+    # "U14 S.Femminile": "89775",                             
 }
 
 # ================= PLAY OUT SALVEZZA (MINI-GIRONI CON CLASSIFICA) =================
 PLAY_OUT = {
-    "Serie C S.Femminile": "88812",
-    "Serie D S.Maschile": "88826",
+   # "Serie C S.Femminile": "88812",
+   # "Serie D S.Maschile": "88826",
 }
 
 # ================= CAMPIONATI FINITI (STAGIONE CONCLUSA) =================
 
 CAMPIONATI_FINITI =[
-    "Serie D S.Maschile",
-    "U17 Gr.B S.Maschile",
-    "U15 Gr.B S.Maschile",
-    "Serie C S.Femminile",
-    "U16 S.Femminile",
-    "U18 S.Femminile",
-    "U14 S.Femminile",
-    "U13 S.Femminile",
-    "U19 S.Maschile"
+   # "Serie D S.Maschile",
+   # "U17 Gr.B S.Maschile",
+   # "U15 Gr.B S.Maschile",
+   # "Serie C S.Femminile",
+   # "U16 S.Femminile",
+   # "U18 S.Femminile",
+   # "U14 S.Femminile",
+   # "U13 S.Femminile",
+   # "U19 S.Maschile"
 ]
 
 # Mappa dei campionati che hanno una classifica generale avulsa
 CAMPIONATI_AVULSI = {
-    "Serie C S.Femminile": "85473",
-    "U14 S.Femminile": "86858",
-    "U16 S.Femminile": "86853",
-    "U18 S.Femminile": "86849",
-    "Serie D S.Maschile": "85620",
-    "U19 S.Maschile": "86865",
-    "U13 S.Femminile": "88820",
+    # "Serie C S.Femminile": "85473",
+    # "U14 S.Femminile": "86858",
+    # "U16 S.Femminile": "86853",
+    # "U18 S.Femminile": "86849",
+    # "Serie D S.Maschile": "85620",
+    # "U19 S.Maschile": "86865",
+    # "U13 S.Femminile": "88820",
 }
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
