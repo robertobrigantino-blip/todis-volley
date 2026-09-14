@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v6.2
-# RELEASE NOTE: Galleria Media Dinamica sincronizzata con i Campionati
+# SOFTWARE VERSION: v6.3
+# RELEASE NOTE: Galleria Media Dinamica e Integrazione Post Instagram
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v6.2 | Stagione 26/27 🏐"
+APP_VERSION = "v6.3 | Stagione 26/27 🏐"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -37,12 +37,14 @@ FILE_FEMALE = "femminile.html"
 FILE_GEN_MALE = "generale_m.html"
 FILE_GEN_FEMALE = "generale_f.html"
 FILE_SCORE = "segnapunti.html"   
-FILE_MEDIA = "media.html"        # NUOVO FILE GALLERIA MEDIA
+FILE_MEDIA = "media.html"        
 
 # URL IMMAGINI
 REPO_URL = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/"
 URL_LOGO = REPO_URL + "logo.jpg"
-URL_SPLIT_IMG = REPO_URL + "new_landing_page.jpg"  # AGGIORNATO
+URL_SPLIT_IMG = REPO_URL + "new_landing_page.jpg"  
+URL_SUNDAY_MALE = REPO_URL + "Sunday_Male.png"
+URL_SUNDAY_FEMALE = REPO_URL + "Sunday_Female.png"
 URL_SUNDAY_ALL = REPO_URL + "Sunday.png"  
 
 # BOTTONI
@@ -54,39 +56,38 @@ BTN_CALENDAR_EVENTS = REPO_URL + "prossimi_appuntamenti.png"
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
 # ================= CAMPIONATI (STAGIONE NUOVA) =================
-# Lasciato vuoto per questa stagione, ma struttura mantenuta per il futuro
 CAMPIONATI_MASCHILI = {}
 
-# Da aggiornare con i nuovi ID della stagione 26/27 appena saranno resi noti
 CAMPIONATI_FEMMINILI = {
-    "Serie C S.Femminile": "92741",
-   # "U19 S.Femminile": "",
-   # "U17 S.Femminile": "",
-   # "U15 S.Femminile": "",
-   # "U14 S.Femminile": "",
-   # "U13 S.Femminile": "",
+    "Serie C S.Femminile": "85471",
+    "U18 S.Femminile": "86850",
+    "U16 S.Femminile": "86853",
+    "U14 S.Femminile": "86860",
+    "U13 S.Femminile": "88820",
 }
 
-# Svuotati per inizio stagione
 FINALI_REGIONALI = {}
 FASI_FINALI = {}
 PLAY_OUT = {}
 CAMPIONATI_FINITI = []
-
 CAMPIONATI_AVULSI = {}
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 
 # ================= CONFIGURAZIONE GALLERIA MEDIA =================
-# Inserisci qui i link alle foto/video per ogni campionato. 
-# Se un campionato non ha nulla in questa lista, genererà automaticamente un "Contenitore Vuoto".
+# Tipi supportati: "image" (per link diretti a .jpg/.png), "video" (per youtube), "instagram" (per post IG)
 GALLERIA_MEDIA = {
     "Serie C S.Femminile": [
-        {"type": "video", "url": "https://www.youtube.com/embed/dQw4w9WgXcQ", "caption": "Highlights Serie C"},
-        {"type": "image", "url": "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?q=80&w=600", "caption": "Vittoria importante!"}
-    ],
-    "U16 S.Femminile": [
-        {"type": "image", "url": "https://images.unsplash.com/photo-1593786196229-37ea920b784b?q=80&w=600", "caption": "Attacco vincente U16"}
+        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/Dc308ZPgQmR/", "caption": "Squadra U18"},
+        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/Dc5zACPAKIl/", "caption": "Squadra U18"},
+        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/Dc8S1BhAVe6/", "caption": "Squadra U18"},
+        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/Dc_XZX5h3gX/", "caption": "Squadra U18"},
+        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/DdBRrp7g4TU/", "caption": "Squadra U18"},
+        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/DdEV-QfAsBl/", "caption": "Squadra U18"},
+        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/DdJLqrNAPK6/", "caption": "Squadra U18"},
+        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/DdL4aeOgkpO/", "caption": "Squadra U18"},
+        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/DdOvaOkgoR6/", "caption": "Squadra U18"},
+        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/DdQyf6NgxfK/", "caption": "Squadra U18"}
     ]
 }
 
@@ -220,6 +221,8 @@ CSS_BASE = """
     .media-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
     .media-card .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; }
     .media-card .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    .media-card .ig-wrapper { position: relative; padding-bottom: 125%; height: 0; background: #fff; }
+    .media-card .ig-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
     .media-card .img-wrapper { width: 100%; height: 250px; background: #eee; }
     .media-card .img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
     .media-caption { padding: 12px; background: #fff; border-top: 1px solid #f0f0f0; text-align: center; font-weight: bold; color: #d32f2f; font-size: 13px; text-transform: uppercase; }
@@ -287,6 +290,14 @@ CSS_BASE = """
         for (var i = 0; i < buttons.length; i++) buttons[i].classList.remove("active");
         document.getElementById("content-" + tabIndex).classList.add("active");
         document.getElementById("btn-" + tabIndex).classList.add("active");
+    }
+
+    function tornaAlSettore() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const origin = urlParams.get('from');
+        if (origin === 'maschile') window.location.href = "maschile.html";
+        else if (origin === 'femminile') window.location.href = "femminile.html";
+        else window.location.href = "index.html";
     }
 
     var originalOrder = {};
@@ -765,7 +776,57 @@ def genera_landing_page(is_frozen=False):
         f.write(html)
 
 def genera_pagina_media():
-    print(f"📸 Generazione Pagina Media...")
+    print(f"📸 Generazione Pagina Media Dinamica...")
+    
+    # Costruzione dinamica della griglia Media
+    media_html = ""
+    if not ALL_CAMPIONATI:
+        media_html = '<div class="empty-media">Nessun contenuto multimediale ancora inserito. In attesa di nuovi caricamenti... 📸</div>'
+    else:
+        for camp in ALL_CAMPIONATI.keys():
+            media_list = GALLERIA_MEDIA.get(camp, [])
+            
+            camp_label = camp.split(" S.")[0]
+            if camp in CAMPIONATI_FINITI:
+                icon = "🏁"
+                bg_color = "linear-gradient(135deg, #607d8b 0%, #37474f 100%)"
+            elif camp in FINALI_REGIONALI:
+                icon = "🌟"
+                bg_color = "linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%)"
+            elif camp in FASI_FINALI:
+                icon = "🏆"
+                bg_color = "linear-gradient(135deg, #d32f2f 0%, #ff5252 100%)"
+            elif camp in PLAY_OUT:
+                icon = "🛡️"
+                bg_color = "linear-gradient(135deg, #e65100 0%, #ff9800 100%)"
+            else:
+                icon = "🏐"
+                bg_color = "linear-gradient(135deg, #1976D2 0%, #42A5F5 100%)"
+                
+            media_html += f'<div class="media-section-title" style="background: {bg_color};">{icon} {camp_label} {icon}</div>'
+            
+            if not media_list:
+                media_html += '<div class="empty-media">Nessun contenuto multimediale ancora inserito per questa squadra. 📸</div>'
+            else:
+                media_html += '<div class="media-grid">'
+                for m in media_list:
+                    caption = m.get("caption", "")
+                    m_type = m.get("type", "image")
+                    url = m.get("url", "")
+                    
+                    media_html += '<div class="media-card">'
+                    if m_type == "video":
+                        media_html += f'<div class="video-wrapper"><iframe src="{url}" allowfullscreen></iframe></div>'
+                    elif m_type == "instagram":
+                        if not url.endswith('/'): url += '/'
+                        embed_url = url + "embed/"
+                        media_html += f'<div class="ig-wrapper"><iframe src="{embed_url}" frameborder="0" scrolling="no" allowtransparency="true"></iframe></div>'
+                    else:
+                        media_html += f'<div class="img-wrapper"><img src="{url}" alt="{caption}" loading="lazy"></div>'
+                    media_html += f'<div class="media-caption">{caption}</div></div>'
+                
+                media_html += '</div>'
+
     html = f"""<!DOCTYPE html>
     <html lang="it">
     <head>
@@ -787,64 +848,13 @@ def genera_pagina_media():
             </div>
         </div>
         
-        <!-- CONTENITORE SCROLLABILE -->
         <div style="flex: 1 1 auto; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; width: 100%; background-color: #f0f2f5;">
             <div style="padding: 15px; text-align: center;">
                 <p style="font-size: 13px; color: #555; margin: 0;">Benvenuti nella sezione Media! Scorri verso il basso per vedere i momenti più belli della stagione.</p>
             </div>
 
-           <!--  <div class="media-grid">
-                <!-- ESEMPIO VIDEO YOUTUBE -->
-                <div class="media-card">
-                    <div class="video-wrapper">
-                        <!-- Sostituisci l'URL di 'src' con quello del tuo video YouTube (usa il link /embed/) -->
-                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
-                    </div>
-                    <div class="media-caption">Highlights Serie C</div>
-                </div> -->
-
-                <!-- ESEMPIO FOTO 1 -->
-                <div class="media-card">
-                    <div class="img-wrapper">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/Dc308ZPgQmR/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/Dc5zACPAKIl/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/Dc8S1BhAVe6/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/Dc_XZX5h3gX/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdBRrp7g4TU/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdEV-QfAsBl/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdJLqrNAPK6/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdL4aeOgkpO/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdOvaOkgoR6/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdQyf6NgxfK/" alt="Squadra U18">
-                    </div>
-                    <div class="media-caption">La Serie C</div>
-                </div>
-                
-               <!-- 
-               <!-- ESEMPIO FOTO 2 -->
-                <div class="media-card">
-                    <div class="img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1593786196229-37ea920b784b?q=80&w=600&auto=format&fit=crop" alt="Azione di gioco">
-                    </div>
-                    <div class="media-caption">Attacco vincente U16</div>
-                </div>
-                
-                <!-- ESEMPIO FOTO 3 -->
-                <div class="media-card">
-                    <div class="img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1552667466-07770ae110d0?q=80&w=600&auto=format&fit=crop" alt="Esultanza in campo">
-                    </div>
-                    <div class="media-caption">Vittoria importante!</div>
-                </div>
-                
-                <!-- ESEMPIO FOTO 4 -->
-                <div class="media-card">
-                    <div class="img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=600&auto=format&fit=crop" alt="Allenamento">
-                    </div>
-                    <div class="media-caption">Riscaldamento Pre-partita</div>
-                </div> -->
-            </div>
+            {media_html}
+            
         </div>
 
         <div class="footer-counter">
@@ -857,12 +867,10 @@ def genera_pagina_media():
         f.write(html)
 
 def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, mode="APP"):
-    # Non genera la pagina se il dizionario dei campionati è vuoto (es. Maschile quest'anno)
     if not campionati_target: return
     
     page_title = "Campionati"
     
-    # Rimosso il tasto "Tutti i risultati"
     nav_links = f'<a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR_EVENTS}" class="nav-icon-img"></span></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
 
     html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>{page_title}</title>{CSS_BASE}</head><body>'
@@ -935,7 +943,6 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
         html += f'<div id="calendar-container-{i}">'
         if not df_ris.empty and 'Campionato' in df_ris.columns:
             df_r = df_ris[df_ris['Campionato'] == camp]
-            # Mostra tutte le partite (non filtra più per ToDis in quanto vogliamo vederle tutte ora che non c'è la tab Generale)
             for g in df_r['Giornata'].unique():
                 html += f'<h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">{g}</h3>'
                 for _, r in df_r[df_r['Giornata'] == g].iterrows(): 
@@ -965,7 +972,6 @@ if __name__ == "__main__":
         genera_landing_page(is_frozen=False)
         genera_pagina_media()
         
-        # Genera solo le pagine di campionati che hanno effettivamente dati configurati
         if CAMPIONATI_MASCHILI:
             genera_pagina_app(df_ris, df_class, df_avulse, FILE_MALE, CAMPIONATI_MASCHILI)
         
