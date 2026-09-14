@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v6.1
-# RELEASE NOTE: Fix layout Galleria Media (Scroll Verticale App-like)
+# SOFTWARE VERSION: v6.2
+# RELEASE NOTE: Galleria Media Dinamica sincronizzata con i Campionati
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v6.1 | Stagione 26/27 🏐"
+APP_VERSION = "v6.2 | Stagione 26/27 🏐"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -59,12 +59,11 @@ CAMPIONATI_MASCHILI = {}
 
 # Da aggiornare con i nuovi ID della stagione 26/27 appena saranno resi noti
 CAMPIONATI_FEMMINILI = {
-    "Serie C S.Femminile": "92741",
-   # "U19 S.Femminile": "",
-   # "U17 S.Femminile": "",
-   # "U15 S.Femminile": "",
-   # "U14 S.Femminile": "",
-   # "U13 S.Femminile": "",
+    "Serie C S.Femminile": "85471",
+    "U18 S.Femminile": "86850",
+    "U16 S.Femminile": "86853",
+    "U14 S.Femminile": "86860",
+    "U13 S.Femminile": "88820",
 }
 
 # Svuotati per inizio stagione
@@ -73,11 +72,23 @@ FASI_FINALI = {}
 PLAY_OUT = {}
 CAMPIONATI_FINITI = []
 
-CAMPIONATI_AVULSI = {
-    # Inserire i nuovi ID avulsi quando serviranno
-}
+CAMPIONATI_AVULSI = {}
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
+
+# ================= CONFIGURAZIONE GALLERIA MEDIA =================
+# Inserisci qui i link alle foto/video per ogni campionato. 
+# Se un campionato non ha nulla in questa lista, genererà automaticamente un "Contenitore Vuoto".
+GALLERIA_MEDIA = {
+    "Serie C S.Femminile": [
+        {"type": "video", "url": "https://www.youtube.com/embed/dQw4w9WgXcQ", "caption": "Highlights Serie C"},
+        {"type": "image", "url": "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?q=80&w=600", "caption": "Vittoria importante!"}
+    ],
+    "U16 S.Femminile": [
+        {"type": "image", "url": "https://images.unsplash.com/photo-1593786196229-37ea920b784b?q=80&w=600", "caption": "Attacco vincente U16"}
+    ]
+}
+
 
 def is_target_team(team_name):
     if pd.isna(team_name) or not str(team_name).strip(): return False
@@ -201,7 +212,9 @@ CSS_BASE = """
     .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
 
     /* MEDIA GALLERY CSS */
-    .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; padding: 15px; max-width: 900px; margin: 0 auto; }
+    .media-section-title { background: linear-gradient(135deg, #d32f2f 0%, #ff5252 100%); color: white; padding: 10px 15px; margin: 20px 15px 5px 15px; border-radius: 8px; font-weight: 800; font-size: 14px; text-transform: uppercase; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; }
+    .empty-media { text-align: center; padding: 20px; color: #888; font-size: 12px; font-style: italic; background: #fff; border-radius: 8px; margin: 5px 15px 20px 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; padding: 10px 15px 25px 15px; max-width: 900px; margin: 0 auto; }
     .media-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s; }
     .media-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
     .media-card .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; }
