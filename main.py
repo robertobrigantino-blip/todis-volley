@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v6.3
-# RELEASE NOTE: Galleria Media Dinamica e Integrazione Post Instagram
+# SOFTWARE VERSION: v6.4
+# RELEASE NOTE: Nuova Stagione (Serie C) e Integrazione Foto GitHub (Raw Links)
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v6.3 | Stagione 26/27 🏐"
+APP_VERSION = "v6.4 | Stagione 26/27 🏐"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -55,17 +55,18 @@ BTN_CALENDAR_EVENTS = REPO_URL + "prossimi_appuntamenti.png"
 
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
-# ================= CAMPIONATI (STAGIONE NUOVA) =================
+# ================= CAMPIONATI (NUOVA STAGIONE) =================
 CAMPIONATI_MASCHILI = {}
 
 CAMPIONATI_FEMMINILI = {
-  "Serie C S.Femminile": "92741",
-   # "U19 S.Femminile": "",
-   # "U17 S.Femminile": "",
-   # "U15 S.Femminile": "",
-   # "U14 S.Femminile": "",,
+    "Serie C S.Femminile": "92741",
+    # "U19 S.Femminile": "",
+    # "U17 S.Femminile": "",
+    # "U15 S.Femminile": "",
+    # "U14 S.Femminile": "",
 }
 
+# Svuotati per il riavvio della nuova stagione
 FINALI_REGIONALI = {}
 FASI_FINALI = {}
 PLAY_OUT = {}
@@ -75,19 +76,20 @@ CAMPIONATI_AVULSI = {}
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 
 # ================= CONFIGURAZIONE GALLERIA MEDIA =================
-# Tipi supportati: "image" (per link diretti a .jpg/.png), "video" (per youtube), "instagram" (per post IG)
+# Usa il prefisso raw.githubusercontent.com per fare in modo che le foto GitHub vengano lette correttamente come immagini
 GALLERIA_MEDIA = {
     "Serie C S.Femminile": [
-        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/Dc308ZPgQmR/", "caption": "Squadra U18"},
-        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/Dc5zACPAKIl/", "caption": "Squadra U18"},
-        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/Dc8S1BhAVe6/", "caption": "Squadra U18"},
-        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/Dc_XZX5h3gX/", "caption": "Squadra U18"},
-        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/DdBRrp7g4TU/", "caption": "Squadra U18"},
-        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/DdEV-QfAsBl/", "caption": "Squadra U18"},
-        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/DdJLqrNAPK6/", "caption": "Squadra U18"},
-        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/DdL4aeOgkpO/", "caption": "Squadra U18"},
-        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/DdOvaOkgoR6/", "caption": "Squadra U18"},
-        {"type": "instagram", "url": "https://www.instagram.com/asdcspastena_volley/p/DdQyf6NgxfK/", "caption": "Squadra U18"}
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/AinettFaiella.png", "caption": "Ainett Faiella"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/AnnaDiMuccio.png", "caption": "Anna Di Muccio"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/ChiaraGentile.png", "caption": "Chiara Gentile"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/DariaDeCiancio.png", "caption": "Daria De Ciancio"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/ElenaSantoro.png", "caption": "Elena santoro"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/FrancescaPacifico.png", "caption": "Francesco Pacifico"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/GiuliaDeMartino.png", "caption": "Giulia De Martino"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/GiuliaFico.png", "caption": "Giulia Fico"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IrenePierro.png", "caption": "Irene Pierro"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/MariapiaAvino.png", "caption": "Mariapia Avino"},
+        # Aggiungi qui le altre foto seguendo lo stesso formato
     ]
 }
 
@@ -224,7 +226,7 @@ CSS_BASE = """
     .media-card .ig-wrapper { position: relative; padding-bottom: 125%; height: 0; background: #fff; }
     .media-card .ig-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
     .media-card .img-wrapper { width: 100%; height: 250px; background: #eee; }
-    .media-card .img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+    .media-card .img-wrapper img { width: 100%; height: 100%; object-fit: contain; background: #fafafa; }
     .media-caption { padding: 12px; background: #fff; border-top: 1px solid #f0f0f0; text-align: center; font-weight: bold; color: #d32f2f; font-size: 13px; text-transform: uppercase; }
 
     /* 8. INSTALL POPUPS */
@@ -778,7 +780,6 @@ def genera_landing_page(is_frozen=False):
 def genera_pagina_media():
     print(f"📸 Generazione Pagina Media Dinamica...")
     
-    # Costruzione dinamica della griglia Media
     media_html = ""
     if not ALL_CAMPIONATI:
         media_html = '<div class="empty-media">Nessun contenuto multimediale ancora inserito. In attesa di nuovi caricamenti... 📸</div>'
