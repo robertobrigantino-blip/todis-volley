@@ -793,7 +793,7 @@ def genera_pagina_media():
                 <p style="font-size: 13px; color: #555; margin: 0;">Benvenuti nella sezione Media! Scorri verso il basso per vedere i momenti più belli della stagione.</p>
             </div>
 
-            <div class="media-grid">
+           <!--  <div class="media-grid">
                 <!-- ESEMPIO VIDEO YOUTUBE -->
                 <div class="media-card">
                     <div class="video-wrapper">
@@ -801,18 +801,27 @@ def genera_pagina_media():
                         <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
                     </div>
                     <div class="media-caption">Highlights Serie C</div>
-                </div>
+                </div> -->
 
                 <!-- ESEMPIO FOTO 1 -->
                 <div class="media-card">
                     <div class="img-wrapper">
-                        <!-- Sostituisci l'URL di 'src' con l'URL della tua foto caricata su GitHub o altrove -->
-                        <img src="https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?q=80&w=600&auto=format&fit=crop" alt="Squadra U18">
+                        <img src="https://www.instagram.com/asdcspastena_volley/p/Dc308ZPgQmR/" alt="Squadra U18">
+                        <img src="https://www.instagram.com/asdcspastena_volley/p/Dc5zACPAKIl/" alt="Squadra U18">
+                        <img src="https://www.instagram.com/asdcspastena_volley/p/Dc8S1BhAVe6/" alt="Squadra U18">
+                        <img src="https://www.instagram.com/asdcspastena_volley/p/Dc_XZX5h3gX/" alt="Squadra U18">
+                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdBRrp7g4TU/" alt="Squadra U18">
+                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdEV-QfAsBl/" alt="Squadra U18">
+                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdJLqrNAPK6/" alt="Squadra U18">
+                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdL4aeOgkpO/" alt="Squadra U18">
+                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdOvaOkgoR6/" alt="Squadra U18">
+                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdQyf6NgxfK/" alt="Squadra U18">
                     </div>
-                    <div class="media-caption">La squadra U18 festeggia!</div>
+                    <div class="media-caption">La Serie C</div>
                 </div>
                 
-                <!-- ESEMPIO FOTO 2 -->
+               <!-- 
+               <!-- ESEMPIO FOTO 2 -->
                 <div class="media-card">
                     <div class="img-wrapper">
                         <img src="https://images.unsplash.com/photo-1593786196229-37ea920b784b?q=80&w=600&auto=format&fit=crop" alt="Azione di gioco">
@@ -834,7 +843,7 @@ def genera_pagina_media():
                         <img src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=600&auto=format&fit=crop" alt="Allenamento">
                     </div>
                     <div class="media-caption">Riscaldamento Pre-partita</div>
-                </div>
+                </div> -->
             </div>
         </div>
 
