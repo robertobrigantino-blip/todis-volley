@@ -59,11 +59,12 @@ CAMPIONATI_MASCHILI = {}
 
 # Da aggiornare con i nuovi ID della stagione 26/27 appena saranno resi noti
 CAMPIONATI_FEMMINILI = {
-    "Serie C S.Femminile": "85471",
-    "U18 S.Femminile": "86850",
-    "U16 S.Femminile": "86853",
-    "U14 S.Femminile": "86860",
-    "U13 S.Femminile": "88820",
+    "Serie C S.Femminile": "92741",
+   # "U19 S.Femminile": "",
+   # "U17 S.Femminile": "",
+   # "U15 S.Femminile": "",
+   # "U14 S.Femminile": "",
+   # "U13 S.Femminile": "",
 }
 
 # Svuotati per inizio stagione
