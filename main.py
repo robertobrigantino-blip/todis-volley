@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v5.6
-# RELEASE NOTE: Implementazione Fasi Finali Regionali (Switch Dominio automatico)
+# SOFTWARE VERSION: v6.0
+# RELEASE NOTE: Nuova Stagione, Rimozione Maschile, Inserimento Galleria Media
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v5.6 | Stagione 26/27"
+APP_VERSION = "v6.0 | Stagione 26/27 🏐"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -37,14 +37,13 @@ FILE_FEMALE = "femminile.html"
 FILE_GEN_MALE = "generale_m.html"
 FILE_GEN_FEMALE = "generale_f.html"
 FILE_SCORE = "segnapunti.html"   
+FILE_MEDIA = "media.html"        # NUOVO FILE GALLERIA MEDIA
 
 # URL IMMAGINI
 REPO_URL = "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/"
 URL_LOGO = REPO_URL + "logo.jpg"
-URL_SPLIT_IMG = REPO_URL + "scelta_campionato.jpg"
-URL_SUNDAY_MALE = REPO_URL + "Sunday_Male.png"
-URL_SUNDAY_FEMALE = REPO_URL + "Sunday_Female.png"
-URL_SUNDAY_ALL = REPO_URL + "Sunday.png"  # Immagine per il Freeze Totale
+URL_SPLIT_IMG = REPO_URL + "new_landing_page.jpg"  # AGGIORNATO
+URL_SUNDAY_ALL = REPO_URL + "Sunday.png"  
 
 # BOTTONI
 BTN_ALL_RESULTS = REPO_URL + "all_result.png"
@@ -54,65 +53,27 @@ BTN_CALENDAR_EVENTS = REPO_URL + "prossimi_appuntamenti.png"
 
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
-# ================= CAMPIONATI (STAGIONE REGOLARE) =================
-CAMPIONATI_MASCHILI = {
- #   "Serie D S.Maschile": "85622",
- #   "U19 S.Maschile": "86865",
- #   "U17 Gr.B S.Maschile": "86864",
- #  "U15 Gr.B S.Maschile": "86848",
-}
+# ================= CAMPIONATI (STAGIONE NUOVA) =================
+# Lasciato vuoto per questa stagione, ma struttura mantenuta per il futuro
+CAMPIONATI_MASCHILI = {}
 
+# Da aggiornare con i nuovi ID della stagione 26/27 appena saranno resi noti
 CAMPIONATI_FEMMINILI = {
-    "Serie C S.Femminile": "92741",
-   # "U18 S.Femminile": "86850",
-   # "U16 S.Femminile": "86853",
-   # "U14 S.Femminile": "86860",
-   # "U13 S.Femminile": "88820",
+    "Serie C S.Femminile": "85471",
+    "U18 S.Femminile": "86850",
+    "U16 S.Femminile": "86853",
+    "U14 S.Femminile": "86860",
+    "U13 S.Femminile": "88820",
 }
 
-# ================= FASI FINALI REGIONALI =================
-# Le squadre qui passano automaticamente dal portale Fipav Salerno a Fipav Campania
-FINALI_REGIONALI = {
-    # "U13 S.Femminile": "91859",
-}
+# Svuotati per inizio stagione
+FINALI_REGIONALI = {}
+FASI_FINALI = {}
+PLAY_OUT = {}
+CAMPIONATI_FINITI = []
 
-# ================= FASI FINALI PROVINCIALI (ELIMINAZIONE DIRETTA) =================
-FASI_FINALI = {
-    # "U18 S.Femminile": "89371",
-    # "U19 S.Maschile": "89301",
-    # "U16 S.Femminile": "89774",
-    # "U14 S.Femminile": "89775",                             
-}
-
-# ================= PLAY OUT SALVEZZA (MINI-GIRONI CON CLASSIFICA) =================
-PLAY_OUT = {
-   # "Serie C S.Femminile": "88812",
-   # "Serie D S.Maschile": "88826",
-}
-
-# ================= CAMPIONATI FINITI (STAGIONE CONCLUSA) =================
-
-CAMPIONATI_FINITI =[
-   # "Serie D S.Maschile",
-   # "U17 Gr.B S.Maschile",
-   # "U15 Gr.B S.Maschile",
-   # "Serie C S.Femminile",
-   # "U16 S.Femminile",
-   # "U18 S.Femminile",
-   # "U14 S.Femminile",
-   # "U13 S.Femminile",
-   # "U19 S.Maschile"
-]
-
-# Mappa dei campionati che hanno una classifica generale avulsa
 CAMPIONATI_AVULSI = {
-    # "Serie C S.Femminile": "85473",
-    # "U14 S.Femminile": "86858",
-    # "U16 S.Femminile": "86853",
-    # "U18 S.Femminile": "86849",
-    # "Serie D S.Maschile": "85620",
-    # "U19 S.Maschile": "86865",
-    # "U13 S.Femminile": "88820",
+    # Inserire i nuovi ID avulsi quando serviranno
 }
 
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
@@ -183,13 +144,13 @@ CSS_BASE = """
     /* DISCLAIMER FIPAV */
     .disclaimer-box { font-size: 9px; color: #888; text-align: center; margin: 10px 20px 5px 20px; line-height: 1.3; font-weight: 400; max-width: 500px; }
 
-    /* 4. MENU TABS (FIX SCROLLING SMARTPHONE) */
+    /* 4. MENU TABS */
     .tab-bar { background-color: white; display: flex; overflow-x: auto; white-space: nowrap; position: sticky; top: 60px; z-index: 99; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #eee; flex-shrink: 0; scrollbar-width: none; }
     .tab-bar::-webkit-scrollbar { display: none; } 
     .tab-btn { flex: 1; padding: 10px 4px; text-align: center; background: none; border: none; font-size: 10px; font-weight: 700; color: #666; border-bottom: 3px solid transparent; cursor: pointer; min-width: 60px; text-transform: uppercase; letter-spacing: -0.3px; }
     .tab-btn.active { color: #d32f2f; border-bottom: 3px solid #d32f2f; font-weight: bold; }
     
-    /* 5. TABELLE CLASSIFICA (Blindate) */
+    /* 5. TABELLE CLASSIFICA */
     .tab-content { display: none; padding: 15px; width: 100%; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -207,15 +168,13 @@ CSS_BASE = """
     .my-team-row td { background-color: #fff3e0 !important; font-weight: bold; }
     .my-team-row td:nth-child(2) { background-color: #fff3e0 !important; }
 
-    /* 6. MATCH CARDS & LAYOUT SETS (FIX ORIZZONTALE) */
+    /* 6. MATCH CARDS */
     .match-card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ddd; position: relative; width: 100%; }
     .match-card.win { border-left-color: #2e7d32; } .match-card.loss { border-left-color: #c62828; } .match-card.upcoming { border-left-color: #ff9800; } 
     .match-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 10px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px; }
     .team-row { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; margin-bottom: 8px; }
     .team-info { flex: 1; min-width: 0; font-size: 14px; line-height: 1.2; white-space: normal; word-wrap: break-word; }
     .my-team-text { color: #d32f2f; font-weight: 700; }
-
-    /* Fix Punteggi: Forza Allineamento Orizzontale */
     .scores-wrapper { display: flex !important; flex-direction: row !important; align-items: center !important; gap: 6px; flex-shrink: 0; }
     .partials-inline { display: flex !important; flex-direction: row !important; gap: 3px; }
     .partial-badge { width: 22px; height: 22px; background-color: #7986cb; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; flex-shrink: 0; }
@@ -229,7 +188,7 @@ CSS_BASE = """
     .btn-map { background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
     .btn-cal { background-color: #f3e5f5; color: #7b1fa2; border-color: #e1bee7; } .btn-wa { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; } 
 
-    /* 7. MODALI E TESTATA MODAL FIX */
+    /* 7. MODALI E CONTROLLI */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .modal-content { background: white; width: 90%; max-width: 400px; max-height: 80vh; border-radius: 12px; padding: 15px; overflow-y: auto; position: relative; }
     .modal-header { display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; width: 100%; }
@@ -240,6 +199,16 @@ CSS_BASE = """
     .btn-tool { font-size: 10px; padding: 6px 12px; background: #fff; border: 1px solid #ccc; border-radius: 15px; cursor: pointer; color: #555; font-weight: bold; transition: 0.2s; z-index: 11; }
     .btn-tool.active { background: #d32f2f; color: white; border-color: #d32f2f; }
 
+    /* MEDIA GALLERY CSS */
+    .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; padding: 15px; max-width: 900px; margin: 0 auto; }
+    .media-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s; }
+    .media-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+    .media-card .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; }
+    .media-card .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    .media-card .img-wrapper { width: 100%; height: 250px; background: #eee; }
+    .media-card .img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+    .media-caption { padding: 12px; background: #fff; border-top: 1px solid #f0f0f0; text-align: center; font-weight: bold; color: #d32f2f; font-size: 13px; text-transform: uppercase; }
+
     /* 8. INSTALL POPUPS */
     .install-popup { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 5000; width: 85%; max-width: 350px; text-align: center; display: none; border: 3px solid #d32f2f; animation: slideUp 0.5s ease-out; }
     @keyframes slideUp { from { transform: translate(-50%, 150%); } to { transform: translate(-50%, 0); } }
@@ -247,7 +216,7 @@ CSS_BASE = """
     .btn-close-popup { background: none; border: none; color: #999; text-decoration: underline; font-size: 12px; cursor: pointer; }
 
     /* 9. FOOTER E PRINT */
-    .footer-counter { text-align: center; padding: 8px 0; background: white; border-top: 1px solid #eee; flex-shrink: 0; width: 100%; }
+    .footer-counter { text-align: center; padding: 8px 0; background: white; border-top: 1px solid #eee; flex-shrink: 0; width: 100%; margin-top: auto;}
     .footer-msg { font-size: 10px; color: #d32f2f; margin: 0; font-weight: bold; }
 
     @media print {
@@ -305,14 +274,6 @@ CSS_BASE = """
         document.getElementById("btn-" + tabIndex).classList.add("active");
     }
 
-    function tornaAlSettore() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const origin = urlParams.get('from');
-        if (origin === 'maschile') window.location.href = "maschile.html";
-        else if (origin === 'femminile') window.location.href = "femminile.html";
-        else window.location.href = "index.html";
-    }
-
     var originalOrder = {};
     function toggleSort(tabId) {
         const container = document.getElementById('calendar-container-' + tabId);
@@ -347,7 +308,7 @@ CSS_BASE = """
             }, 3000);
         }
 
-        // LOGICA NOTIFICHE E PALLINO GIALLO
+        // LOGICA NOTIFICHE CALENDARIO
         if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
             const today = new Date(); today.setHours(0,0,0,0);
             let nextMatches = {};
@@ -365,7 +326,7 @@ CSS_BASE = """
                 }
             });
             let popupHTML = "";
-            for (const[camp, data] of Object.entries(nextMatches)) {
+            for (const [camp, data] of Object.entries(nextMatches)) {
                 const campPulito = camp.replace(' S.Femminile', '').replace(' S.Maschile', '');
                 popupHTML += `<h3 style="color:#d32f2f; font-size:14px; margin-top:10px; border-bottom:1px solid #eee">🏆 ${campPulito}</h3>` + data.html;			   
             }
@@ -516,7 +477,6 @@ def crea_card_html(r, camp, is_focus_mode=False):
     cs = 'class="team-info my-team-text"' if is_home else 'class="team-info"'
     os = 'class="team-info my-team-text"' if is_away else 'class="team-info"'
     
-    # Se il campionato è contrassegnato come finito, forziamo i match ad apparire come giocati per non attivare il pallino calendario
     status_class = "upcoming"
     if camp in CAMPIONATI_FINITI and not r['Punteggio']:
         status_class = "played"
@@ -551,7 +511,6 @@ def crea_card_html(r, camp, is_focus_mode=False):
     btns_html = ""
     if lnk_map: btns_html += f'<a href="{lnk_map}" target="_blank" class="btn btn-map">📍 Mappa</a>'
     if is_my_match or not is_focus_mode:
-        # Nascondi il tasto calendario se il campionato è finito (ormai le date sono passate)
         if lnk_cal and camp not in CAMPIONATI_FINITI: 
             btns_html += f'<a href="{lnk_cal}" target="_blank" class="btn btn-cal">📅</a>'
         if lnk_wa: btns_html += f'<a href="{lnk_wa}" target="_blank" class="btn btn-wa">💬</a>'
@@ -606,22 +565,18 @@ def scrape_data():
     driver = webdriver.Chrome(options=chrome_options)
     all_results, all_standings, all_avulse = [], [],[]
     
-    # 1. Preparazione degli ID (Sostituzione in base alla Fase Attuale)
     campionati_to_scrape = {}
     for nome, cid in ALL_CAMPIONATI.items():
         if nome in FINALI_REGIONALI:
-            campionati_to_scrape[nome] = FINALI_REGIONALI[nome] # Priorità 1: Regionali
+            campionati_to_scrape[nome] = FINALI_REGIONALI[nome] 
         elif nome in FASI_FINALI:
-            campionati_to_scrape[nome] = FASI_FINALI[nome]      # Priorità 2: Finali Provinciali
+            campionati_to_scrape[nome] = FASI_FINALI[nome]      
         elif nome in PLAY_OUT:
-            campionati_to_scrape[nome] = PLAY_OUT[nome]         # Priorità 3: Play Out
+            campionati_to_scrape[nome] = PLAY_OUT[nome]         
         else:
             campionati_to_scrape[nome] = cid
 
-    # 2. Scraping Match e Classifiche Standard
     for nome_camp, id_camp in campionati_to_scrape.items():
-        
-        # LOGICA DOMINIO: Le regionali, la Serie C e la Serie D risiedono su fipavcampania
         if "Serie C" in nome_camp or "Serie D" in nome_camp or nome_camp in FINALI_REGIONALI:
             base_url = "https://www.fipavcampania.it/mobile/"
         else:
@@ -630,7 +585,6 @@ def scrape_data():
         driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}")
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         
-        # Scansioniamo in ordine tutti gli elementi pertinenti
         curr_giornata = "N/D"
         elementi = soup.find_all(['div', 'a'])
         
@@ -644,7 +598,6 @@ def scrape_data():
                 c = el.find('div', class_='squadraCasa').get_text(strip=True).replace(pt_c, '').strip()
                 o = el.find('div', class_='squadraOspite').get_text(strip=True).replace(pt_o, '').strip()
                 
-                # Se siamo in FASI FINALI o PLAY OUT, aggiungiamo l'etichetta speciale
                 giornata_label = curr_giornata
                 if nome_camp in FINALI_REGIONALI and "Regionali" not in giornata_label:
                     giornata_label = f"🌟 Finali Regionali - {curr_giornata}"
@@ -670,7 +623,6 @@ def scrape_data():
                     'Parziali': parziali
                 })
         
-        # Prova a scaricare la classifica (saltata per Regionali ed Eliminazione Diretta)
         if nome_camp not in FASI_FINALI and nome_camp not in FINALI_REGIONALI:
             try:
                 driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
@@ -681,9 +633,7 @@ def scrape_data():
                     all_standings.append(df_s)
             except: pass
 
-    # 3. Scraping Classifiche Avulse (Multi-Dominio)
     for nome_camp, id_camp in CAMPIONATI_AVULSI.items():
-        # Selettore esclusione classifiche avulse per fasi successive o concluse
         if nome_camp in FINALI_REGIONALI or nome_camp in FASI_FINALI or nome_camp in CAMPIONATI_FINITI or nome_camp in PLAY_OUT:
             continue
             
@@ -711,8 +661,6 @@ def scrape_data():
 # ================= GENERATORI PAGINE =================
 def genera_landing_page(is_frozen=False):
     print(f"📄 Generazione Landing Page...")
-    
-    # Selettore Immagine Dinamico (Split o Freeze)
     img_scelta = URL_SUNDAY_ALL if is_frozen else URL_SPLIT_IMG
     
     html = f"""<!DOCTYPE html>
@@ -747,13 +695,13 @@ def genera_landing_page(is_frozen=False):
         </div>
         
         <div class="landing-container">
-            <div class="instruction-text">Seleziona il settore:</div>
+            <div class="instruction-text">Seleziona la sezione:</div>
             
             <div class="choice-card">
-                <img src="{img_scelta}" alt="Scelta Campionato" class="choice-img">
+                <img src="{img_scelta}" alt="Scelta Sezione" class="choice-img">
                 <div class="click-overlay">
-                    <a href="{FILE_MALE}" class="click-area" title="Archivio Maschile"></a>
-                    <a href="{FILE_FEMALE}" class="click-area" title="Archivio Femminile"></a>
+                    <a href="{FILE_MEDIA}" class="click-area" title="Galleria Media"></a>
+                    <a href="{FILE_FEMALE}" class="click-area" title="Campionati"></a>
                 </div>
             </div>
 
@@ -778,62 +726,109 @@ def genera_landing_page(is_frozen=False):
             <span class="version-text">{APP_VERSION}</span>
             <div class="footer-msg">{FOOTER_MSG}</div>
         </div>
-
-        <!-- POPUP ANDROID -->
-        <div id="android-popup" class="install-popup">
-            <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Todis Volley</div>
-            <div style="font-size:13px; color:#555;">Accedi ai risultati più velocemente e usa l'app a tutto schermo!</div>
-            <button class="btn-install-app" onclick="triggerAndroidInstall()">INSTALLA ORA</button>
-            <button class="btn-close-popup" onclick="closePopup('android-popup')">Magari più tardi</button>
-        </div>
-
-        <!-- POPUP IOS -->
-        <div id="ios-popup" class="install-popup">
-            <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa su iPhone</div>
-            <div style="font-size:13px; color:#555; margin-bottom:10px;">
-                1. Premi il tasto <b>Condividi</b> <span style="font-size:18px">📤</span> (in basso al centro)<br>
-                2. Scorri e seleziona <b>"Aggiungi alla schermata Home"</b> <span style="font-size:18px">➕</span>
-            </div>
-            <button class="btn-install-app" onclick="closePopup('ios-popup')">HO CAPITO</button>
-        </div>
     </body>
     </html>"""
     with open(FILE_LANDING, "w", encoding="utf-8") as f: 
         f.write(html)
 
+def genera_pagina_media():
+    print(f"📸 Generazione Pagina Media...")
+    html = f"""<!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="theme-color" content="#d32f2f">
+        <title>Galleria Media - {NOME_VISUALIZZATO}</title>
+        <link rel="icon" type="image/png" href="{URL_LOGO}">
+        {CSS_BASE}
+    </head>
+    <body>
+        <div class="app-header">
+            <div class="header-left" onclick="window.location.href='{FILE_LANDING}'">
+                <img src="{URL_LOGO}" alt="Logo" class="logo-main">
+                <div><h1>Galleria Media</h1><div class="last-update">Torna alla Home</div></div>
+            </div>
+            <div class="nav-buttons">
+                <a href="{FILE_SCORE}" title="Segnapunti"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>
+            </div>
+        </div>
+        
+        <div style="padding: 15px; text-align: center;">
+            <p style="font-size: 13px; color: #555;">Benvenuti nella sezione Media! Qui raccogliamo i momenti più belli della stagione.</p>
+        </div>
+
+        <div class="media-grid">
+            <!-- ESEMPIO VIDEO YOUTUBE -->
+            <div class="media-card">
+                <div class="video-wrapper">
+                    <!-- Sostituisci l'URL di 'src' con quello del tuo video YouTube (usa il link /embed/) -->
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+                </div>
+                <div class="media-caption">Highlights Serie C</div>
+            </div>
+
+            <!-- ESEMPIO FOTO -->
+            <div class="media-card">
+                <div class="img-wrapper">
+                    <!-- Sostituisci l'URL di 'src' con l'URL della tua foto caricata su GitHub o altrove -->
+                    <img src="https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?q=80&w=600&auto=format&fit=crop" alt="Squadra U18">
+                </div>
+                <div class="media-caption">La squadra U18 festeggia!</div>
+            </div>
+            
+            <!-- ESEMPIO FOTO 2 -->
+            <div class="media-card">
+                <div class="img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1593786196229-37ea920b784b?q=80&w=600&auto=format&fit=crop" alt="Azione di gioco">
+                </div>
+                <div class="media-caption">Attacco vincente U16</div>
+            </div>
+        </div>
+
+        <div class="footer-counter">
+            <span class="version-text">{APP_VERSION}</span>
+            <div class="footer-msg">{FOOTER_MSG}</div>
+        </div>
+    </body>
+    </html>"""
+    with open(FILE_MEDIA, "w", encoding="utf-8") as f: 
+        f.write(html)
+
 def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, mode="APP"):
-    page_title = "Settore Maschile" if "maschile" in filename else "Settore Femminile"
-    origin = "maschile" if "maschile" in filename else "femminile"
-    nav_links = f'<a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR_EVENTS}" class="nav-icon-img"></span></a><a href="{"generale_m.html" if origin=="maschile" else "generale_f.html"}?from={origin}"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
+    # Non genera la pagina se il dizionario dei campionati è vuoto (es. Maschile quest'anno)
+    if not campionati_target: return
+    
+    page_title = "Campionati"
+    
+    # Rimosso il tasto "Tutti i risultati"
+    nav_links = f'<a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR_EVENTS}" class="nav-icon-img"></span></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
 
     html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>{page_title}</title>{CSS_BASE}</head><body>'
     html += f'<div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div><div id="modal-body"></div></div></div>'
     html += f'<div class="app-header"><div class="header-left" onclick="window.location.href=\'index.html\'"><img src="{URL_LOGO}" class="logo-main"><div><h1>{page_title}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div></div><div class="nav-buttons">{nav_links}</div></div>'
 
-    # Seleziona i campionati validi
-    valid_camps =[]
+    valid_camps = []
     if not df_class.empty and 'Campionato' in df_class.columns: valid_camps.extend(df_class['Campionato'].unique())
     if not df_ris.empty and 'Campionato' in df_ris.columns: valid_camps.extend(df_ris['Campionato'].unique())
-    campionati_disp =[c for c in campionati_target.keys() if c in valid_camps]
+    campionati_disp = [c for c in campionati_target.keys() if c in valid_camps]
 
-    html += '<div class="tab-bar">'
-    for i, camp in enumerate(campionati_disp): 
-        tab_label = camp.split(" S.")[0]
-        # Priorità visiva modificata: Finita > Regionali > Provinciali > Play Out
-        if camp in CAMPIONATI_FINITI: tab_label += " 🏁"
-        elif camp in FINALI_REGIONALI: tab_label += " 🌟"
-        elif camp in FASI_FINALI: tab_label += " 🏆"
-        elif camp in PLAY_OUT: tab_label += " 🛡️"
-        html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{tab_label}</button>'
-    html += '</div>'
+    if campionati_disp:
+        html += '<div class="tab-bar">'
+        for i, camp in enumerate(campionati_disp): 
+            tab_label = camp.split(" S.")[0]
+            if camp in CAMPIONATI_FINITI: tab_label += " 🏁"
+            elif camp in FINALI_REGIONALI: tab_label += " 🌟"
+            elif camp in FASI_FINALI: tab_label += " 🏆"
+            elif camp in PLAY_OUT: tab_label += " 🛡️"
+            html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{tab_label}</button>'
+        html += '</div>'
 
     for i, camp in enumerate(campionati_disp):
         html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
         
-        # --- BANNER E IMMAGINI ---
         if camp in CAMPIONATI_FINITI:
-            img_url = URL_SUNDAY_MALE if "Maschile" in camp else URL_SUNDAY_FEMALE
-            html += f'<div class="season-ended-container"><img src="{img_url}" class="season-ended-img" alt="Stagione Conclusa"></div>'
+            html += f'<div class="season-ended-container"><img src="{URL_SUNDAY_FEMALE}" class="season-ended-img" alt="Stagione Conclusa"></div>'
             html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #607d8b 0%, #37474f 100%);">🏁 STAGIONE CONCLUSA 🏁</div>'
         elif camp in FINALI_REGIONALI:
             html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%);">🌟 Fasi Finali Regionali 🌟</div>'
@@ -842,7 +837,6 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
         elif camp in PLAY_OUT:
             html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT 🛡️</div>'
 
-        # --- CLASSIFICA GIRONE (Salta se è in Fase Finale a eliminazione diretta) ---
         if camp not in FASI_FINALI and camp not in FINALI_REGIONALI and not df_class.empty and 'Campionato' in df_class.columns:
             df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
             if not df_c.empty:
@@ -856,8 +850,7 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
                     html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
                 html += '</tbody></table></div></div>'
 
-        # --- CLASSIFICA GENERALE AVULSA (Esclusa in automatico nei casi extra) ---
-        if camp not in FASI_FINALI and camp not in FINALI_REGIONALI and camp not in PLAY_OUT and camp not in CAMPIONATI_FINITI and not df_avulse.empty and camp in df_avulse['Campionato_Ref'].unique():
+        if camp not in FASI_FINALI and camp not in PLAY_OUT and camp not in CAMPIONATI_FINITI and not df_avulse.empty and camp in df_avulse['Campionato_Ref'].unique():
             html += f"<h2 style='color: #1565c0; border-left-color: #1565c0;'>🏅 Classifica Generale</h2>"
             df_a = df_avulse[df_avulse['Campionato_Ref'] == camp]
             html += '<div class="table-card" style="border: 1px solid #bbdefb;"><div class="table-scroll"><table><thead><tr style="background-color: #e3f2fd; color: #1565c0;"><th>Pos</th><th>Squadra</th><th>Pz.</th><th>P/G</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
@@ -871,110 +864,53 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
                 html += f"<tr {cls}><td>{r['col_0']}</td><td>{squadra_nome}</td><td>{r['col_2']}</td><td>{format_dec(r['col_3'])}</td><td><b>{r['col_4']}</b></td><td>{r['col_5']}</td><td>{r['col_6']}</td><td>{r['col_7']}</td><td>{r['col_8']}</td><td>{r['col_9']}</td></tr>"
             html += '</tbody></table></div></div>'
         
-        # --- CALENDARIO ---
-        if camp in CAMPIONATI_FINITI: html += f"<h2>📚 Archivio Calendario TODIS</h2>"
-        elif camp in FINALI_REGIONALI: html += f"<h2>🌟 Calendario Finali Regionali TODIS</h2>"
-        elif camp in FASI_FINALI: html += f"<h2>🏆 Calendario Fasi Finali TODIS</h2>"
-        elif camp in PLAY_OUT: html += f"<h2>🛡️ Calendario Play Out TODIS</h2>"
-        else: html += f"<h2>📅 Calendario TODIS</h2>"
+        if camp in CAMPIONATI_FINITI: html += f"<h2>📚 Archivio Calendario</h2>"
+        elif camp in FINALI_REGIONALI: html += f"<h2>🌟 Calendario Regionali</h2>"
+        elif camp in FASI_FINALI: html += f"<h2>🏆 Calendario Finali</h2>"
+        elif camp in PLAY_OUT: html += f"<h2>🛡️ Calendario Play Out</h2>"
+        else: html += f"<h2>📅 Calendario Gare</h2>"
         
-        html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
-        html += f'<div id="calendar-container-{i}">'
-        if not df_ris.empty and 'Campionato' in df_ris.columns:
-            df_todis = df_ris[(df_ris['Campionato'] == camp) & (df_ris['Squadra Casa'].apply(is_target_team) | df_ris['Squadra Ospite'].apply(is_target_team))]
-            for _, r in df_todis.iterrows(): html += crea_card_html(r, camp, is_focus_mode=True)
-        html += '</div></div>'
-
-    html += f'<div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span></div></body></html>'
-    with open(filename, "w", encoding="utf-8") as f: f.write(html)
-
-def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_link):
-    nav_links = f'<a href="#" onclick="tornaAlSettore(); return false;"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
-    html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Risultati Completi</title>{CSS_BASE}</head><body>'
-    html += f'<div class="app-header" style="background:#1976D2"><div class="header-left" onclick="window.location.href=\'index.html\'"><img src="{URL_LOGO}" class="logo-main"><h1>Risultati Completi</h1></div><div class="nav-buttons">{nav_links}</div></div>'
-    
-    valid_camps =[]
-    if not df_class.empty and 'Campionato' in df_class.columns: valid_camps.extend(df_class['Campionato'].unique())
-    if not df_ris.empty and 'Campionato' in df_ris.columns: valid_camps.extend(df_ris['Campionato'].unique())
-    campionati_disp =[c for c in campionati_target.keys() if c in valid_camps]
-
-    html += '<div class="tab-bar">'
-    for i, camp in enumerate(campionati_disp): 
-        tab_label = camp.split(" S.")[0]
-        if camp in CAMPIONATI_FINITI: tab_label += " 🏁"
-        elif camp in FINALI_REGIONALI: tab_label += " 🌟"
-        elif camp in FASI_FINALI: tab_label += " 🏆"
-        elif camp in PLAY_OUT: tab_label += " 🛡️"
-        html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{tab_label}</button>'
-    html += '</div>'
-
-    for i, camp in enumerate(campionati_disp):
-        html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
-        
-        if camp in CAMPIONATI_FINITI:
-            img_url = URL_SUNDAY_MALE if "Maschile" in camp else URL_SUNDAY_FEMALE
-            html += f'<div class="season-ended-container"><img src="{img_url}" class="season-ended-img" alt="Stagione Conclusa"></div>'
-            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #607d8b 0%, #37474f 100%);">🏁 STAGIONE CONCLUSA 🏁</div>'
-        elif camp in FINALI_REGIONALI:
-            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%);">🌟 Fasi Finali Regionali 🌟</div>'
-        elif camp in FASI_FINALI:
-            html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
-        elif camp in PLAY_OUT:
-            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT 🛡️</div>'
-
-        # Classifica non inserita se Fasi Finali
-        if camp not in FASI_FINALI and camp not in FINALI_REGIONALI and not df_class.empty and 'Campionato' in df_class.columns:
-            df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
-            if not df_c.empty:
-                if camp in CAMPIONATI_FINITI: html += f'<h2>🏆 Classifica Definitiva</h2>'
-                elif camp in PLAY_OUT: html += f'<h2>🛡️ Classifica Play Out</h2>'
-                else: html += f'<h2>🏆 Classifica</h2>'
-                
-                html += '<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
-                for _, r in df_c.iterrows():
-                    cls = 'class="my-team-row"' if is_target_team(r['Squadra']) else ''
-                    html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
-                html += '</tbody></table></div></div>'
-        
-        if camp in CAMPIONATI_FINITI: html += f'<h2>📚 Archivio Calendario</h2>'
-        elif camp in FINALI_REGIONALI: html += f'<h2>🌟 Calendario Finali Regionali</h2>'
-        elif camp in FASI_FINALI: html += f'<h2>🏆 Calendario Fasi Finali</h2>'
-        elif camp in PLAY_OUT: html += f'<h2>🛡️ Calendario Play Out</h2>'
-        else: html += f'<h2>📅 Calendario</h2>'
-
         html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
         html += f'<div id="calendar-container-{i}">'
         if not df_ris.empty and 'Campionato' in df_ris.columns:
             df_r = df_ris[df_ris['Campionato'] == camp]
+            # Mostra tutte le partite (non filtra più per ToDis in quanto vogliamo vederle tutte ora che non c'è la tab Generale)
             for g in df_r['Giornata'].unique():
                 html += f'<h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">{g}</h3>'
-                for _, r in df_r[df_r['Giornata'] == g].iterrows(): html += crea_card_html(r, camp, is_focus_mode=False)
+                for _, r in df_r[df_r['Giornata'] == g].iterrows(): 
+                    html += crea_card_html(r, camp, is_focus_mode=False)
         html += '</div></div>'
 
     html += f'<div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span></div></body></html>'
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
+
 
 def genera_segnapunti():
     html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Segnapunti</title>{SCOREBOARD_CODE}</head></html>'
     with open(FILE_SCORE, "w", encoding="utf-8") as f: f.write(html)
 
 if __name__ == "__main__":
-    # Verifica se TUTTI i campionati sono stati inseriti in CAMPIONATI_FINITI
-    is_frozen = all(camp in CAMPIONATI_FINITI for camp in ALL_CAMPIONATI)
+    is_frozen = False 
+    if ALL_CAMPIONATI:
+        is_frozen = all(camp in CAMPIONATI_FINITI for camp in ALL_CAMPIONATI)
     
-    if is_frozen:
+    if is_frozen and ALL_CAMPIONATI:
         print("❄️ TUTTI I CAMPIONATI SONO TERMINATI: APPLICAZIONE IN FREEZE MODE ❄️")
-        # Genera unicamente la Landing Page (con la nuova immagine) e il Segnapunti
         genera_landing_page(is_frozen=True)
+        genera_pagina_media()
         genera_segnapunti()
     else:
-        # Funzionamento Standard
         df_ris, df_class, df_avulse = scrape_data()
         genera_landing_page(is_frozen=False)
-        genera_pagina_app(df_ris, df_class, df_avulse, FILE_MALE, CAMPIONATI_MASCHILI)
-        genera_pagina_app(df_ris, df_class, df_avulse, FILE_FEMALE, CAMPIONATI_FEMMINILI)
-        genera_pagina_generale(df_ris, df_class, FILE_GEN_MALE, CAMPIONATI_MASCHILI, FILE_MALE)
-        genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
+        genera_pagina_media()
+        
+        # Genera solo le pagine di campionati che hanno effettivamente dati configurati
+        if CAMPIONATI_MASCHILI:
+            genera_pagina_app(df_ris, df_class, df_avulse, FILE_MALE, CAMPIONATI_MASCHILI)
+        
+        if CAMPIONATI_FEMMINILI:
+            genera_pagina_app(df_ris, df_class, df_avulse, FILE_FEMALE, CAMPIONATI_FEMMINILI)
+            
         genera_segnapunti()
         
     print(f"✅ Generazione {APP_VERSION} completata!")
