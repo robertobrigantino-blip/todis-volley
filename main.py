@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v6.0
-# RELEASE NOTE: Nuova Stagione, Rimozione Maschile, Inserimento Galleria Media
+# SOFTWARE VERSION: v6.1
+# RELEASE NOTE: Fix layout Galleria Media (Scroll Verticale App-like)
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v6.0 | Stagione 26/27 🏐"
+APP_VERSION = "v6.1 | Stagione 26/27 🏐"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -59,11 +59,12 @@ CAMPIONATI_MASCHILI = {}
 
 # Da aggiornare con i nuovi ID della stagione 26/27 appena saranno resi noti
 CAMPIONATI_FEMMINILI = {
-    "Serie C S.Femminile": "85471",
-    "U18 S.Femminile": "86850",
-    "U16 S.Femminile": "86853",
-    "U14 S.Femminile": "86860",
-    "U13 S.Femminile": "88820",
+    "Serie C S.Femminile": "92741",
+   # "U19 S.Femminile": "",
+   # "U17 S.Femminile": "",
+   # "U15 S.Femminile": "",
+   # "U14 S.Femminile": "",
+   # "U13 S.Femminile": "",
 }
 
 # Svuotati per inizio stagione
@@ -726,6 +727,24 @@ def genera_landing_page(is_frozen=False):
             <span class="version-text">{APP_VERSION}</span>
             <div class="footer-msg">{FOOTER_MSG}</div>
         </div>
+
+        <!-- POPUP ANDROID -->
+        <div id="android-popup" class="install-popup">
+            <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Todis Volley</div>
+            <div style="font-size:13px; color:#555;">Accedi ai risultati più velocemente e usa l'app a tutto schermo!</div>
+            <button class="btn-install-app" onclick="triggerAndroidInstall()">INSTALLA ORA</button>
+            <button class="btn-close-popup" onclick="closePopup('android-popup')">Magari più tardi</button>
+        </div>
+
+        <!-- POPUP IOS -->
+        <div id="ios-popup" class="install-popup">
+            <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa su iPhone</div>
+            <div style="font-size:13px; color:#555; margin-bottom:10px;">
+                1. Premi il tasto <b>Condividi</b> <span style="font-size:18px">📤</span> (in basso al centro)<br>
+                2. Scorri e seleziona <b>"Aggiungi alla schermata Home"</b> <span style="font-size:18px">➕</span>
+            </div>
+            <button class="btn-install-app" onclick="closePopup('ios-popup')">HO CAPITO</button>
+        </div>
     </body>
     </html>"""
     with open(FILE_LANDING, "w", encoding="utf-8") as f: 
@@ -754,35 +773,54 @@ def genera_pagina_media():
             </div>
         </div>
         
-        <div style="padding: 15px; text-align: center;">
-            <p style="font-size: 13px; color: #555;">Benvenuti nella sezione Media! Qui raccogliamo i momenti più belli della stagione.</p>
-        </div>
-
-        <div class="media-grid">
-            <!-- ESEMPIO VIDEO YOUTUBE -->
-            <div class="media-card">
-                <div class="video-wrapper">
-                    <!-- Sostituisci l'URL di 'src' con quello del tuo video YouTube (usa il link /embed/) -->
-                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
-                </div>
-                <div class="media-caption">Highlights Serie C</div>
+        <!-- CONTENITORE SCROLLABILE -->
+        <div style="flex: 1 1 auto; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; width: 100%; background-color: #f0f2f5;">
+            <div style="padding: 15px; text-align: center;">
+                <p style="font-size: 13px; color: #555; margin: 0;">Benvenuti nella sezione Media! Scorri verso il basso per vedere i momenti più belli della stagione.</p>
             </div>
 
-            <!-- ESEMPIO FOTO -->
-            <div class="media-card">
-                <div class="img-wrapper">
-                    <!-- Sostituisci l'URL di 'src' con l'URL della tua foto caricata su GitHub o altrove -->
-                    <img src="https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?q=80&w=600&auto=format&fit=crop" alt="Squadra U18">
+            <div class="media-grid">
+                <!-- ESEMPIO VIDEO YOUTUBE -->
+                <div class="media-card">
+                    <div class="video-wrapper">
+                        <!-- Sostituisci l'URL di 'src' con quello del tuo video YouTube (usa il link /embed/) -->
+                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+                    </div>
+                    <div class="media-caption">Highlights Serie C</div>
                 </div>
-                <div class="media-caption">La squadra U18 festeggia!</div>
-            </div>
-            
-            <!-- ESEMPIO FOTO 2 -->
-            <div class="media-card">
-                <div class="img-wrapper">
-                    <img src="https://images.unsplash.com/photo-1593786196229-37ea920b784b?q=80&w=600&auto=format&fit=crop" alt="Azione di gioco">
+
+                <!-- ESEMPIO FOTO 1 -->
+                <div class="media-card">
+                    <div class="img-wrapper">
+                        <!-- Sostituisci l'URL di 'src' con l'URL della tua foto caricata su GitHub o altrove -->
+                        <img src="https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?q=80&w=600&auto=format&fit=crop" alt="Squadra U18">
+                    </div>
+                    <div class="media-caption">La squadra U18 festeggia!</div>
                 </div>
-                <div class="media-caption">Attacco vincente U16</div>
+                
+                <!-- ESEMPIO FOTO 2 -->
+                <div class="media-card">
+                    <div class="img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1593786196229-37ea920b784b?q=80&w=600&auto=format&fit=crop" alt="Azione di gioco">
+                    </div>
+                    <div class="media-caption">Attacco vincente U16</div>
+                </div>
+                
+                <!-- ESEMPIO FOTO 3 -->
+                <div class="media-card">
+                    <div class="img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1552667466-07770ae110d0?q=80&w=600&auto=format&fit=crop" alt="Esultanza in campo">
+                    </div>
+                    <div class="media-caption">Vittoria importante!</div>
+                </div>
+                
+                <!-- ESEMPIO FOTO 4 -->
+                <div class="media-card">
+                    <div class="img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=600&auto=format&fit=crop" alt="Allenamento">
+                    </div>
+                    <div class="media-caption">Riscaldamento Pre-partita</div>
+                </div>
             </div>
         </div>
 
