@@ -4,18 +4,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <meta name="theme-color" content="#d32f2f">
-        <title>TODIS PASTENA VOLLEY</title>
-        
-        <!-- PWA Meta Tags -->
-        <meta name="mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="apple-mobile-web-app-title" content="PastenaVolley">
-        
+        <title>Galleria Media - TODIS PASTENA VOLLEY</title>
         <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
-        <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg">
-        <link rel="manifest" href="manifest.json">
-        
         
 <style>
     /* 1. RESET E LAYOUT BASE */
@@ -278,44 +268,48 @@
     </head>
     <body>
         <div class="app-header">
-            <div class="header-left">
+            <div class="header-left" onclick="window.location.href='index.html'">
                 <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" alt="Logo" class="logo-main">
-                <div><h1>TODIS PASTENA VOLLEY</h1></div>
+                <div><h1>Galleria Media</h1><div class="last-update">Torna alla Home</div></div>
             </div>
             <div class="nav-buttons">
                 <a href="segnapunti.html" title="Segnapunti"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a>
             </div>
         </div>
         
-        <div class="landing-container">
-            <div class="instruction-text">Seleziona la sezione:</div>
-            
-            <div class="choice-card">
-                <img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/new_landing_page.jpg" alt="Scelta Sezione" class="choice-img">
-                <div class="click-overlay">
-                    <a href="media.html" class="click-area" title="Galleria Media"></a>
-                    <a href="femminile.html" class="click-area" title="Campionati"></a>
+        <div style="padding: 15px; text-align: center;">
+            <p style="font-size: 13px; color: #555;">Benvenuti nella sezione Media! Qui raccogliamo i momenti più belli della stagione.</p>
+        </div>
+
+        <div class="media-grid">
+            <!-- ESEMPIO VIDEO YOUTUBE -->
+            <div class="media-card">
+                <div class="video-wrapper">
+                    <!-- Sostituisci l'URL di 'src' con quello del tuo video YouTube (usa il link /embed/) -->
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
                 </div>
+                <div class="media-caption">Highlights Serie C</div>
             </div>
 
-            <div class="social-section">
-                <div class="social-icons">
-                    <a href="https://www.facebook.com/111542261731361?ref=_xav_ig_profile_page_web" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" class="social-icon-img" alt="Facebook">
-                    </a>
-                    <a href="https://www.instagram.com/asdcspastena_volley/" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" class="social-icon-img" alt="Instagram">
-                    </a>
+            <!-- ESEMPIO FOTO -->
+            <div class="media-card">
+                <div class="img-wrapper">
+                    <!-- Sostituisci l'URL di 'src' con l'URL della tua foto caricata su GitHub o altrove -->
+                    <img src="https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?q=80&w=600&auto=format&fit=crop" alt="Squadra U18">
                 </div>
+                <div class="media-caption">La squadra U18 festeggia!</div>
             </div>
             
-            <div class="disclaimer-box">
-                <b>Disclaimer:</b> Questa Web App non è ufficiale e non intende sostituirsi ai portali FIPAV. È uno strumento gratuito creato per facilitare la consultazione dei dati delle squadre della ASD CS Pastena. Tutti i dati mostrati sono di pubblico dominio; nessun dato personale, sensibile o riservato viene prelevato.
+            <!-- ESEMPIO FOTO 2 -->
+            <div class="media-card">
+                <div class="img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1593786196229-37ea920b784b?q=80&w=600&auto=format&fit=crop" alt="Azione di gioco">
+                </div>
+                <div class="media-caption">Attacco vincente U16</div>
             </div>
         </div>
-        
+
         <div class="footer-counter">
-            <img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f" alt="Visite"><br>
             <span class="version-text">v6.0 | Stagione 26/27 🏐</span>
             <div class="footer-msg">🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐</div>
         </div>
