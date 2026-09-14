@@ -316,8 +316,26 @@
         
         <div class="footer-counter">
             <img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f" alt="Visite"><br>
-            <span class="version-text">v6.0 | Stagione 26/27 🏐</span>
+            <span class="version-text">v6.1 | Stagione 26/27 🏐</span>
             <div class="footer-msg">🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐</div>
+        </div>
+
+        <!-- POPUP ANDROID -->
+        <div id="android-popup" class="install-popup">
+            <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Todis Volley</div>
+            <div style="font-size:13px; color:#555;">Accedi ai risultati più velocemente e usa l'app a tutto schermo!</div>
+            <button class="btn-install-app" onclick="triggerAndroidInstall()">INSTALLA ORA</button>
+            <button class="btn-close-popup" onclick="closePopup('android-popup')">Magari più tardi</button>
+        </div>
+
+        <!-- POPUP IOS -->
+        <div id="ios-popup" class="install-popup">
+            <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa su iPhone</div>
+            <div style="font-size:13px; color:#555; margin-bottom:10px;">
+                1. Premi il tasto <b>Condividi</b> <span style="font-size:18px">📤</span> (in basso al centro)<br>
+                2. Scorri e seleziona <b>"Aggiungi alla schermata Home"</b> <span style="font-size:18px">➕</span>
+            </div>
+            <button class="btn-install-app" onclick="closePopup('ios-popup')">HO CAPITO</button>
         </div>
     </body>
     </html>
