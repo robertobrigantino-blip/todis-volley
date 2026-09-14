@@ -137,6 +137,8 @@
     .media-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
     .media-card .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; }
     .media-card .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    .media-card .ig-wrapper { position: relative; padding-bottom: 125%; height: 0; background: #fff; }
+    .media-card .ig-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
     .media-card .img-wrapper { width: 100%; height: 250px; background: #eee; }
     .media-card .img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
     .media-caption { padding: 12px; background: #fff; border-top: 1px solid #f0f0f0; text-align: center; font-weight: bold; color: #d32f2f; font-size: 13px; text-transform: uppercase; }
@@ -204,6 +206,14 @@
         for (var i = 0; i < buttons.length; i++) buttons[i].classList.remove("active");
         document.getElementById("content-" + tabIndex).classList.add("active");
         document.getElementById("btn-" + tabIndex).classList.add("active");
+    }
+
+    function tornaAlSettore() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const origin = urlParams.get('from');
+        if (origin === 'maschile') window.location.href = "maschile.html";
+        else if (origin === 'femminile') window.location.href = "femminile.html";
+        else window.location.href = "index.html";
     }
 
     var originalOrder = {};
@@ -318,7 +328,7 @@
         
         <div class="footer-counter">
             <img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f" alt="Visite"><br>
-            <span class="version-text">v6.2 | Stagione 26/27 🏐</span>
+            <span class="version-text">v6.3 | Stagione 26/27 🏐</span>
             <div class="footer-msg">🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐</div>
         </div>
 

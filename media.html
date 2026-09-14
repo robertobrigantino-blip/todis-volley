@@ -127,6 +127,8 @@
     .media-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
     .media-card .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; }
     .media-card .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    .media-card .ig-wrapper { position: relative; padding-bottom: 125%; height: 0; background: #fff; }
+    .media-card .ig-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
     .media-card .img-wrapper { width: 100%; height: 250px; background: #eee; }
     .media-card .img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
     .media-caption { padding: 12px; background: #fff; border-top: 1px solid #f0f0f0; text-align: center; font-weight: bold; color: #d32f2f; font-size: 13px; text-transform: uppercase; }
@@ -194,6 +196,14 @@
         for (var i = 0; i < buttons.length; i++) buttons[i].classList.remove("active");
         document.getElementById("content-" + tabIndex).classList.add("active");
         document.getElementById("btn-" + tabIndex).classList.add("active");
+    }
+
+    function tornaAlSettore() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const origin = urlParams.get('from');
+        if (origin === 'maschile') window.location.href = "maschile.html";
+        else if (origin === 'femminile') window.location.href = "femminile.html";
+        else window.location.href = "index.html";
     }
 
     var originalOrder = {};
@@ -279,68 +289,17 @@
             </div>
         </div>
         
-        <!-- CONTENITORE SCROLLABILE -->
         <div style="flex: 1 1 auto; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; width: 100%; background-color: #f0f2f5;">
             <div style="padding: 15px; text-align: center;">
                 <p style="font-size: 13px; color: #555; margin: 0;">Benvenuti nella sezione Media! Scorri verso il basso per vedere i momenti più belli della stagione.</p>
             </div>
 
-           <!--  <div class="media-grid">
-                <!-- ESEMPIO VIDEO YOUTUBE -->
-                <div class="media-card">
-                    <div class="video-wrapper">
-                        <!-- Sostituisci l'URL di 'src' con quello del tuo video YouTube (usa il link /embed/) -->
-                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
-                    </div>
-                    <div class="media-caption">Highlights Serie C</div>
-                </div> -->
-
-                <!-- ESEMPIO FOTO 1 -->
-                <div class="media-card">
-                    <div class="img-wrapper">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/Dc308ZPgQmR/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/Dc5zACPAKIl/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/Dc8S1BhAVe6/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/Dc_XZX5h3gX/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdBRrp7g4TU/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdEV-QfAsBl/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdJLqrNAPK6/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdL4aeOgkpO/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdOvaOkgoR6/" alt="Squadra U18">
-                        <img src="https://www.instagram.com/asdcspastena_volley/p/DdQyf6NgxfK/" alt="Squadra U18">
-                    </div>
-                    <div class="media-caption">La Serie C</div>
-                </div>
-                
-               <!-- 
-               <!-- ESEMPIO FOTO 2 -->
-                <div class="media-card">
-                    <div class="img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1593786196229-37ea920b784b?q=80&w=600&auto=format&fit=crop" alt="Azione di gioco">
-                    </div>
-                    <div class="media-caption">Attacco vincente U16</div>
-                </div>
-                
-                <!-- ESEMPIO FOTO 3 -->
-                <div class="media-card">
-                    <div class="img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1552667466-07770ae110d0?q=80&w=600&auto=format&fit=crop" alt="Esultanza in campo">
-                    </div>
-                    <div class="media-caption">Vittoria importante!</div>
-                </div>
-                
-                <!-- ESEMPIO FOTO 4 -->
-                <div class="media-card">
-                    <div class="img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=600&auto=format&fit=crop" alt="Allenamento">
-                    </div>
-                    <div class="media-caption">Riscaldamento Pre-partita</div>
-                </div> -->
-            </div>
+            <div class="media-section-title" style="background: linear-gradient(135deg, #1976D2 0%, #42A5F5 100%);">🏐 Serie C 🏐</div><div class="media-grid"><div class="media-card"><div class="ig-wrapper"><iframe src="https://www.instagram.com/asdcspastena_volley/p/Dc308ZPgQmR/embed/" frameborder="0" scrolling="no" allowtransparency="true"></iframe></div><div class="media-caption">Squadra U18</div></div><div class="media-card"><div class="ig-wrapper"><iframe src="https://www.instagram.com/asdcspastena_volley/p/Dc5zACPAKIl/embed/" frameborder="0" scrolling="no" allowtransparency="true"></iframe></div><div class="media-caption">Squadra U18</div></div><div class="media-card"><div class="ig-wrapper"><iframe src="https://www.instagram.com/asdcspastena_volley/p/Dc8S1BhAVe6/embed/" frameborder="0" scrolling="no" allowtransparency="true"></iframe></div><div class="media-caption">Squadra U18</div></div><div class="media-card"><div class="ig-wrapper"><iframe src="https://www.instagram.com/asdcspastena_volley/p/Dc_XZX5h3gX/embed/" frameborder="0" scrolling="no" allowtransparency="true"></iframe></div><div class="media-caption">Squadra U18</div></div><div class="media-card"><div class="ig-wrapper"><iframe src="https://www.instagram.com/asdcspastena_volley/p/DdBRrp7g4TU/embed/" frameborder="0" scrolling="no" allowtransparency="true"></iframe></div><div class="media-caption">Squadra U18</div></div><div class="media-card"><div class="ig-wrapper"><iframe src="https://www.instagram.com/asdcspastena_volley/p/DdEV-QfAsBl/embed/" frameborder="0" scrolling="no" allowtransparency="true"></iframe></div><div class="media-caption">Squadra U18</div></div><div class="media-card"><div class="ig-wrapper"><iframe src="https://www.instagram.com/asdcspastena_volley/p/DdJLqrNAPK6/embed/" frameborder="0" scrolling="no" allowtransparency="true"></iframe></div><div class="media-caption">Squadra U18</div></div><div class="media-card"><div class="ig-wrapper"><iframe src="https://www.instagram.com/asdcspastena_volley/p/DdL4aeOgkpO/embed/" frameborder="0" scrolling="no" allowtransparency="true"></iframe></div><div class="media-caption">Squadra U18</div></div><div class="media-card"><div class="ig-wrapper"><iframe src="https://www.instagram.com/asdcspastena_volley/p/DdOvaOkgoR6/embed/" frameborder="0" scrolling="no" allowtransparency="true"></iframe></div><div class="media-caption">Squadra U18</div></div><div class="media-card"><div class="ig-wrapper"><iframe src="https://www.instagram.com/asdcspastena_volley/p/DdQyf6NgxfK/embed/" frameborder="0" scrolling="no" allowtransparency="true"></iframe></div><div class="media-caption">Squadra U18</div></div></div><div class="media-section-title" style="background: linear-gradient(135deg, #1976D2 0%, #42A5F5 100%);">🏐 U18 🏐</div><div class="empty-media">Nessun contenuto multimediale ancora inserito per questa squadra. 📸</div><div class="media-section-title" style="background: linear-gradient(135deg, #1976D2 0%, #42A5F5 100%);">🏐 U16 🏐</div><div class="empty-media">Nessun contenuto multimediale ancora inserito per questa squadra. 📸</div><div class="media-section-title" style="background: linear-gradient(135deg, #1976D2 0%, #42A5F5 100%);">🏐 U14 🏐</div><div class="empty-media">Nessun contenuto multimediale ancora inserito per questa squadra. 📸</div><div class="media-section-title" style="background: linear-gradient(135deg, #1976D2 0%, #42A5F5 100%);">🏐 U13 🏐</div><div class="empty-media">Nessun contenuto multimediale ancora inserito per questa squadra. 📸</div>
+            
         </div>
 
         <div class="footer-counter">
-            <span class="version-text">v6.2 | Stagione 26/27 🏐</span>
+            <span class="version-text">v6.3 | Stagione 26/27 🏐</span>
             <div class="footer-msg">🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐</div>
         </div>
     </body>
