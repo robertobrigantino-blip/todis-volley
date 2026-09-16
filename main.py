@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v6.5
-# RELEASE NOTE: Fix sintassi dizionario e supporto categorie storiche in Galleria
+# SOFTWARE VERSION: v6.6
+# RELEASE NOTE: Ripristino funzionalità toggle calendario "Solo Todis" / "Completo"
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v6.5 | Stagione 26/27 🏐"
+APP_VERSION = "v6.6 | Stagione 26/27 🏐"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -511,7 +511,6 @@ def crea_card_html(r, camp, is_focus_mode=False):
     cs = 'class="team-info my-team-text"' if is_home else 'class="team-info"'
     os = 'class="team-info my-team-text"' if is_away else 'class="team-info"'
     
-    # Se il campionato è contrassegnato come finito, forziamo i match ad apparire come giocati per non attivare il pallino calendario
     status_class = "upcoming"
     if camp in CAMPIONATI_FINITI and not r['Punteggio']:
         status_class = "played"
@@ -546,7 +545,6 @@ def crea_card_html(r, camp, is_focus_mode=False):
     btns_html = ""
     if lnk_map: btns_html += f'<a href="{lnk_map}" target="_blank" class="btn btn-map">📍 Mappa</a>'
     if is_my_match or not is_focus_mode:
-        # Nascondi il tasto calendario se il campionato è finito (ormai le date sono passate)
         if lnk_cal and camp not in CAMPIONATI_FINITI: 
             btns_html += f'<a href="{lnk_cal}" target="_blank" class="btn btn-cal">📅</a>'
         if lnk_wa: btns_html += f'<a href="{lnk_wa}" target="_blank" class="btn btn-wa">💬</a>'
@@ -889,8 +887,10 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
     if not campionati_target: return
     
     page_title = "Campionati"
+    origin = "maschile" if "maschile" in filename else "femminile"
     
-    nav_links = f'<a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR_EVENTS}" class="nav-icon-img"></span></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
+    # REINSERITO IL TASTO "TUTTI I RISULTATI"
+    nav_links = f'<a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR_EVENTS}" class="nav-icon-img"></span></a><a href="{"generale_m.html" if origin=="maschile" else "generale_f.html"}?from={origin}"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
 
     html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>{page_title}</title>{CSS_BASE}</head><body>'
     html += f'<div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div><div id="modal-body"></div></div></div>'
@@ -961,17 +961,80 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
         html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
         html += f'<div id="calendar-container-{i}">'
         if not df_ris.empty and 'Campionato' in df_ris.columns:
-            df_r = df_ris[df_ris['Campionato'] == camp]
-            # Mostra tutte le partite
-            for g in df_r['Giornata'].unique():
-                html += f'<h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">{g}</h3>'
-                for _, r in df_r[df_r['Giornata'] == g].iterrows(): 
-                    html += crea_card_html(r, camp, is_focus_mode=False)
+            # Ripristinato il filtro per mostrare SOLO la squadra TODIS CS PASTENA in questa pagina
+            df_todis = df_ris[(df_ris['Campionato'] == camp) & (df_ris['Squadra Casa'].apply(is_target_team) | df_ris['Squadra Ospite'].apply(is_target_team))]
+            for _, r in df_todis.iterrows(): html += crea_card_html(r, camp, is_focus_mode=True)
         html += '</div></div>'
 
     html += f'<div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span></div></body></html>'
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
 
+def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_link):
+    nav_links = f'<a href="#" onclick="tornaAlSettore(); return false;"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
+    html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Risultati Completi</title>{CSS_BASE}</head><body>'
+    html += f'<div class="app-header" style="background:#1976D2"><div class="header-left" onclick="window.location.href=\'index.html\'"><img src="{URL_LOGO}" class="logo-main"><h1>Risultati Completi</h1></div><div class="nav-buttons">{nav_links}</div></div>'
+    
+    valid_camps =[]
+    if not df_class.empty and 'Campionato' in df_class.columns: valid_camps.extend(df_class['Campionato'].unique())
+    if not df_ris.empty and 'Campionato' in df_ris.columns: valid_camps.extend(df_ris['Campionato'].unique())
+    campionati_disp =[c for c in campionati_target.keys() if c in valid_camps]
+
+    html += '<div class="tab-bar">'
+    for i, camp in enumerate(campionati_disp): 
+        tab_label = camp.split(" S.")[0]
+        if camp in CAMPIONATI_FINITI: tab_label += " 🏁"
+        elif camp in FINALI_REGIONALI: tab_label += " 🌟"
+        elif camp in FASI_FINALI: tab_label += " 🏆"
+        elif camp in PLAY_OUT: tab_label += " 🛡️"
+        html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{tab_label}</button>'
+    html += '</div>'
+
+    for i, camp in enumerate(campionati_disp):
+        html += f'<div id="content-{i}" class="tab-content {"active" if i==0 else ""}">'
+        
+        if camp in CAMPIONATI_FINITI:
+            img_url = URL_SUNDAY_MALE if "Maschile" in camp else URL_SUNDAY_FEMALE
+            html += f'<div class="season-ended-container"><img src="{img_url}" class="season-ended-img" alt="Stagione Conclusa"></div>'
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #607d8b 0%, #37474f 100%);">🏁 STAGIONE CONCLUSA 🏁</div>'
+        elif camp in FINALI_REGIONALI:
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%);">🌟 Fasi Finali Regionali 🌟</div>'
+        elif camp in FASI_FINALI:
+            html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
+        elif camp in PLAY_OUT:
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT 🛡️</div>'
+
+        # Classifica non inserita se Fasi Finali
+        if camp not in FASI_FINALI and camp not in FINALI_REGIONALI and not df_class.empty and 'Campionato' in df_class.columns:
+            df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
+            if not df_c.empty:
+                if camp in CAMPIONATI_FINITI: html += f'<h2>🏆 Classifica Definitiva</h2>'
+                elif camp in PLAY_OUT: html += f'<h2>🛡️ Classifica Play Out</h2>'
+                else: html += f'<h2>🏆 Classifica</h2>'
+                
+                html += '<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
+                for _, r in df_c.iterrows():
+                    cls = 'class="my-team-row"' if is_target_team(r['Squadra']) else ''
+                    html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
+                html += '</tbody></table></div></div>'
+        
+        if camp in CAMPIONATI_FINITI: html += f'<h2>📚 Archivio Calendario</h2>'
+        elif camp in FINALI_REGIONALI: html += f'<h2>🌟 Calendario Finali Regionali</h2>'
+        elif camp in FASI_FINALI: html += f'<h2>🏆 Calendario Fasi Finali</h2>'
+        elif camp in PLAY_OUT: html += f'<h2>🛡️ Calendario Play Out</h2>'
+        else: html += f'<h2>📅 Calendario</h2>'
+
+        html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
+        html += f'<div id="calendar-container-{i}">'
+        if not df_ris.empty and 'Campionato' in df_ris.columns:
+            df_r = df_ris[df_ris['Campionato'] == camp]
+            # La pagina generale mostra tutte le partite di tutte le squadre
+            for g in df_r['Giornata'].unique():
+                html += f'<h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">{g}</h3>'
+                for _, r in df_r[df_r['Giornata'] == g].iterrows(): html += crea_card_html(r, camp, is_focus_mode=False)
+        html += '</div></div>'
+
+    html += f'<div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span></div></body></html>'
+    with open(filename, "w", encoding="utf-8") as f: f.write(html)
 
 def genera_segnapunti():
     html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Segnapunti</title>{SCOREBOARD_CODE}</head></html>'
@@ -992,7 +1055,6 @@ if __name__ == "__main__":
         genera_landing_page(is_frozen=False)
         genera_pagina_media()
         
-        # Genera solo le pagine di campionati che hanno effettivamente dati configurati
         if CAMPIONATI_MASCHILI:
             genera_pagina_app(df_ris, df_class, df_avulse, FILE_MALE, CAMPIONATI_MASCHILI)
         
