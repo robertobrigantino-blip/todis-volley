@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v6.4
-# RELEASE NOTE: Nuova Stagione (Serie C) e Integrazione Foto GitHub (Raw Links)
+# SOFTWARE VERSION: v6.5
+# RELEASE NOTE: Fix sintassi dizionario e supporto categorie storiche in Galleria
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v6.4 | Stagione 26/27 🏐"
+APP_VERSION = "v6.5 | Stagione 26/27 🏐"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -66,7 +66,6 @@ CAMPIONATI_FEMMINILI = {
     # "U14 S.Femminile": "",
 }
 
-# Svuotati per il riavvio della nuova stagione
 FINALI_REGIONALI = {}
 FASI_FINALI = {}
 PLAY_OUT = {}
@@ -76,31 +75,27 @@ CAMPIONATI_AVULSI = {}
 ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 
 # ================= CONFIGURAZIONE GALLERIA MEDIA =================
-# Usa il prefisso raw.githubusercontent.com per fare in modo che le foto GitHub vengano lette correttamente come immagini
 GALLERIA_MEDIA = {
     "Serie C S.Femminile": [
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/AinettFaiella.png", "caption": "Ainett Faiella"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/AnnaDiMuccio.png", "caption": "Anna Di Muccio"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/ChiaraGentile.png", "caption": "Chiara Gentile"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/DariaDeCiancio.png", "caption": "Daria De Ciancio"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/ElenaSantoro.png", "caption": "Elena santoro"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/FrancescaPacifico.png", "caption": "Francesco Pacifico"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/ElenaSantoro.png", "caption": "Elena Santoro"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/FrancescaPacifico.png", "caption": "Francesca Pacifico"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/GiuliaDeMartino.png", "caption": "Giulia De Martino"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/GiuliaFico.png", "caption": "Giulia Fico"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IrenePierro.png", "caption": "Irene Pierro"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/MariapiaAvino.png", "caption": "Mariapia Avino"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/GiorgiaPrisco.png", "caption": "Giorgia Prisco"},
-        # Aggiungi qui le altre foto seguendo lo stesso formato
-    ]
-  "U12 S.Femminile": [
+    ],
+    "U12 S.Femminile": [
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_1161.jpg", "caption": "Premiazione U12 2025"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_3487.jpg", "caption": "Premiazione U12 2026"},
-        # Aggiungi qui le altre foto seguendo lo stesso formato
-    ]
-  "U13 S.Femminile": [
+    ],
+    "U13 S.Femminile": [
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_3492.jpg", "caption": "Premiazione U13 2026"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_8741.jpg", "caption": "1° Classificate U13 2026"},
-        # Aggiungi qui le altre foto seguendo lo stesso formato
     ]
 }
 
@@ -516,6 +511,7 @@ def crea_card_html(r, camp, is_focus_mode=False):
     cs = 'class="team-info my-team-text"' if is_home else 'class="team-info"'
     os = 'class="team-info my-team-text"' if is_away else 'class="team-info"'
     
+    # Se il campionato è contrassegnato come finito, forziamo i match ad apparire come giocati per non attivare il pallino calendario
     status_class = "upcoming"
     if camp in CAMPIONATI_FINITI and not r['Punteggio']:
         status_class = "played"
@@ -550,6 +546,7 @@ def crea_card_html(r, camp, is_focus_mode=False):
     btns_html = ""
     if lnk_map: btns_html += f'<a href="{lnk_map}" target="_blank" class="btn btn-map">📍 Mappa</a>'
     if is_my_match or not is_focus_mode:
+        # Nascondi il tasto calendario se il campionato è finito (ormai le date sono passate)
         if lnk_cal and camp not in CAMPIONATI_FINITI: 
             btns_html += f'<a href="{lnk_cal}" target="_blank" class="btn btn-cal">📅</a>'
         if lnk_wa: btns_html += f'<a href="{lnk_wa}" target="_blank" class="btn btn-wa">💬</a>'
@@ -791,13 +788,23 @@ def genera_landing_page(is_frozen=False):
 def genera_pagina_media():
     print(f"📸 Generazione Pagina Media Dinamica...")
     
+    # Raccogliamo TUTTI i campionati (attivi + storici presenti nella galleria)
+    tutti_i_campionati_media = list(ALL_CAMPIONATI.keys())
+    for k in GALLERIA_MEDIA.keys():
+        if k not in tutti_i_campionati_media:
+            tutti_i_campionati_media.append(k)
+            
     media_html = ""
-    if not ALL_CAMPIONATI:
+    if not tutti_i_campionati_media:
         media_html = '<div class="empty-media">Nessun contenuto multimediale ancora inserito. In attesa di nuovi caricamenti... 📸</div>'
     else:
-        for camp in ALL_CAMPIONATI.keys():
+        for camp in tutti_i_campionati_media:
             media_list = GALLERIA_MEDIA.get(camp, [])
             
+            # Se un campionato non è attivo su fipav e non ha nemmeno foto, non creiamo la sezione vuota
+            if camp not in ALL_CAMPIONATI and not media_list:
+                continue
+                
             camp_label = camp.split(" S.")[0]
             if camp in CAMPIONATI_FINITI:
                 icon = "🏁"
@@ -955,6 +962,7 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
         html += f'<div id="calendar-container-{i}">'
         if not df_ris.empty and 'Campionato' in df_ris.columns:
             df_r = df_ris[df_ris['Campionato'] == camp]
+            # Mostra tutte le partite
             for g in df_r['Giornata'].unique():
                 html += f'<h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">{g}</h3>'
                 for _, r in df_r[df_r['Giornata'] == g].iterrows(): 
@@ -984,6 +992,7 @@ if __name__ == "__main__":
         genera_landing_page(is_frozen=False)
         genera_pagina_media()
         
+        # Genera solo le pagine di campionati che hanno effettivamente dati configurati
         if CAMPIONATI_MASCHILI:
             genera_pagina_app(df_ris, df_class, df_avulse, FILE_MALE, CAMPIONATI_MASCHILI)
         
