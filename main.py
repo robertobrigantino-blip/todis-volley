@@ -89,6 +89,7 @@ GALLERIA_MEDIA = {
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/GiuliaFico.png", "caption": "Giulia Fico"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IrenePierro.png", "caption": "Irene Pierro"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/MariapiaAvino.png", "caption": "Mariapia Avino"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/GiorgiaPrisco.png", "caption": "Giorgia Prisco"},
         # Aggiungi qui le altre foto seguendo lo stesso formato
     ]
   "U12 S.Femminile": [
