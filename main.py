@@ -91,6 +91,16 @@ GALLERIA_MEDIA = {
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/MariapiaAvino.png", "caption": "Mariapia Avino"},
         # Aggiungi qui le altre foto seguendo lo stesso formato
     ]
+  "U12 S.Femminile": [
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_1161.jpg", "caption": "Premiazione U12 2025"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_3487.jpg", "caption": "Premiazione U12 2026"},
+        # Aggiungi qui le altre foto seguendo lo stesso formato
+    ]
+  "U13 S.Femminile": [
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_3492.jpg", "caption": "Premiazione U13 2026"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_8741.jpg", "caption": "1° Classificate U13 2026"},
+        # Aggiungi qui le altre foto seguendo lo stesso formato
+    ]
 }
 
 
