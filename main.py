@@ -90,6 +90,7 @@ GALLERIA_MEDIA = {
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/GiorgiaPrisco.png", "caption": "Giorgia Prisco"},
     ],
     "U12 S.Femminile": [
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_1058.jpg", "caption": "1° Classificate U12 2025"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_1161.jpg", "caption": "Premiazione U12 2025"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/U12_S2026.png", "caption": "1° Classificate U12 2026"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_3487.jpg", "caption": "Premiazione U12 2026"},
