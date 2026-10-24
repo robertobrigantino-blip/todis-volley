@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v6.6
-# RELEASE NOTE: Ripristino funzionalità toggle calendario "Solo Todis" / "Completo"
+# SOFTWARE VERSION: v6.7
+# RELEASE NOTE: Fix Esecuzione - Ripristinata generazione pagine "Tutti i risultati"
 # ==============================================================================
 
 import pandas as pd
@@ -19,7 +19,7 @@ import os
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v6.6 | Stagione 26/27 🏐"
+APP_VERSION = "v6.7 | Stagione 26/27 🏐"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -788,7 +788,6 @@ def genera_landing_page(is_frozen=False):
 def genera_pagina_media():
     print(f"📸 Generazione Pagina Media Dinamica...")
     
-    # Raccogliamo TUTTI i campionati (attivi + storici presenti nella galleria)
     tutti_i_campionati_media = list(ALL_CAMPIONATI.keys())
     for k in GALLERIA_MEDIA.keys():
         if k not in tutti_i_campionati_media:
@@ -801,7 +800,6 @@ def genera_pagina_media():
         for camp in tutti_i_campionati_media:
             media_list = GALLERIA_MEDIA.get(camp, [])
             
-            # Se un campionato non è attivo su fipav e non ha nemmeno foto, non creiamo la sezione vuota
             if camp not in ALL_CAMPIONATI and not media_list:
                 continue
                 
@@ -891,7 +889,6 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
     page_title = "Campionati"
     origin = "maschile" if "maschile" in filename else "femminile"
     
-    # REINSERITO IL TASTO "TUTTI I RISULTATI"
     nav_links = f'<a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR_EVENTS}" class="nav-icon-img"></span></a><a href="{"generale_m.html" if origin=="maschile" else "generale_f.html"}?from={origin}"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
 
     html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>{page_title}</title>{CSS_BASE}</head><body>'
@@ -963,7 +960,6 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
         html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
         html += f'<div id="calendar-container-{i}">'
         if not df_ris.empty and 'Campionato' in df_ris.columns:
-            # Ripristinato il filtro per mostrare SOLO la squadra TODIS CS PASTENA in questa pagina
             df_todis = df_ris[(df_ris['Campionato'] == camp) & (df_ris['Squadra Casa'].apply(is_target_team) | df_ris['Squadra Ospite'].apply(is_target_team))]
             for _, r in df_todis.iterrows(): html += crea_card_html(r, camp, is_focus_mode=True)
         html += '</div></div>'
@@ -1005,7 +1001,6 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
         elif camp in PLAY_OUT:
             html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT 🛡️</div>'
 
-        # Classifica non inserita se Fasi Finali
         if camp not in FASI_FINALI and camp not in FINALI_REGIONALI and not df_class.empty and 'Campionato' in df_class.columns:
             df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
             if not df_c.empty:
@@ -1029,7 +1024,6 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
         html += f'<div id="calendar-container-{i}">'
         if not df_ris.empty and 'Campionato' in df_ris.columns:
             df_r = df_ris[df_ris['Campionato'] == camp]
-            # La pagina generale mostra tutte le partite di tutte le squadre
             for g in df_r['Giornata'].unique():
                 html += f'<h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">{g}</h3>'
                 for _, r in df_r[df_r['Giornata'] == g].iterrows(): html += crea_card_html(r, camp, is_focus_mode=False)
@@ -1059,9 +1053,11 @@ if __name__ == "__main__":
         
         if CAMPIONATI_MASCHILI:
             genera_pagina_app(df_ris, df_class, df_avulse, FILE_MALE, CAMPIONATI_MASCHILI)
-        
+            genera_pagina_generale(df_ris, df_class, FILE_GEN_MALE, CAMPIONATI_MASCHILI, FILE_MALE)
+            
         if CAMPIONATI_FEMMINILI:
             genera_pagina_app(df_ris, df_class, df_avulse, FILE_FEMALE, CAMPIONATI_FEMMINILI)
+            genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
             
         genera_segnapunti()
         
