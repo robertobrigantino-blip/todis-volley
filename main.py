@@ -60,9 +60,9 @@ CAMPIONATI_MASCHILI = {}
 
 CAMPIONATI_FEMMINILI = {
     "Serie C S.Femminile": "92741",
-    "U17 S.Femminile": "94374",
-    "U15 S.Femminile": "94377",
-    "U14 S.Femminile": "94385",
+    "U17 S.Femminile Gir.C": "94374",
+    "U15 S.Femminile Gir.A": "94377",
+    "U14 S.Femminile Gir.C": "94385",
 }
 
 FINALI_REGIONALI = {}
