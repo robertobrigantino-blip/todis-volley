@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v6.7
-# RELEASE NOTE: Fix Esecuzione - Ripristinata generazione pagine "Tutti i risultati"
+# SOFTWARE VERSION: v6.8
+# RELEASE NOTE: Aggiunta Calendari
 # ==============================================================================
 
 import pandas as pd
@@ -60,10 +60,9 @@ CAMPIONATI_MASCHILI = {}
 
 CAMPIONATI_FEMMINILI = {
     "Serie C S.Femminile": "92741",
-    # "U19 S.Femminile": "",
-    # "U17 S.Femminile": "",
-    # "U15 S.Femminile": "",
-    # "U14 S.Femminile": "",
+    "U17 S.Femminile": "94374",
+    "U15 S.Femminile": "94377",
+    "U14 S.Femminile": "94385",
 }
 
 FINALI_REGIONALI = {}
