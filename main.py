@@ -76,17 +76,8 @@ ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 # ================= CONFIGURAZIONE GALLERIA MEDIA =================
 GALLERIA_MEDIA = {
     "Serie C S.Femminile": [
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/AinettFaiella.png", "caption": "Ainett Faiella"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/AnnaDiMuccio.png", "caption": "Anna Di Muccio"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/ChiaraGentile.png", "caption": "Chiara Gentile"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/DariaDeCiancio.png", "caption": "Daria De Ciancio"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/ElenaSantoro.png", "caption": "Elena Santoro"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/FrancescaPacifico.png", "caption": "Francesca Pacifico"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/GiuliaDeMartino.png", "caption": "Giulia De Martino"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/GiuliaFico.png", "caption": "Giulia Fico"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IrenePierro.png", "caption": "Irene Pierro"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/MariapiaAvino.png", "caption": "Mariapia Avino"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/GiorgiaPrisco.png", "caption": "Giorgia Prisco"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_0091.jpg", "caption": "Vittoria 2° Giornata"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_0093.jpg", "caption": "Vittoria 2° Giornata"},
     ],
     "U12 S.Femminile": [
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_1058.jpg", "caption": "1° Classificate U12 2025"},
