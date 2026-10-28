@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v7.0
-# RELEASE NOTE: Fix Pop-Up Installazione (Risolto conflitto Service Worker PWA)
+# SOFTWARE VERSION: v71
+# RELEASE NOTE: Fix Service Worker Scope per GitHub Pages e Prompt Notifiche
 # ==============================================================================
 
 import pandas as pd
@@ -21,7 +21,7 @@ import json
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v7.0 | Stagione 26/27 🏐🔔"
+APP_VERSION = "v7.1 | Stagione 26/27 🏐🔔"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -59,9 +59,10 @@ URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg
 
 # ================= CONFIGURAZIONE ONESIGNAL PUSH =================
 # INSERISCI QUI L'APP ID (Può essere reso pubblico senza problemi)
-ONESIGNAL_APP_ID = "46ed1099-8b58-4760-abca-646c60822779"
+ONESIGNAL_APP_ID = "46ed1099-8b58-4760-abca-646c60822779" 
 
-# Ora OneSignal è configurato per appoggiarsi a sw.js ed evitare conflitti
+# FIX: Parametri specifici per far funzionare il Service Worker nelle sottocartelle di GitHub Pages
+# e forzare l'apertura del prompt (Slidedown) per chiedere il permesso all'utente
 ONESIGNAL_SCRIPT = f"""
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
@@ -69,9 +70,12 @@ ONESIGNAL_SCRIPT = f"""
   OneSignalDeferred.push(async function(OneSignal) {{
     await OneSignal.init({{
       appId: "{ONESIGNAL_APP_ID}",
-      serviceWorkerParam: {{ scope: "/" }},
-      serviceWorkerPath: "sw.js"
+      serviceWorkerParam: {{ scope: "/todis-volley/" }},
+      serviceWorkerPath: "/todis-volley/sw.js"
     }});
+    
+    // Mostra il banner di iscrizione alle notifiche se l'utente non ha ancora scelto
+    OneSignal.Slidedown.promptPush();
   }});
 </script>
 """
@@ -174,7 +178,7 @@ CSS_BASE = """
     .season-ended-container { text-align: center; margin: 5px 0 15px 0; }
     .season-ended-img { width: 100%; max-width: 450px; height: auto; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
 
-    /* 3. LANDING PAGE */
+    /* 3. LANDING PAGE E DISCLAIMER */
     .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 5px 0; overflow: hidden; }
     .instruction-text { font-weight: 700; color: #555; font-size: 11px; text-transform: uppercase; margin: 0; }
     .choice-card { position: relative; width: 92%; max-width: 450px; display: flex; justify-content: center; align-items: center; }
@@ -277,35 +281,35 @@ CSS_BASE = """
 </style>
 
 <script>
-    /* PWA & INSTALLAZIONE */
-    let deferredPrompt;
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Error', err));
-        });
-    }
+                             
+                       
+                                       
+                                               
+                                                                                                 
+           
+     
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        if (!/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())) {
-            setTimeout(() => { 
-                const p = document.getElementById('android-popup');
-                if(p) p.style.display = 'block'; 
-            }, 2000);
-        }
-    });
+                                                           
+                           
+                           
+                                                                                 
+                               
+                                                                   
+                                                 
+                     
+         
+       
 
-    async function triggerAndroidInstall() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            await deferredPrompt.userChoice;
-            deferredPrompt = null;
-            closePopup('android-popup');
-        } else {
-            alert("Usa il menu di Chrome (3 puntini) e seleziona 'Installa App'.");
-        }
-    }
+                                            
+                             
+                                    
+                                            
+                                  
+                                        
+                
+                                                                                   
+         
+     
 
     /* FUNZIONI GENERALI */
     function closePopup(id) { document.getElementById(id).style.display = 'none'; }
@@ -353,8 +357,31 @@ CSS_BASE = """
         }
     }
 
+    /* PWA & INSTALLAZIONE */
+    async function triggerAndroidInstall() {
+        if (window.deferredPrompt) {
+            window.deferredPrompt.prompt();
+            await window.deferredPrompt.userChoice;
+            window.deferredPrompt = null;
+            closePopup('android-popup');
+        } else {
+            alert("Usa il menu di Chrome (3 puntini) e seleziona 'Installa App'.");
+        }
+    }
+
     window.onload = function() {
-        // Pop-up iOS
+        // Pop-up installazione logica
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            window.deferredPrompt = e;
+            if (!/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())) {
+                setTimeout(() => { 
+                    const p = document.getElementById('android-popup');
+                    if(p) p.style.display = 'block'; 
+                }, 2000);
+            }
+        });
+
         const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
         const isStandalone = window.navigator.standalone === true;
         if (isIos && !isStandalone) {
