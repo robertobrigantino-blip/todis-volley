@@ -1,6 +1,6 @@
 # ==============================================================================
 # SOFTWARE VERSION: v7.0
-# RELEASE NOTE: Integrazione Notifiche Push Web (OneSignal SDK + API)
+# RELEASE NOTE: Fix Pop-Up Installazione (Risolto conflitto Service Worker PWA)
 # ==============================================================================
 
 import pandas as pd
@@ -59,8 +59,9 @@ URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg
 
 # ================= CONFIGURAZIONE ONESIGNAL PUSH =================
 # INSERISCI QUI L'APP ID (Può essere reso pubblico senza problemi)
-ONESIGNAL_APP_ID = "46ed1099-8b58-4760-abca-646c60822779" 
+ONESIGNAL_APP_ID = "46ed1099-8b58-4760-abca-646c60822779"
 
+# Ora OneSignal è configurato per appoggiarsi a sw.js ed evitare conflitti
 ONESIGNAL_SCRIPT = f"""
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
@@ -68,6 +69,8 @@ ONESIGNAL_SCRIPT = f"""
   OneSignalDeferred.push(async function(OneSignal) {{
     await OneSignal.init({{
       appId: "{ONESIGNAL_APP_ID}",
+      serviceWorkerParam: {{ scope: "/" }},
+      serviceWorkerPath: "sw.js"
     }});
   }});
 </script>
@@ -171,7 +174,7 @@ CSS_BASE = """
     .season-ended-container { text-align: center; margin: 5px 0 15px 0; }
     .season-ended-img { width: 100%; max-width: 450px; height: auto; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
 
-    /* 3. LANDING PAGE E DISCLAIMER */
+    /* 3. LANDING PAGE */
     .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 5px 0; overflow: hidden; }
     .instruction-text { font-weight: 700; color: #555; font-size: 11px; text-transform: uppercase; margin: 0; }
     .choice-card { position: relative; width: 92%; max-width: 450px; display: flex; justify-content: center; align-items: center; }
@@ -399,6 +402,27 @@ CSS_BASE = """
 </script>
 """
 
+# HTML DI INSTALLAZIONE DA INCLUDERE IN TUTTE LE PAGINE
+INSTALL_POPUPS_HTML = """
+<!-- POPUP ANDROID -->
+<div id="android-popup" class="install-popup">
+    <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Todis Volley</div>
+    <div style="font-size:13px; color:#555;">Accedi ai risultati più velocemente e usa l'app a tutto schermo!</div>
+    <button class="btn-install-app" onclick="triggerAndroidInstall()">INSTALLA ORA</button>
+    <button class="btn-close-popup" onclick="closePopup('android-popup')">Magari più tardi</button>
+</div>
+
+<!-- POPUP IOS -->
+<div id="ios-popup" class="install-popup">
+    <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa su iPhone</div>
+    <div style="font-size:13px; color:#555; margin-bottom:10px;">
+        1. Premi il tasto <b>Condividi</b> <span style="font-size:18px">📤</span> (in basso al centro)<br>
+        2. Scorri e seleziona <b>"Aggiungi alla schermata Home"</b> <span style="font-size:18px">➕</span>
+    </div>
+    <button class="btn-install-app" onclick="closePopup('ios-popup')">HO CAPITO</button>
+</div>
+"""
+
 SCOREBOARD_CODE = """
 <style>
     body { background-color: #121212; color: white; overflow: hidden; margin: 0; padding: 0; }
@@ -526,8 +550,7 @@ def send_push_notification(title, message):
     app_id = ONESIGNAL_APP_ID
     api_key = os.environ.get('ONESIGNAL_API_KEY')
     
-    # Se l'utente non ha ancora configurato OneSignal, ignora l'invio
-    if not api_key or app_id == "INSERISCI_QUI_IL_TUO_APP_ID_DI_ONESIGNAL":
+    if not api_key or app_id == "46ed1099-8b58-4760-abca-646c60822779":
         return
         
     payload = {
@@ -807,24 +830,7 @@ def genera_landing_page(is_frozen=False):
             <span class="version-text">{APP_VERSION}</span>
             <div class="footer-msg">{FOOTER_MSG}</div>
         </div>
-
-        <!-- POPUP ANDROID -->
-        <div id="android-popup" class="install-popup">
-            <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Todis Volley</div>
-            <div style="font-size:13px; color:#555;">Accedi ai risultati più velocemente e usa l'app a tutto schermo!</div>
-            <button class="btn-install-app" onclick="triggerAndroidInstall()">INSTALLA ORA</button>
-            <button class="btn-close-popup" onclick="closePopup('android-popup')">Magari più tardi</button>
-        </div>
-
-        <!-- POPUP IOS -->
-        <div id="ios-popup" class="install-popup">
-            <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa su iPhone</div>
-            <div style="font-size:13px; color:#555; margin-bottom:10px;">
-                1. Premi il tasto <b>Condividi</b> <span style="font-size:18px">📤</span> (in basso al centro)<br>
-                2. Scorri e seleziona <b>"Aggiungi alla schermata Home"</b> <span style="font-size:18px">➕</span>
-            </div>
-            <button class="btn-install-app" onclick="closePopup('ios-popup')">HO CAPITO</button>
-        </div>
+        {INSTALL_POPUPS_HTML}
     </body>
     </html>"""
     with open(FILE_LANDING, "w", encoding="utf-8") as f: 
@@ -924,6 +930,7 @@ def genera_pagina_media():
             <span class="version-text">{APP_VERSION}</span>
             <div class="footer-msg">{FOOTER_MSG}</div>
         </div>
+        {INSTALL_POPUPS_HTML}
     </body>
     </html>"""
     with open(FILE_MEDIA, "w", encoding="utf-8") as f: 
@@ -1010,7 +1017,9 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
             for _, r in df_todis.iterrows(): html += crea_card_html(r, camp, is_focus_mode=True)
         html += '</div></div>'
 
-    html += f'<div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span></div></body></html>'
+    html += f'<div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span></div>'
+    html += INSTALL_POPUPS_HTML
+    html += '</body></html>'
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
 
 def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_link):
@@ -1076,7 +1085,9 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
                 for _, r in df_r[df_r['Giornata'] == g].iterrows(): html += crea_card_html(r, camp, is_focus_mode=False)
         html += '</div></div>'
 
-    html += f'<div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span></div></body></html>'
+    html += f'<div class="footer-counter"><img src="{URL_COUNTER}"><br><span class="version-text">{APP_VERSION}</span></div>'
+    html += INSTALL_POPUPS_HTML
+    html += '</body></html>'
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
 
 def genera_segnapunti():
@@ -1114,21 +1125,16 @@ if __name__ == "__main__":
         today_iso = datetime.today().strftime('%Y-%m-%d')
         tracking_file = "notified_dates.txt"
         
-        # Recupera le date per cui è già stata inviata la notifica
         notified_dates = []
         if os.path.exists(tracking_file):
             with open(tracking_file, 'r') as f:
                 notified_dates = f.read().splitlines()
         
-        # Se oggi non abbiamo ancora mandato nulla...
         if today_iso not in notified_dates:
-            # Filtra le partite che si giocano ESATTAMENTE oggi
             match_oggi = df_ris[df_ris['DataISO'] == today_iso]
-            # Filtra solo le partite che coinvolgono la NOSTRA SQUADRA
             my_match_oggi = match_oggi[match_oggi['Squadra Casa'].apply(is_target_team) | match_oggi['Squadra Ospite'].apply(is_target_team)]
             
             if not my_match_oggi.empty:
-                # Abbiamo delle partite oggi! Prepariamo il messaggio
                 message_lines = []
                 for _, m in my_match_oggi.iterrows():
                     camp_corto = m['Campionato'].split(" S.")[0]
@@ -1137,10 +1143,8 @@ if __name__ == "__main__":
                 push_title = "🏐 È il giorno della partita!"
                 push_msg = " | ".join(message_lines)
                 
-                # Invio Notifica (solo se le chiavi sono configurate)
                 send_push_notification(push_title, push_msg)
                 
-                # Salviamo la data di oggi per evitare duplicati nei run successivi (lo script gira ogni ora)
                 with open(tracking_file, 'a') as f:
                     f.write(f"{today_iso}\n")
     
