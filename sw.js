@@ -1,7 +1,9 @@
+// 1. Importa il motore di OneSignal per le notifiche Push
 importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
-const CACHE_NAME = 'todis-volley-offline-v5'; // Cambio nome per forzare l'aggiornamento su tutti i telefoni
 
-// Elenco COMPLETO di tutto ciò che serve all'app per funzionare senza internet
+const CACHE_NAME = 'todis-volley-offline-v6'; // Passato a v6 per forzare l'aggiornamento
+
+// Elenco COMPLETO e AGGIORNATO dei file necessari
 const ASSETS_TO_CACHE = [
   './',
   'index.html',
@@ -10,9 +12,13 @@ const ASSETS_TO_CACHE = [
   'generale_m.html',
   'generale_f.html',
   'segnapunti.html',
+  'media.html',          // NUOVA PAGINA
   'manifest.json',
   'logo.jpg',
-  'scelta_campionato.jpg',
+  'new_landing_page.jpg', // NUOVA IMMAGINE
+  'Sunday.png',
+  'Sunday_Male.png',
+  'Sunday_Female.png',
   'all_result.png',
   'todis_result.png',
   'tabellone_segnapunti.png',
@@ -67,8 +73,7 @@ self.addEventListener('fetch', (event) => {
             if (cachedResponse) {
                 return cachedResponse;
             }
-            // Se non c'è nemmeno in cache (caso raro se installato bene), mostra error o index
-            // Qui potremmo reindirizzare alla home se una pagina specifica manca
+            // Fallback se manca un file
             return caches.match('index.html'); 
         });
       })
