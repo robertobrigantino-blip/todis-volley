@@ -145,36 +145,6 @@
 </style>
 
 <script>
-                             
-                       
-                                       
-                                               
-                                                                                                 
-           
-     
-
-                                                           
-                           
-                           
-                                                                                 
-                               
-                                                                   
-                                                 
-                     
-         
-       
-
-                                            
-                             
-                                    
-                                            
-                                  
-                                        
-                
-                                                                                   
-         
-     
-
     /* FUNZIONI GENERALI */
     function closePopup(id) { document.getElementById(id).style.display = 'none'; }
     function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
@@ -239,10 +209,11 @@
             e.preventDefault();
             window.deferredPrompt = e;
             if (!/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())) {
+                // Modificato: ritardo 5 secondi per non confliggere con OneSignal
                 setTimeout(() => { 
                     const p = document.getElementById('android-popup');
                     if(p) p.style.display = 'block'; 
-                }, 2000);
+                }, 5000);
             }
         });
 
@@ -252,7 +223,7 @@
             setTimeout(() => { 
                 const p = document.getElementById('ios-popup');
                 if(p) p.style.display = 'block'; 
-            }, 3000);
+            }, 5000);
         }
 
         // LOGICA NOTIFICHE CALENDARIO
@@ -3834,7 +3805,7 @@
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.71603850,14.94132820&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20GIFFONI%20FUTURA%20vs%20FRATRES%20DONATORI%20VALLO%20DI%20DIANO&dates=20270203T170000/20270203T190000&location=PALESTRA%20SMS%20F.LLI%20LINGUITI%20%C2%A0GIFFONI%20VALLE%20PIANA%20SAVIA%20DOMODOSSOLA&details=Campionato+U14%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U14%20S.Femminile%20Gir.C%2A%0A03/02/2027%20%E2%8F%B0%2017%3A00%0A%F0%9F%93%8D%20PALESTRA%20SMS%20F.LLI%20LINGUITI%20%C2%A0GIFFONI%20VALLE%20PIANA%20SAVIA%20DOMODOSSOLA%0AGIFFONI%20FUTURA%20vs%20FRATRES%20DONATORI%20VALLO%20DI%20DIANO" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
-    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v7.1 | Stagione 26/27 🏐🔔</span></div>
+    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v7.2 | Stagione 26/27 🏐🔔</span></div>
 <!-- POPUP ANDROID -->
 <div id="android-popup" class="install-popup">
     <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Todis Volley</div>

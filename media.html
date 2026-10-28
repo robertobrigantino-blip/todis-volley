@@ -153,36 +153,6 @@
 </style>
 
 <script>
-                             
-                       
-                                       
-                                               
-                                                                                                 
-           
-     
-
-                                                           
-                           
-                           
-                                                                                 
-                               
-                                                                   
-                                                 
-                     
-         
-       
-
-                                            
-                             
-                                    
-                                            
-                                  
-                                        
-                
-                                                                                   
-         
-     
-
     /* FUNZIONI GENERALI */
     function closePopup(id) { document.getElementById(id).style.display = 'none'; }
     function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
@@ -247,10 +217,11 @@
             e.preventDefault();
             window.deferredPrompt = e;
             if (!/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())) {
+                // Modificato: ritardo 5 secondi per non confliggere con OneSignal
                 setTimeout(() => { 
                     const p = document.getElementById('android-popup');
                     if(p) p.style.display = 'block'; 
-                }, 2000);
+                }, 5000);
             }
         });
 
@@ -260,7 +231,7 @@
             setTimeout(() => { 
                 const p = document.getElementById('ios-popup');
                 if(p) p.style.display = 'block'; 
-            }, 3000);
+            }, 5000);
         }
 
         // LOGICA NOTIFICHE CALENDARIO
@@ -338,7 +309,7 @@
         </div>
 
         <div class="footer-counter">
-            <span class="version-text">v7.1 | Stagione 26/27 🏐🔔</span>
+            <span class="version-text">v7.2 | Stagione 26/27 🏐🔔</span>
             <div class="footer-msg">🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐</div>
         </div>
         
