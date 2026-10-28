@@ -287,6 +287,17 @@
     };
 </script>
 
+        
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "46ed1099-8b58-4760-abca-646c60822779",
+    });
+  });
+</script>
+
     </head>
     <body>
         <div class="app-header">
@@ -328,7 +339,7 @@
         
         <div class="footer-counter">
             <img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f" alt="Visite"><br>
-            <span class="version-text">v6.8 | Stagione 26/27 🏐</span>
+            <span class="version-text">v7.0 | Stagione 26/27 🏐🔔</span>
             <div class="footer-msg">🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐</div>
         </div>
 

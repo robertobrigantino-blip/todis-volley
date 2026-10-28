@@ -268,6 +268,16 @@
         }
     };
 </script>
+
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "46ed1099-8b58-4760-abca-646c60822779",
+    });
+  });
+</script>
 </head><body><div class="app-header" style="background:#1976D2"><div class="header-left" onclick="window.location.href='index.html'"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" class="logo-main"><h1>Risultati Completi</h1></div><div class="nav-buttons"><a href="#" onclick="tornaAlSettore(); return false;"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/todis_result.png" class="nav-icon-img"></a><a href="segnapunti.html"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div></div><div class="tab-bar"><button id="btn-0" class="tab-btn active" onclick="openTab(0)">Serie C</button><button id="btn-1" class="tab-btn " onclick="openTab(1)">U17</button><button id="btn-2" class="tab-btn " onclick="openTab(2)">U15</button><button id="btn-3" class="tab-btn " onclick="openTab(3)">U14</button></div><div id="content-0" class="tab-content active"><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>PHOENIX CAIVANO</td><td><b>6</b></td><td>2</td><td>2</td><td>0</td><td>6</td><td>0</td></tr><tr ><td>2</td><td>C.R.A. - GREEN VOLLEY CLUB</td><td><b>6</b></td><td>2</td><td>2</td><td>0</td><td>6</td><td>0</td></tr><tr ><td>3</td><td>VIRTUS AVERSA</td><td><b>6</b></td><td>2</td><td>2</td><td>0</td><td>6</td><td>1</td></tr><tr ><td>4</td><td>MONTEVOLLEY</td><td><b>4</b></td><td>2</td><td>1</td><td>1</td><td>5</td><td>4</td></tr><tr ><td>5</td><td>ASD VOLLEY VOLLA</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>4</td><td>4</td></tr><tr ><td>6</td><td>ANCIS VILLARICCA</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>3</td><td>3</td></tr><tr ><td>7</td><td>VITOLO VOLLEY MINERVA</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>3</td><td>3</td></tr><tr ><td>8</td><td>ASD PALLAVOLO POZZUOLI</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>4</td><td>4</td></tr><tr ><td>9</td><td>PM VOLLEY ASD</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>3</td><td>4</td></tr><tr class="my-team-row"><td>10</td><td>TODIS PASTENA VOLLEY</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>3</td><td>4</td></tr><tr ><td>11</td><td>APD CAROTENUTO SANT'AGNELLO</td><td><b>2</b></td><td>2</td><td>1</td><td>1</td><td>4</td><td>5</td></tr><tr ><td>12</td><td>SPORTLAND MONTESARCHIO</td><td><b>0</b></td><td>2</td><td>0</td><td>2</td><td>2</td><td>6</td></tr><tr ><td>13</td><td>VOLLEY CASORIA</td><td><b>0</b></td><td>2</td><td>0</td><td>2</td><td>1</td><td>6</td></tr><tr ><td>14</td><td>EMBARCADERO FAMMILA INCROCIO P</td><td><b>0</b></td><td>2</td><td>0</td><td>2</td><td>0</td><td>6</td></tr></tbody></table></div></div><h2>📅 Calendario</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-0" data-sorted="false" onclick="toggleSort(0)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-0"><h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 1</h3>
     <div class="match-card played" data-date-iso="2026-10-16" data-camp="Serie C S.Femminile" data-my-team="false">
         <div class="match-header">
@@ -2847,7 +2857,7 @@
     
     <div class="match-card upcoming" data-date-iso="2026-11-12" data-camp="U17 S.Femminile Gir.C" data-my-team="true">
         <div class="match-header">
-            <span class="date-badge">📅 12/11/2026 ⏰ 19:00</span> <span>|</span> <span>Giornata 1</span>
+            <span class="date-badge">📅 12/11/2026 ⏰ 19:30</span> <span>|</span> <span>Giornata 1</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info">PROJECR PONTE GIALLA</span><span class="team-score-wrapper">-</span></div>
@@ -2855,7 +2865,7 @@
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALASPORT PALAGRANAIO PONTECAGNANO FAIANO SAVIA ALDO MORO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20PROJECR%20PONTE%20GIALLA%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20261112T190000/20261112T210000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A12/11/2026%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0APROJECR%20PONTE%20GIALLA%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20PROJECR%20PONTE%20GIALLA%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20261112T193000/20261112T213000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A12/11/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0APROJECR%20PONTE%20GIALLA%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     <h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 2</h3>
@@ -2887,17 +2897,17 @@
         </div>
     </div>
     
-    <div class="match-card upcoming" data-date-iso="2026-11-19" data-camp="U17 S.Femminile Gir.C" data-my-team="false">
+    <div class="match-card upcoming" data-date-iso="2026-12-21" data-camp="U17 S.Femminile Gir.C" data-my-team="false">
         <div class="match-header">
-            <span class="date-badge">📅 19/11/2026 ⏰ 20:30</span> <span>|</span> <span>Giornata 2</span>
+            <span class="date-badge">📅 21/12/2026 ⏰ 20:00</span> <span>|</span> <span>Giornata 2</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info">SALERNO GUISCARDS</span><span class="team-score-wrapper">-</span></div>
             <div class="team-row"><span class="team-info">PROJECR PONTE GIALLA</span><span class="team-score-wrapper">-</span></div>
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALESTRA SMS POSIDONIA-LANZALONE XX SETTEMBRE  TORRIONE SALERNO SAVIA XX SETTEMBRE</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66966980,14.78715550&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20SALERNO%20GUISCARDS%20vs%20PROJECR%20PONTE%20GIALLA&dates=20261119T203000/20261119T223000&location=PALESTRA%20SMS%20POSIDONIA-LANZALONE%20XX%20SETTEMBRE%20%C2%A0TORRIONE%20SALERNO%20SAVIA%20XX%20SETTEMBRE&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A19/11/2026%20%E2%8F%B0%2020%3A30%0A%F0%9F%93%8D%20PALESTRA%20SMS%20POSIDONIA-LANZALONE%20XX%20SETTEMBRE%20%C2%A0TORRIONE%20SALERNO%20SAVIA%20XX%20SETTEMBRE%0ASALERNO%20GUISCARDS%20vs%20PROJECR%20PONTE%20GIALLA" target="_blank" class="btn btn-wa">💬</a></div>
+            <span class="gym-name">🏟️ PALESTRA MASULLO LS SEVERI  SALERNO SAVIA D' ANNUNZIO</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66816720,14.79661950&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20SALERNO%20GUISCARDS%20vs%20PROJECR%20PONTE%20GIALLA&dates=20261221T200000/20261221T220000&location=PALESTRA%20MASULLO%20LS%20SEVERI%20%C2%A0SALERNO%20SAVIA%20D%27%20ANNUNZIO&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A21/12/2026%20%E2%8F%B0%2020%3A00%0A%F0%9F%93%8D%20PALESTRA%20MASULLO%20LS%20SEVERI%20%C2%A0SALERNO%20SAVIA%20D%27%20ANNUNZIO%0ASALERNO%20GUISCARDS%20vs%20PROJECR%20PONTE%20GIALLA" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     <h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 3</h3>
@@ -2959,7 +2969,7 @@
     
     <div class="match-card upcoming" data-date-iso="2026-12-03" data-camp="U17 S.Femminile Gir.C" data-my-team="false">
         <div class="match-header">
-            <span class="date-badge">📅 03/12/2026 ⏰ 19:00</span> <span>|</span> <span>Giornata 4</span>
+            <span class="date-badge">📅 03/12/2026 ⏰ 19:30</span> <span>|</span> <span>Giornata 4</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info">PROJECR PONTE GIALLA</span><span class="team-score-wrapper">-</span></div>
@@ -2967,7 +2977,7 @@
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALASPORT PALAGRANAIO PONTECAGNANO FAIANO SAVIA ALDO MORO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20PROJECR%20PONTE%20GIALLA%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO&dates=20261203T190000/20261203T210000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A03/12/2026%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0APROJECR%20PONTE%20GIALLA%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20PROJECR%20PONTE%20GIALLA%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO&dates=20261203T193000/20261203T213000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A03/12/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0APROJECR%20PONTE%20GIALLA%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
@@ -3041,9 +3051,9 @@
         </div>
     </div>
     
-    <div class="match-card upcoming" data-date-iso="2026-12-17" data-camp="U17 S.Femminile Gir.C" data-my-team="false">
+    <div class="match-card upcoming" data-date-iso="2026-12-16" data-camp="U17 S.Femminile Gir.C" data-my-team="false">
         <div class="match-header">
-            <span class="date-badge">📅 17/12/2026 ⏰ 20:30</span> <span>|</span> <span>Giornata 6</span>
+            <span class="date-badge">📅 16/12/2026 ⏰ 21:00</span> <span>|</span> <span>Giornata 6</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info">SALERNO GUISCARDS</span><span class="team-score-wrapper">-</span></div>
@@ -3051,7 +3061,7 @@
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALESTRA SMS POSIDONIA-LANZALONE XX SETTEMBRE  TORRIONE SALERNO SAVIA XX SETTEMBRE</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66966980,14.78715550&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20SALERNO%20GUISCARDS%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO&dates=20261217T203000/20261217T223000&location=PALESTRA%20SMS%20POSIDONIA-LANZALONE%20XX%20SETTEMBRE%20%C2%A0TORRIONE%20SALERNO%20SAVIA%20XX%20SETTEMBRE&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A17/12/2026%20%E2%8F%B0%2020%3A30%0A%F0%9F%93%8D%20PALESTRA%20SMS%20POSIDONIA-LANZALONE%20XX%20SETTEMBRE%20%C2%A0TORRIONE%20SALERNO%20SAVIA%20XX%20SETTEMBRE%0ASALERNO%20GUISCARDS%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66966980,14.78715550&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20SALERNO%20GUISCARDS%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO&dates=20261216T210000/20261216T230000&location=PALESTRA%20SMS%20POSIDONIA-LANZALONE%20XX%20SETTEMBRE%20%C2%A0TORRIONE%20SALERNO%20SAVIA%20XX%20SETTEMBRE&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A16/12/2026%20%E2%8F%B0%2021%3A00%0A%F0%9F%93%8D%20PALESTRA%20SMS%20POSIDONIA-LANZALONE%20XX%20SETTEMBRE%20%C2%A0TORRIONE%20SALERNO%20SAVIA%20XX%20SETTEMBRE%0ASALERNO%20GUISCARDS%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
@@ -3069,6 +3079,20 @@
         </div>
     </div>
     <h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 7</h3>
+    <div class="match-card upcoming" data-date-iso="2026-11-04" data-camp="U17 S.Femminile Gir.C" data-my-team="false">
+        <div class="match-header">
+            <span class="date-badge">📅 04/11/2026 ⏰ 20:45</span> <span>|</span> <span>Giornata 7</span>
+        </div>
+        <div class="teams">
+            <div class="team-row"><span class="team-info">PROJECR PONTE GIALLA</span><span class="team-score-wrapper">-</span></div>
+            <div class="team-row"><span class="team-info">SALERNO GUISCARDS</span><span class="team-score-wrapper">-</span></div>
+        </div>
+        <div class="match-footer" onclick="event.stopPropagation()">
+            <span class="gym-name">🏟️ PALASPORT PALAGRANAIO PONTECAGNANO FAIANO SAVIA ALDO MORO</span>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20PROJECR%20PONTE%20GIALLA%20vs%20SALERNO%20GUISCARDS&dates=20261104T204500/20261104T224500&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A04/11/2026%20%E2%8F%B0%2020%3A45%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0APROJECR%20PONTE%20GIALLA%20vs%20SALERNO%20GUISCARDS" target="_blank" class="btn btn-wa">💬</a></div>
+        </div>
+    </div>
+    
     <div class="match-card upcoming" data-date-iso="2027-01-04" data-camp="U17 S.Femminile Gir.C" data-my-team="true">
         <div class="match-header">
             <span class="date-badge">📅 04/01/2027 ⏰ 17:00</span> <span>|</span> <span>Giornata 7</span>
@@ -3080,20 +3104,6 @@
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ IMPIANTO POLIVALENTE GIANCARLO SIANI BIVIO PRATOLE MONTECORVINO PUGLIANO SAVIA MONTETERMINILLO</span>
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.62512340,14.92707690&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20A.P.D.%20PESSY%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20270104T170000/20270104T190000&location=IMPIANTO%20POLIVALENTE%20GIANCARLO%20SIANI%C2%A0BIVIO%20PRATOLE%20MONTECORVINO%20PUGLIANO%20SAVIA%20MONTETERMINILLO&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A04/01/2027%20%E2%8F%B0%2017%3A00%0A%F0%9F%93%8D%20IMPIANTO%20POLIVALENTE%20GIANCARLO%20SIANI%C2%A0BIVIO%20PRATOLE%20MONTECORVINO%20PUGLIANO%20SAVIA%20MONTETERMINILLO%0AA.P.D.%20PESSY%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
-        </div>
-    </div>
-    
-    <div class="match-card upcoming" data-date-iso="2027-01-07" data-camp="U17 S.Femminile Gir.C" data-my-team="false">
-        <div class="match-header">
-            <span class="date-badge">📅 07/01/2027 ⏰ 19:00</span> <span>|</span> <span>Giornata 7</span>
-        </div>
-        <div class="teams">
-            <div class="team-row"><span class="team-info">PROJECR PONTE GIALLA</span><span class="team-score-wrapper">-</span></div>
-            <div class="team-row"><span class="team-info">SALERNO GUISCARDS</span><span class="team-score-wrapper">-</span></div>
-        </div>
-        <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">🏟️ PALASPORT PALAGRANAIO PONTECAGNANO FAIANO SAVIA ALDO MORO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20PROJECR%20PONTE%20GIALLA%20vs%20SALERNO%20GUISCARDS&dates=20270107T190000/20270107T210000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A07/01/2027%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0APROJECR%20PONTE%20GIALLA%20vs%20SALERNO%20GUISCARDS" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
@@ -3111,9 +3121,9 @@
         </div>
     </div>
     <h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 8</h3>
-    <div class="match-card upcoming" data-date-iso="2027-01-12" data-camp="U17 S.Femminile Gir.C" data-my-team="true">
+    <div class="match-card upcoming" data-date-iso="2027-01-14" data-camp="U17 S.Femminile Gir.C" data-my-team="true">
         <div class="match-header">
-            <span class="date-badge">📅 12/01/2027 ⏰ 19:30</span> <span>|</span> <span>Giornata 8</span>
+            <span class="date-badge">📅 14/01/2027 ⏰ 19:30</span> <span>|</span> <span>Giornata 8</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
@@ -3121,13 +3131,13 @@
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO&dates=20270112T193000/20270112T213000&location=PALESTRA%20ITC%20AMENDOLA%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A12/01/2027%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO&dates=20270114T193000/20270114T213000&location=PALESTRA%20ITC%20AMENDOLA%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A14/01/2027%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
     <div class="match-card upcoming" data-date-iso="2027-01-14" data-camp="U17 S.Femminile Gir.C" data-my-team="false">
         <div class="match-header">
-            <span class="date-badge">📅 14/01/2027 ⏰ 19:00</span> <span>|</span> <span>Giornata 8</span>
+            <span class="date-badge">📅 14/01/2027 ⏰ 19:30</span> <span>|</span> <span>Giornata 8</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info">PROJECR PONTE GIALLA</span><span class="team-score-wrapper">-</span></div>
@@ -3135,7 +3145,7 @@
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALASPORT PALAGRANAIO PONTECAGNANO FAIANO SAVIA ALDO MORO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20PROJECR%20PONTE%20GIALLA%20vs%20A.P.D.%20PESSY&dates=20270114T190000/20270114T210000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A14/01/2027%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0APROJECR%20PONTE%20GIALLA%20vs%20A.P.D.%20PESSY" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20PROJECR%20PONTE%20GIALLA%20vs%20A.P.D.%20PESSY&dates=20270114T193000/20270114T213000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A14/01/2027%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0APROJECR%20PONTE%20GIALLA%20vs%20A.P.D.%20PESSY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
@@ -3225,7 +3235,7 @@
     
     <div class="match-card upcoming" data-date-iso="2027-01-28" data-camp="U17 S.Femminile Gir.C" data-my-team="false">
         <div class="match-header">
-            <span class="date-badge">📅 28/01/2027 ⏰ 19:00</span> <span>|</span> <span>Giornata 10</span>
+            <span class="date-badge">📅 28/01/2027 ⏰ 19:30</span> <span>|</span> <span>Giornata 10</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info">PROJECR PONTE GIALLA</span><span class="team-score-wrapper">-</span></div>
@@ -3233,13 +3243,13 @@
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALASPORT PALAGRANAIO PONTECAGNANO FAIANO SAVIA ALDO MORO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20PROJECR%20PONTE%20GIALLA%20vs%20PALL%20BATTIPAGLIA&dates=20270128T190000/20270128T210000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A28/01/2027%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0APROJECR%20PONTE%20GIALLA%20vs%20PALL%20BATTIPAGLIA" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20PROJECR%20PONTE%20GIALLA%20vs%20PALL%20BATTIPAGLIA&dates=20270128T193000/20270128T213000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U17%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U17%20S.Femminile%20Gir.C%2A%0A28/01/2027%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0APROJECR%20PONTE%20GIALLA%20vs%20PALL%20BATTIPAGLIA" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     </div></div><div id="content-2" class="tab-content "><h2>🏆 Classifica</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr class="my-team-row"><td>1</td><td>TODIS PASTENA VOLLEY</td><td><b>0</b></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr ><td>2</td><td>EMBARCADERO FAMMILA INCROCIO PO</td><td><b>0</b></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr ><td>3</td><td>PALL BATTIPAGLIA</td><td><b>0</b></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr ><td>4</td><td>VOLLEY PROJECT PONTECAGNANO</td><td><b>0</b></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr ><td>5</td><td>ASD GOLDEN SALERNO</td><td><b>0</b></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></tbody></table></div></div><h2>📅 Calendario</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-2" data-sorted="false" onclick="toggleSort(2)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-2"><h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 1</h3>
     <div class="match-card upcoming" data-date-iso="2026-11-10" data-camp="U15 S.Femminile Gir.A" data-my-team="false">
         <div class="match-header">
-            <span class="date-badge">📅 10/11/2026 ⏰ 19:00</span> <span>|</span> <span>Giornata 1</span>
+            <span class="date-badge">📅 10/11/2026 ⏰ 19:30</span> <span>|</span> <span>Giornata 1</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info">VOLLEY PROJECT PONTECAGNANO</span><span class="team-score-wrapper">-</span></div>
@@ -3247,7 +3257,7 @@
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALASPORT PALAGRANAIO PONTECAGNANO FAIANO SAVIA ALDO MORO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20ASD%20GOLDEN%20SALERNO&dates=20261110T190000/20261110T210000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U15%20S.Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U15%20S.Femminile%20Gir.A%2A%0A10/11/2026%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20ASD%20GOLDEN%20SALERNO" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20ASD%20GOLDEN%20SALERNO&dates=20261110T193000/20261110T213000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U15%20S.Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U15%20S.Femminile%20Gir.A%2A%0A10/11/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20ASD%20GOLDEN%20SALERNO" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
@@ -3309,7 +3319,7 @@
     
     <div class="match-card upcoming" data-date-iso="2026-11-24" data-camp="U15 S.Femminile Gir.A" data-my-team="false">
         <div class="match-header">
-            <span class="date-badge">📅 24/11/2026 ⏰ 19:00</span> <span>|</span> <span>Giornata 3</span>
+            <span class="date-badge">📅 24/11/2026 ⏰ 19:30</span> <span>|</span> <span>Giornata 3</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info">VOLLEY PROJECT PONTECAGNANO</span><span class="team-score-wrapper">-</span></div>
@@ -3317,7 +3327,7 @@
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALASPORT PALAGRANAIO PONTECAGNANO FAIANO SAVIA ALDO MORO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20PALL%20BATTIPAGLIA&dates=20261124T190000/20261124T210000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U15%20S.Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U15%20S.Femminile%20Gir.A%2A%0A24/11/2026%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20PALL%20BATTIPAGLIA" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20PALL%20BATTIPAGLIA&dates=20261124T193000/20261124T213000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U15%20S.Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U15%20S.Femminile%20Gir.A%2A%0A24/11/2026%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20PALL%20BATTIPAGLIA" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     <h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 4</h3>
@@ -3421,7 +3431,7 @@
     
     <div class="match-card upcoming" data-date-iso="2027-01-05" data-camp="U15 S.Femminile Gir.A" data-my-team="true">
         <div class="match-header">
-            <span class="date-badge">📅 05/01/2027 ⏰ 19:00</span> <span>|</span> <span>Giornata 7</span>
+            <span class="date-badge">📅 05/01/2027 ⏰ 19:30</span> <span>|</span> <span>Giornata 7</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info">VOLLEY PROJECT PONTECAGNANO</span><span class="team-score-wrapper">-</span></div>
@@ -3429,13 +3439,13 @@
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALASPORT PALAGRANAIO PONTECAGNANO FAIANO SAVIA ALDO MORO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20270105T190000/20270105T210000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U15%20S.Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U15%20S.Femminile%20Gir.A%2A%0A05/01/2027%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20270105T193000/20270105T213000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U15%20S.Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U15%20S.Femminile%20Gir.A%2A%0A05/01/2027%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     <h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 8</h3>
-    <div class="match-card upcoming" data-date-iso="2027-01-14" data-camp="U15 S.Femminile Gir.A" data-my-team="true">
+    <div class="match-card upcoming" data-date-iso="2027-01-12" data-camp="U15 S.Femminile Gir.A" data-my-team="true">
         <div class="match-header">
-            <span class="date-badge">📅 14/01/2027 ⏰ 19:30</span> <span>|</span> <span>Giornata 8</span>
+            <span class="date-badge">📅 12/01/2027 ⏰ 19:30</span> <span>|</span> <span>Giornata 8</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info my-team-text">TODIS PASTENA VOLLEY</span><span class="team-score-wrapper">-</span></div>
@@ -3443,7 +3453,7 @@
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALESTRA ITC AMENDOLA SALERNO SAVia Lazzarelli</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO&dates=20270114T193000/20270114T213000&location=PALESTRA%20ITC%20AMENDOLA%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+U15%20S.Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U15%20S.Femminile%20Gir.A%2A%0A14/01/2027%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO&dates=20270112T193000/20270112T213000&location=PALESTRA%20ITC%20AMENDOLA%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+U15%20S.Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U15%20S.Femminile%20Gir.A%2A%0A12/01/2027%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
@@ -3491,7 +3501,7 @@
     <h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 10</h3>
     <div class="match-card upcoming" data-date-iso="2027-01-26" data-camp="U15 S.Femminile Gir.A" data-my-team="false">
         <div class="match-header">
-            <span class="date-badge">📅 26/01/2027 ⏰ 19:00</span> <span>|</span> <span>Giornata 10</span>
+            <span class="date-badge">📅 26/01/2027 ⏰ 19:30</span> <span>|</span> <span>Giornata 10</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info">VOLLEY PROJECT PONTECAGNANO</span><span class="team-score-wrapper">-</span></div>
@@ -3499,7 +3509,7 @@
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALASPORT PALAGRANAIO PONTECAGNANO FAIANO SAVIA ALDO MORO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO&dates=20270126T190000/20270126T210000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U15%20S.Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U15%20S.Femminile%20Gir.A%2A%0A26/01/2027%20%E2%8F%B0%2019%3A00%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO&dates=20270126T193000/20270126T213000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U15%20S.Femminile%20Gir.A" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U15%20S.Femminile%20Gir.A%2A%0A26/01/2027%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20EMBARCADERO%20FAMMILA%20INCROCIO%20PO" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
@@ -3545,9 +3555,9 @@
         </div>
     </div>
     <h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 2</h3>
-    <div class="match-card upcoming" data-date-iso="2026-11-24" data-camp="U14 S.Femminile Gir.C" data-my-team="false">
+    <div class="match-card upcoming" data-date-iso="2026-11-23" data-camp="U14 S.Femminile Gir.C" data-my-team="false">
         <div class="match-header">
-            <span class="date-badge">📅 24/11/2026 ⏰ 17:00</span> <span>|</span> <span>Giornata 2</span>
+            <span class="date-badge">📅 23/11/2026 ⏰ 18:45</span> <span>|</span> <span>Giornata 2</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info">VOLLEY PROJECT PONTECAGNANO</span><span class="team-score-wrapper">-</span></div>
@@ -3555,7 +3565,7 @@
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALASPORT PALAGRANAIO PONTECAGNANO FAIANO SAVIA ALDO MORO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20GIFFONI%20FUTURA&dates=20261124T170000/20261124T190000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U14%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U14%20S.Femminile%20Gir.C%2A%0A24/11/2026%20%E2%8F%B0%2017%3A00%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20GIFFONI%20FUTURA" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20GIFFONI%20FUTURA&dates=20261123T184500/20261123T204500&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U14%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U14%20S.Femminile%20Gir.C%2A%0A23/11/2026%20%E2%8F%B0%2018%3A45%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20GIFFONI%20FUTURA" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
@@ -3657,9 +3667,9 @@
         </div>
     </div>
     <h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 6</h3>
-    <div class="match-card upcoming" data-date-iso="2027-01-05" data-camp="U14 S.Femminile Gir.C" data-my-team="false">
+    <div class="match-card upcoming" data-date-iso="2027-01-04" data-camp="U14 S.Femminile Gir.C" data-my-team="false">
         <div class="match-header">
-            <span class="date-badge">📅 05/01/2027 ⏰ 17:00</span> <span>|</span> <span>Giornata 6</span>
+            <span class="date-badge">📅 04/01/2027 ⏰ 18:45</span> <span>|</span> <span>Giornata 6</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info">VOLLEY PROJECT PONTECAGNANO</span><span class="team-score-wrapper">-</span></div>
@@ -3667,7 +3677,7 @@
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALASPORT PALAGRANAIO PONTECAGNANO FAIANO SAVIA ALDO MORO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20ASD%20MGVOLLEY%20EBOLI&dates=20270105T170000/20270105T190000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U14%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U14%20S.Femminile%20Gir.C%2A%0A05/01/2027%20%E2%8F%B0%2017%3A00%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20ASD%20MGVOLLEY%20EBOLI" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20ASD%20MGVOLLEY%20EBOLI&dates=20270104T184500/20270104T204500&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U14%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U14%20S.Femminile%20Gir.C%2A%0A04/01/2027%20%E2%8F%B0%2018%3A45%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20ASD%20MGVOLLEY%20EBOLI" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
@@ -3713,9 +3723,9 @@
         </div>
     </div>
     <h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 8</h3>
-    <div class="match-card upcoming" data-date-iso="2027-01-19" data-camp="U14 S.Femminile Gir.C" data-my-team="false">
+    <div class="match-card upcoming" data-date-iso="2027-01-18" data-camp="U14 S.Femminile Gir.C" data-my-team="false">
         <div class="match-header">
-            <span class="date-badge">📅 19/01/2027 ⏰ 17:00</span> <span>|</span> <span>Giornata 8</span>
+            <span class="date-badge">📅 18/01/2027 ⏰ 18:45</span> <span>|</span> <span>Giornata 8</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info">VOLLEY PROJECT PONTECAGNANO</span><span class="team-score-wrapper">-</span></div>
@@ -3723,7 +3733,7 @@
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALASPORT PALAGRANAIO PONTECAGNANO FAIANO SAVIA ALDO MORO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20FRATRES%20DONATORI%20VALLO%20DI%20DIANO&dates=20270119T170000/20270119T190000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U14%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U14%20S.Femminile%20Gir.C%2A%0A19/01/2027%20%E2%8F%B0%2017%3A00%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20FRATRES%20DONATORI%20VALLO%20DI%20DIANO" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20FRATRES%20DONATORI%20VALLO%20DI%20DIANO&dates=20270118T184500/20270118T204500&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U14%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U14%20S.Femminile%20Gir.C%2A%0A18/01/2027%20%E2%8F%B0%2018%3A45%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20FRATRES%20DONATORI%20VALLO%20DI%20DIANO" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
@@ -3741,9 +3751,9 @@
         </div>
     </div>
     <h3 style="background:#eee; padding:5px; border-radius:4px; margin:10px 0;">Giornata 9</h3>
-    <div class="match-card upcoming" data-date-iso="2027-01-26" data-camp="U14 S.Femminile Gir.C" data-my-team="true">
+    <div class="match-card upcoming" data-date-iso="2027-01-25" data-camp="U14 S.Femminile Gir.C" data-my-team="true">
         <div class="match-header">
-            <span class="date-badge">📅 26/01/2027 ⏰ 17:00</span> <span>|</span> <span>Giornata 9</span>
+            <span class="date-badge">📅 25/01/2027 ⏰ 18:45</span> <span>|</span> <span>Giornata 9</span>
         </div>
         <div class="teams">
             <div class="team-row"><span class="team-info">VOLLEY PROJECT PONTECAGNANO</span><span class="team-score-wrapper">-</span></div>
@@ -3751,7 +3761,7 @@
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
             <span class="gym-name">🏟️ PALASPORT PALAGRANAIO PONTECAGNANO FAIANO SAVIA ALDO MORO</span>
-            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20270126T170000/20270126T190000&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U14%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U14%20S.Femminile%20Gir.C%2A%0A26/01/2027%20%E2%8F%B0%2017%3A00%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
+            <div class="action-buttons"><a href="https://www.google.com/maps?q=40.63862760,14.87916170&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20VOLLEY%20PROJECT%20PONTECAGNANO%20vs%20TODIS%20PASTENA%20VOLLEY&dates=20270125T184500/20270125T204500&location=PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO&details=Campionato+U14%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U14%20S.Femminile%20Gir.C%2A%0A25/01/2027%20%E2%8F%B0%2018%3A45%0A%F0%9F%93%8D%20PALASPORT%20PALAGRANAIO%C2%A0PONTECAGNANO%20FAIANO%20SAVIA%20ALDO%20MORO%0AVOLLEY%20PROJECT%20PONTECAGNANO%20vs%20TODIS%20PASTENA%20VOLLEY" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
     
@@ -3796,4 +3806,4 @@
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.71603850,14.94132820&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20GIFFONI%20FUTURA%20vs%20FRATRES%20DONATORI%20VALLO%20DI%20DIANO&dates=20270203T170000/20270203T190000&location=PALESTRA%20SMS%20F.LLI%20LINGUITI%20%C2%A0GIFFONI%20VALLE%20PIANA%20SAVIA%20DOMODOSSOLA&details=Campionato+U14%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U14%20S.Femminile%20Gir.C%2A%0A03/02/2027%20%E2%8F%B0%2017%3A00%0A%F0%9F%93%8D%20PALESTRA%20SMS%20F.LLI%20LINGUITI%20%C2%A0GIFFONI%20VALLE%20PIANA%20SAVIA%20DOMODOSSOLA%0AGIFFONI%20FUTURA%20vs%20FRATRES%20DONATORI%20VALLO%20DI%20DIANO" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
-    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v6.8 | Stagione 26/27 🏐</span></div></body></html>
+    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v7.0 | Stagione 26/27 🏐🔔</span></div></body></html>
