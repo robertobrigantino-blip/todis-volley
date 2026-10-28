@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v71
-# RELEASE NOTE: Fix Service Worker Scope per GitHub Pages e Prompt Notifiche
+# SOFTWARE VERSION: v7.2
+# RELEASE NOTE: Fix Conflitto Popup Notifiche/Installazione (Delay 5 secondi)
 # ==============================================================================
 
 import pandas as pd
@@ -21,7 +21,7 @@ import json
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v7.1 | Stagione 26/27 🏐🔔"
+APP_VERSION = "v7.2 | Stagione 26/27 🏐🔔"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -61,8 +61,6 @@ URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg
 # INSERISCI QUI L'APP ID (Può essere reso pubblico senza problemi)
 ONESIGNAL_APP_ID = "46ed1099-8b58-4760-abca-646c60822779" 
 
-# FIX: Parametri specifici per far funzionare il Service Worker nelle sottocartelle di GitHub Pages
-# e forzare l'apertura del prompt (Slidedown) per chiedere il permesso all'utente
 ONESIGNAL_SCRIPT = f"""
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
@@ -124,7 +122,6 @@ GALLERIA_MEDIA = {
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_8741.jpg", "caption": "1° Classificate U13 2026"},
     ]
 }
-
 
 def is_target_team(team_name):
     if pd.isna(team_name) or not str(team_name).strip(): return False
@@ -281,36 +278,6 @@ CSS_BASE = """
 </style>
 
 <script>
-                             
-                       
-                                       
-                                               
-                                                                                                 
-           
-     
-
-                                                           
-                           
-                           
-                                                                                 
-                               
-                                                                   
-                                                 
-                     
-         
-       
-
-                                            
-                             
-                                    
-                                            
-                                  
-                                        
-                
-                                                                                   
-         
-     
-
     /* FUNZIONI GENERALI */
     function closePopup(id) { document.getElementById(id).style.display = 'none'; }
     function openModal() { document.getElementById('modal-overlay').style.display = 'flex'; }
@@ -375,10 +342,11 @@ CSS_BASE = """
             e.preventDefault();
             window.deferredPrompt = e;
             if (!/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())) {
+                // Modificato: ritardo 5 secondi per non confliggere con OneSignal
                 setTimeout(() => { 
                     const p = document.getElementById('android-popup');
                     if(p) p.style.display = 'block'; 
-                }, 2000);
+                }, 5000);
             }
         });
 
@@ -388,7 +356,7 @@ CSS_BASE = """
             setTimeout(() => { 
                 const p = document.getElementById('ios-popup');
                 if(p) p.style.display = 'block'; 
-            }, 3000);
+            }, 5000);
         }
 
         // LOGICA NOTIFICHE CALENDARIO
