@@ -1,3 +1,4 @@
+importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
 const CACHE_NAME = 'todis-volley-offline-v5'; // Cambio nome per forzare l'aggiornamento su tutti i telefoni
 
 // Elenco COMPLETO di tutto ciò che serve all'app per funzionare senza internet
