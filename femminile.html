@@ -42,7 +42,7 @@
     .season-ended-container { text-align: center; margin: 5px 0 15px 0; }
     .season-ended-img { width: 100%; max-width: 450px; height: auto; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
 
-    /* 3. LANDING PAGE */
+    /* 3. LANDING PAGE E DISCLAIMER */
     .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 5px 0; overflow: hidden; }
     .instruction-text { font-weight: 700; color: #555; font-size: 11px; text-transform: uppercase; margin: 0; }
     .choice-card { position: relative; width: 92%; max-width: 450px; display: flex; justify-content: center; align-items: center; }
@@ -145,35 +145,35 @@
 </style>
 
 <script>
-    /* PWA & INSTALLAZIONE */
-    let deferredPrompt;
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Error', err));
-        });
-    }
+                             
+                       
+                                       
+                                               
+                                                                                                 
+           
+     
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        if (!/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())) {
-            setTimeout(() => { 
-                const p = document.getElementById('android-popup');
-                if(p) p.style.display = 'block'; 
-            }, 2000);
-        }
-    });
+                                                           
+                           
+                           
+                                                                                 
+                               
+                                                                   
+                                                 
+                     
+         
+       
 
-    async function triggerAndroidInstall() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            await deferredPrompt.userChoice;
-            deferredPrompt = null;
-            closePopup('android-popup');
-        } else {
-            alert("Usa il menu di Chrome (3 puntini) e seleziona 'Installa App'.");
-        }
-    }
+                                            
+                             
+                                    
+                                            
+                                  
+                                        
+                
+                                                                                   
+         
+     
 
     /* FUNZIONI GENERALI */
     function closePopup(id) { document.getElementById(id).style.display = 'none'; }
@@ -221,8 +221,31 @@
         }
     }
 
+    /* PWA & INSTALLAZIONE */
+    async function triggerAndroidInstall() {
+        if (window.deferredPrompt) {
+            window.deferredPrompt.prompt();
+            await window.deferredPrompt.userChoice;
+            window.deferredPrompt = null;
+            closePopup('android-popup');
+        } else {
+            alert("Usa il menu di Chrome (3 puntini) e seleziona 'Installa App'.");
+        }
+    }
+
     window.onload = function() {
-        // Pop-up iOS
+        // Pop-up installazione logica
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            window.deferredPrompt = e;
+            if (!/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())) {
+                setTimeout(() => { 
+                    const p = document.getElementById('android-popup');
+                    if(p) p.style.display = 'block'; 
+                }, 2000);
+            }
+        });
+
         const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
         const isStandalone = window.navigator.standalone === true;
         if (isIos && !isStandalone) {
@@ -275,12 +298,15 @@
   OneSignalDeferred.push(async function(OneSignal) {
     await OneSignal.init({
       appId: "46ed1099-8b58-4760-abca-646c60822779",
-      serviceWorkerParam: { scope: "/" },
-      serviceWorkerPath: "sw.js"
+      serviceWorkerParam: { scope: "/todis-volley/" },
+      serviceWorkerPath: "/todis-volley/sw.js"
     });
+    
+    // Mostra il banner di iscrizione alle notifiche se l'utente non ha ancora scelto
+    OneSignal.Slidedown.promptPush();
   });
 </script>
-</head><body><div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div><div id="modal-body"></div></div></div><div class="app-header"><div class="header-left" onclick="window.location.href='index.html'"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" class="logo-main"><div><h1>Campionati</h1><div class="last-update">28/10 09:40</div></div></div><div class="nav-buttons"><a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/prossimi_appuntamenti.png" class="nav-icon-img"></span></a><a href="generale_f.html?from=femminile"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/all_result.png" class="nav-icon-img"></a><a href="segnapunti.html"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div></div><div class="tab-bar"><button id="btn-0" class="tab-btn active" onclick="openTab(0)">Serie C</button><button id="btn-1" class="tab-btn " onclick="openTab(1)">U17</button><button id="btn-2" class="tab-btn " onclick="openTab(2)">U15</button><button id="btn-3" class="tab-btn " onclick="openTab(3)">U14</button></div><div id="content-0" class="tab-content active"><h2>🏆 Classifica Girone</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>PHOENIX CAIVANO</td><td><b>6</b></td><td>2</td><td>2</td><td>0</td><td>6</td><td>0</td></tr><tr ><td>2</td><td>C.R.A. - GREEN VOLLEY CLUB</td><td><b>6</b></td><td>2</td><td>2</td><td>0</td><td>6</td><td>0</td></tr><tr ><td>3</td><td>VIRTUS AVERSA</td><td><b>6</b></td><td>2</td><td>2</td><td>0</td><td>6</td><td>1</td></tr><tr ><td>4</td><td>MONTEVOLLEY</td><td><b>4</b></td><td>2</td><td>1</td><td>1</td><td>5</td><td>4</td></tr><tr ><td>5</td><td>ASD VOLLEY VOLLA</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>4</td><td>4</td></tr><tr ><td>6</td><td>ANCIS VILLARICCA</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>3</td><td>3</td></tr><tr ><td>7</td><td>VITOLO VOLLEY MINERVA</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>3</td><td>3</td></tr><tr ><td>8</td><td>ASD PALLAVOLO POZZUOLI</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>4</td><td>4</td></tr><tr ><td>9</td><td>PM VOLLEY ASD</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>3</td><td>4</td></tr><tr class="my-team-row"><td>10</td><td>TODIS PASTENA VOLLEY</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>3</td><td>4</td></tr><tr ><td>11</td><td>APD CAROTENUTO SANT'AGNELLO</td><td><b>2</b></td><td>2</td><td>1</td><td>1</td><td>4</td><td>5</td></tr><tr ><td>12</td><td>SPORTLAND MONTESARCHIO</td><td><b>0</b></td><td>2</td><td>0</td><td>2</td><td>2</td><td>6</td></tr><tr ><td>13</td><td>VOLLEY CASORIA</td><td><b>0</b></td><td>2</td><td>0</td><td>2</td><td>1</td><td>6</td></tr><tr ><td>14</td><td>EMBARCADERO FAMMILA INCROCIO P</td><td><b>0</b></td><td>2</td><td>0</td><td>2</td><td>0</td><td>6</td></tr></tbody></table></div></div><h2>📅 Calendario Gare</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-0" data-sorted="false" onclick="toggleSort(0)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-0">
+</head><body><div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div><div id="modal-body"></div></div></div><div class="app-header"><div class="header-left" onclick="window.location.href='index.html'"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/logo.jpg" class="logo-main"><div><h1>Campionati</h1><div class="last-update">28/10 09:52</div></div></div><div class="nav-buttons"><a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/prossimi_appuntamenti.png" class="nav-icon-img"></span></a><a href="generale_f.html?from=femminile"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/all_result.png" class="nav-icon-img"></a><a href="segnapunti.html"><img src="https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/tabellone_segnapunti.png" class="nav-icon-img"></a></div></div><div class="tab-bar"><button id="btn-0" class="tab-btn active" onclick="openTab(0)">Serie C</button><button id="btn-1" class="tab-btn " onclick="openTab(1)">U17</button><button id="btn-2" class="tab-btn " onclick="openTab(2)">U15</button><button id="btn-3" class="tab-btn " onclick="openTab(3)">U14</button></div><div id="content-0" class="tab-content active"><h2>🏆 Classifica Girone</h2><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody><tr ><td>1</td><td>PHOENIX CAIVANO</td><td><b>6</b></td><td>2</td><td>2</td><td>0</td><td>6</td><td>0</td></tr><tr ><td>2</td><td>C.R.A. - GREEN VOLLEY CLUB</td><td><b>6</b></td><td>2</td><td>2</td><td>0</td><td>6</td><td>0</td></tr><tr ><td>3</td><td>VIRTUS AVERSA</td><td><b>6</b></td><td>2</td><td>2</td><td>0</td><td>6</td><td>1</td></tr><tr ><td>4</td><td>MONTEVOLLEY</td><td><b>4</b></td><td>2</td><td>1</td><td>1</td><td>5</td><td>4</td></tr><tr ><td>5</td><td>ASD VOLLEY VOLLA</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>4</td><td>4</td></tr><tr ><td>6</td><td>ANCIS VILLARICCA</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>3</td><td>3</td></tr><tr ><td>7</td><td>VITOLO VOLLEY MINERVA</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>3</td><td>3</td></tr><tr ><td>8</td><td>ASD PALLAVOLO POZZUOLI</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>4</td><td>4</td></tr><tr ><td>9</td><td>PM VOLLEY ASD</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>3</td><td>4</td></tr><tr class="my-team-row"><td>10</td><td>TODIS PASTENA VOLLEY</td><td><b>3</b></td><td>2</td><td>1</td><td>1</td><td>3</td><td>4</td></tr><tr ><td>11</td><td>APD CAROTENUTO SANT'AGNELLO</td><td><b>2</b></td><td>2</td><td>1</td><td>1</td><td>4</td><td>5</td></tr><tr ><td>12</td><td>SPORTLAND MONTESARCHIO</td><td><b>0</b></td><td>2</td><td>0</td><td>2</td><td>2</td><td>6</td></tr><tr ><td>13</td><td>VOLLEY CASORIA</td><td><b>0</b></td><td>2</td><td>0</td><td>2</td><td>1</td><td>6</td></tr><tr ><td>14</td><td>EMBARCADERO FAMMILA INCROCIO P</td><td><b>0</b></td><td>2</td><td>0</td><td>2</td><td>0</td><td>6</td></tr></tbody></table></div></div><h2>📅 Calendario Gare</h2><div class="calendar-controls"><button class="btn-tool" id="btn-sort-0" data-sorted="false" onclick="toggleSort(0)">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div><div id="calendar-container-0">
     <div class="match-card loss" data-date-iso="2026-10-17" data-camp="Serie C S.Femminile" data-my-team="true">
         <div class="match-header">
             <span class="date-badge">📅 17/10/2026 ⏰ 19:00</span> <span>|</span> <span>Giornata 1</span>
@@ -1008,7 +1034,7 @@
             <div class="action-buttons"><a href="https://www.google.com/maps?q=40.66374960,14.80469730&entry=gps&shorturl=1" target="_blank" class="btn btn-map">📍 Mappa</a><a href="https://www.google.com/calendar/render?action=TEMPLATE&text=%F0%9F%8F%90%20TODIS%20PASTENA%20VOLLEY%20vs%20ASD%20MGVOLLEY%20EBOLI&dates=20270202T193000/20270202T213000&location=PALESTRA%20ITC%20AMENDOLA%C2%A0SALERNO%20SAVia%20Lazzarelli&details=Campionato+U14%20S.Femminile%20Gir.C" target="_blank" class="btn btn-cal">📅</a><a href="https://wa.me/?text=%F0%9F%93%85%20%2AGara%20U14%20S.Femminile%20Gir.C%2A%0A02/02/2027%20%E2%8F%B0%2019%3A30%0A%F0%9F%93%8D%20PALESTRA%20ITC%20AMENDOLA%C2%A0SALERNO%20SAVia%20Lazzarelli%0ATODIS%20PASTENA%20VOLLEY%20vs%20ASD%20MGVOLLEY%20EBOLI" target="_blank" class="btn btn-wa">💬</a></div>
         </div>
     </div>
-    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v7.0 | Stagione 26/27 🏐🔔</span></div>
+    </div></div><div class="footer-counter"><img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"><br><span class="version-text">v7.1 | Stagione 26/27 🏐🔔</span></div>
 <!-- POPUP ANDROID -->
 <div id="android-popup" class="install-popup">
     <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Todis Volley</div>
