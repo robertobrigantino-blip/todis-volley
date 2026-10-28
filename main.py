@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v6.8
-# RELEASE NOTE: Aggiunta Calendari
+# SOFTWARE VERSION: v7.0
+# RELEASE NOTE: Integrazione Notifiche Push Web (OneSignal SDK + API)
 # ==============================================================================
 
 import pandas as pd
@@ -16,10 +16,12 @@ from urllib.parse import urljoin, quote
 import re 
 from datetime import datetime, timedelta
 import os
+import urllib.request
+import json
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v6.8 | Stagione 26/27 🏐"
+APP_VERSION = "v7.0 | Stagione 26/27 🏐🔔"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -55,6 +57,22 @@ BTN_CALENDAR_EVENTS = REPO_URL + "prossimi_appuntamenti.png"
 
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
+# ================= CONFIGURAZIONE ONESIGNAL PUSH =================
+# INSERISCI QUI L'APP ID (Può essere reso pubblico senza problemi)
+ONESIGNAL_APP_ID = "46ed1099-8b58-4760-abca-646c60822779" 
+
+ONESIGNAL_SCRIPT = f"""
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {{
+    await OneSignal.init({{
+      appId: "{ONESIGNAL_APP_ID}",
+    }});
+  }});
+</script>
+"""
+
 # ================= CAMPIONATI (NUOVA STAGIONE) =================
 CAMPIONATI_MASCHILI = {}
 
@@ -76,8 +94,17 @@ ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 # ================= CONFIGURAZIONE GALLERIA MEDIA =================
 GALLERIA_MEDIA = {
     "Serie C S.Femminile": [
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_0091.jpg", "caption": "Vittoria 2° Giornata"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_0093.jpg", "caption": "Vittoria 2° Giornata"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/AinettFaiella.png", "caption": "Ainett Faiella"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/AnnaDiMuccio.png", "caption": "Anna Di Muccio"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/ChiaraGentile.png", "caption": "Chiara Gentile"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/DariaDeCiancio.png", "caption": "Daria De Ciancio"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/ElenaSantoro.png", "caption": "Elena Santoro"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/FrancescaPacifico.png", "caption": "Francesca Pacifico"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/GiuliaDeMartino.png", "caption": "Giulia De Martino"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/GiuliaFico.png", "caption": "Giulia Fico"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IrenePierro.png", "caption": "Irene Pierro"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/MariapiaAvino.png", "caption": "Mariapia Avino"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/GiorgiaPrisco.png", "caption": "Giorgia Prisco"},
     ],
     "U12 S.Femminile": [
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_1058.jpg", "caption": "1° Classificate U12 2025"},
@@ -494,6 +521,33 @@ def create_whatsapp_link(row):
         text = f"📅 *Gara {row['Campionato']}*\n{row['Data']}\n📍 {row['Impianto']}\n{row['Squadra Casa']} vs {row['Squadra Ospite']}"
     return f"https://wa.me/?text={quote(text)}"
 
+# ================= NOTIFICHE PUSH ONESIGNAL =================
+def send_push_notification(title, message):
+    app_id = ONESIGNAL_APP_ID
+    api_key = os.environ.get('ONESIGNAL_API_KEY')
+    
+    # Se l'utente non ha ancora configurato OneSignal, ignora l'invio
+    if not api_key or app_id == "INSERISCI_QUI_IL_TUO_APP_ID_DI_ONESIGNAL":
+        return
+        
+    payload = {
+        "app_id": app_id,
+        "included_segments": ["Subscribed Users"],
+        "headings": {"en": title, "it": title},
+        "contents": {"en": message, "it": message}
+    }
+    
+    req = urllib.request.Request('https://onesignal.com/api/v1/notifications')
+    req.add_header('Content-Type', 'application/json; charset=utf-8')
+    req.add_header('Authorization', f'Basic {api_key}')
+    
+    try:
+        jsondata = json.dumps(payload).encode('utf-8')
+        response = urllib.request.urlopen(req, jsondata)
+        print(f"✅ Notifica Push Inviata: {title}")
+    except Exception as e:
+        print("⚠️ Errore nell'invio della notifica push:", e)
+
 # ================= GENERATORE HTML CARD =================
 def crea_card_html(r, camp, is_focus_mode=False):
     is_home = is_target_team(r['Squadra Casa'])
@@ -708,6 +762,7 @@ def genera_landing_page(is_frozen=False):
         <link rel="manifest" href="manifest.json">
         
         {CSS_BASE}
+        {ONESIGNAL_SCRIPT}
     </head>
     <body>
         <div class="app-header">
@@ -843,6 +898,7 @@ def genera_pagina_media():
         <title>Galleria Media - {NOME_VISUALIZZATO}</title>
         <link rel="icon" type="image/png" href="{URL_LOGO}">
         {CSS_BASE}
+        {ONESIGNAL_SCRIPT}
     </head>
     <body>
         <div class="app-header">
@@ -881,7 +937,7 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
     
     nav_links = f'<a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR_EVENTS}" class="nav-icon-img"></span></a><a href="{"generale_m.html" if origin=="maschile" else "generale_f.html"}?from={origin}"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
 
-    html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>{page_title}</title>{CSS_BASE}</head><body>'
+    html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>{page_title}</title>{CSS_BASE}{ONESIGNAL_SCRIPT}</head><body>'
     html += f'<div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div><div id="modal-body"></div></div></div>'
     html += f'<div class="app-header"><div class="header-left" onclick="window.location.href=\'index.html\'"><img src="{URL_LOGO}" class="logo-main"><div><h1>{page_title}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div></div><div class="nav-buttons">{nav_links}</div></div>'
 
@@ -959,7 +1015,7 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
 
 def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_link):
     nav_links = f'<a href="#" onclick="tornaAlSettore(); return false;"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
-    html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Risultati Completi</title>{CSS_BASE}</head><body>'
+    html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Risultati Completi</title>{CSS_BASE}{ONESIGNAL_SCRIPT}</head><body>'
     html += f'<div class="app-header" style="background:#1976D2"><div class="header-left" onclick="window.location.href=\'index.html\'"><img src="{URL_LOGO}" class="logo-main"><h1>Risultati Completi</h1></div><div class="nav-buttons">{nav_links}</div></div>'
     
     valid_camps =[]
@@ -991,6 +1047,7 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
         elif camp in PLAY_OUT:
             html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT 🛡️</div>'
 
+        # Classifica non inserita se Fasi Finali
         if camp not in FASI_FINALI and camp not in FINALI_REGIONALI and not df_class.empty and 'Campionato' in df_class.columns:
             df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
             if not df_c.empty:
@@ -1031,6 +1088,7 @@ if __name__ == "__main__":
     if ALL_CAMPIONATI:
         is_frozen = all(camp in CAMPIONATI_FINITI for camp in ALL_CAMPIONATI)
     
+    df_ris = pd.DataFrame()
     if is_frozen and ALL_CAMPIONATI:
         print("❄️ TUTTI I CAMPIONATI SONO TERMINATI: APPLICAZIONE IN FREEZE MODE ❄️")
         genera_landing_page(is_frozen=True)
@@ -1050,5 +1108,40 @@ if __name__ == "__main__":
             genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
             
         genera_segnapunti()
+    
+    # ---- LOGICA NOTIFICHE PUSH ONESIGNAL ----
+    if not df_ris.empty:
+        today_iso = datetime.today().strftime('%Y-%m-%d')
+        tracking_file = "notified_dates.txt"
         
+        # Recupera le date per cui è già stata inviata la notifica
+        notified_dates = []
+        if os.path.exists(tracking_file):
+            with open(tracking_file, 'r') as f:
+                notified_dates = f.read().splitlines()
+        
+        # Se oggi non abbiamo ancora mandato nulla...
+        if today_iso not in notified_dates:
+            # Filtra le partite che si giocano ESATTAMENTE oggi
+            match_oggi = df_ris[df_ris['DataISO'] == today_iso]
+            # Filtra solo le partite che coinvolgono la NOSTRA SQUADRA
+            my_match_oggi = match_oggi[match_oggi['Squadra Casa'].apply(is_target_team) | match_oggi['Squadra Ospite'].apply(is_target_team)]
+            
+            if not my_match_oggi.empty:
+                # Abbiamo delle partite oggi! Prepariamo il messaggio
+                message_lines = []
+                for _, m in my_match_oggi.iterrows():
+                    camp_corto = m['Campionato'].split(" S.")[0]
+                    message_lines.append(f"{camp_corto}: {m['Squadra Casa']} vs {m['Squadra Ospite']}")
+                
+                push_title = "🏐 È il giorno della partita!"
+                push_msg = " | ".join(message_lines)
+                
+                # Invio Notifica (solo se le chiavi sono configurate)
+                send_push_notification(push_title, push_msg)
+                
+                # Salviamo la data di oggi per evitare duplicati nei run successivi (lo script gira ogni ora)
+                with open(tracking_file, 'a') as f:
+                    f.write(f"{today_iso}\n")
+    
     print(f"✅ Generazione {APP_VERSION} completata!")
