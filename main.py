@@ -100,7 +100,7 @@ ALL_CAMPIONATI = {**CAMPIONATI_MASCHILI, **CAMPIONATI_FEMMINILI}
 GALLERIA_MEDIA = {
     "Serie C S.Femminile": [
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_0091.jpg", "caption": "Vittoria vs Volley Volla"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_0091.jpg", "caption": "Vittoria vs Volley Volla"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_0093.jpg", "caption": "Vittoria vs Volley Volla"},
     ],
     "U12 S.Femminile": [
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_1058.jpg", "caption": "1° Classificate U12 2025"},
