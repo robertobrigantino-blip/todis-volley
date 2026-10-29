@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v7.0
-# RELEASE NOTE: Fix Conflitto Popup Notifiche/Installazione (Delay 5 secondi)
+# SOFTWARE VERSION: v7.2
+# RELEASE NOTE: Ripristino Bottone Calendario (Sempre visibile + Empty State)
 # ==============================================================================
 
 import pandas as pd
@@ -21,7 +21,7 @@ import json
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v7.0 | Stagione 26/27 🔔"
+APP_VERSION = "v7.2 | Stagione 26/27 🔔"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -114,6 +114,7 @@ GALLERIA_MEDIA = {
     ]
 }
 
+
 def is_target_team(team_name):
     if pd.isna(team_name) or not str(team_name).strip(): return False
     name_clean = str(team_name).upper().strip()
@@ -137,8 +138,9 @@ CSS_BASE = """
     .nav-buttons { display: flex; gap: 8px; align-items: center; }
     .nav-icon-img { height: 42px; width: auto; transition: transform 0.1s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     
-    .calendar-container { position: relative; display: none; }
-    .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
+    /* MODIFICA V7.2: Ora il contenitore del calendario è sempre visibile */
+    .calendar-container { position: relative; display: inline-block; }
+    .calendar-container.has-events { animation: pulse-icon 2s infinite; }
     .calendar-container.has-events::after { 
         content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; 
         background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; z-index: 11; 
@@ -333,7 +335,7 @@ CSS_BASE = """
             e.preventDefault();
             window.deferredPrompt = e;
             if (!/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())) {
-                // Modificato: ritardo 5 secondi per non confliggere con OneSignal
+                // Ritardo 5 secondi per non confliggere con OneSignal
                 setTimeout(() => { 
                     const p = document.getElementById('android-popup');
                     if(p) p.style.display = 'block'; 
@@ -351,7 +353,7 @@ CSS_BASE = """
         }
 
         // LOGICA NOTIFICHE CALENDARIO
-        if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
+        if (document.title.includes("Maschile") || document.title.includes("Femminile") || document.title.includes("Campionati") || document.title.includes("Risultati")) {
             const today = new Date(); today.setHours(0,0,0,0);
             let nextMatches = {};
             document.querySelectorAll('.match-card.upcoming').forEach(card => {
@@ -378,9 +380,15 @@ CSS_BASE = """
                     modalBody.innerHTML = popupHTML;							 
                     const btnCal = document.getElementById('btn-calendar');
                     if(btnCal) {
-                        btnCal.style.display = 'inline-block';
+                                                              
                         btnCal.classList.add('has-events'); // ATTIVA PALLINO
                     }
+                }
+            } else {
+                // STATO VUOTO: se non ci sono match futuri
+                const modalBody = document.getElementById('modal-body');										 
+                if(modalBody) {
+                    modalBody.innerHTML = '<div style="text-align:center; padding:30px 10px; color:#888; font-style:italic;">Nessun prossimo appuntamento in programma. 😴</div>';
                 }
             }
         }
@@ -1009,8 +1017,9 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
     with open(filename, "w", encoding="utf-8") as f: f.write(html)
 
 def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_link):
-    nav_links = f'<a href="#" onclick="tornaAlSettore(); return false;"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
+    nav_links = f'<a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR_EVENTS}" class="nav-icon-img"></span></a><a href="#" onclick="tornaAlSettore(); return false;"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
     html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Risultati Completi</title>{CSS_BASE}{ONESIGNAL_SCRIPT}</head><body>'
+    html += f'<div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div><div id="modal-body"></div></div></div>'
     html += f'<div class="app-header" style="background:#1976D2"><div class="header-left" onclick="window.location.href=\'index.html\'"><img src="{URL_LOGO}" class="logo-main"><h1>Risultati Completi</h1></div><div class="nav-buttons">{nav_links}</div></div>'
     
     valid_camps =[]
