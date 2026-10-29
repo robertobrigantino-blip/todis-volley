@@ -31,8 +31,9 @@
     .nav-buttons { display: flex; gap: 8px; align-items: center; }
     .nav-icon-img { height: 42px; width: auto; transition: transform 0.1s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     
-    .calendar-container { position: relative; display: none; }
-    .calendar-container.has-events { display: inline-block; animation: pulse-icon 2s infinite; }
+    /* MODIFICA V7.2: Ora il contenitore del calendario è sempre visibile */
+    .calendar-container { position: relative; display: inline-block; }
+    .calendar-container.has-events { animation: pulse-icon 2s infinite; }
     .calendar-container.has-events::after { 
         content: ''; position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; 
         background: #ffeb3b; border-radius: 50%; border: 2px solid #d32f2f; z-index: 11; 
@@ -227,7 +228,7 @@
             e.preventDefault();
             window.deferredPrompt = e;
             if (!/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())) {
-                // Modificato: ritardo 5 secondi per non confliggere con OneSignal
+                // Ritardo 5 secondi per non confliggere con OneSignal
                 setTimeout(() => { 
                     const p = document.getElementById('android-popup');
                     if(p) p.style.display = 'block'; 
@@ -245,7 +246,7 @@
         }
 
         // LOGICA NOTIFICHE CALENDARIO
-        if (document.title.includes("Maschile") || document.title.includes("Femminile")) {
+        if (document.title.includes("Maschile") || document.title.includes("Femminile") || document.title.includes("Campionati") || document.title.includes("Risultati")) {
             const today = new Date(); today.setHours(0,0,0,0);
             let nextMatches = {};
             document.querySelectorAll('.match-card.upcoming').forEach(card => {
@@ -272,9 +273,15 @@
                     modalBody.innerHTML = popupHTML;							 
                     const btnCal = document.getElementById('btn-calendar');
                     if(btnCal) {
-                        btnCal.style.display = 'inline-block';
+                                                              
                         btnCal.classList.add('has-events'); // ATTIVA PALLINO
                     }
+                }
+            } else {
+                // STATO VUOTO: se non ci sono match futuri
+                const modalBody = document.getElementById('modal-body');										 
+                if(modalBody) {
+                    modalBody.innerHTML = '<div style="text-align:center; padding:30px 10px; color:#888; font-style:italic;">Nessun prossimo appuntamento in programma. 😴</div>';
                 }
             }
         }
@@ -338,7 +345,7 @@
         
         <div class="footer-counter">
             <img src="https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f" alt="Visite"><br>
-            <span class="version-text">v7.0 | Stagione 26/27 🔔</span>
+            <span class="version-text">v7.2 | Stagione 26/27 🔔</span>
             <div class="footer-msg">🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐</div>
         </div>
         
