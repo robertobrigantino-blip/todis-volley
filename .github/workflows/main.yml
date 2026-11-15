@@ -3,7 +3,7 @@ name: Aggiorna Classifica Volley
 on:
   schedule:
     # Esegue ogni ora tra le 17:00 UTC e le 22:00 UTC di sabato
-    - cron: '0 17-22 * * 6'
+    - cron: '0 18-23 * * 2,3,4,6'
   workflow_dispatch:
 
 permissions:
