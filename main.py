@@ -116,11 +116,16 @@ GALLERIA_MEDIA = {
 
 
 def is_target_team(team_name):
-    if pd.isna(team_name) or not str(team_name).strip(): return False
+    if pd.isna(team_name):
+        return False
+
     name_clean = str(team_name).upper().strip()
-    for alias in TARGET_TEAM_ALIASES:
-        if alias.upper() in name_clean: return True
-    return False
+
+    if not name_clean:
+        return False
+
+    return any(alias.upper() in name_clean
+               for alias in TARGET_TEAM_ALIASES)
 
 # ================= CSS COMUNE TOTALE =================
 CSS_BASE = """
