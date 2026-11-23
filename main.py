@@ -1,5 +1,5 @@
 # ==============================================================================
-# SOFTWARE VERSION: v7.2
+# SOFTWARE VERSION: v7.3
 # RELEASE NOTE: Ripristino Bottone Calendario (Sempre visibile + Empty State)
 # ==============================================================================
 
@@ -22,10 +22,10 @@ import html as html_lib
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v7.2 | Stagione 26/27 馃敂"
+APP_VERSION = "v7.3 | Stagione 26/27 🔔"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
-FOOTER_MSG = "馃惥 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 馃彁"    
+FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
                                                                         
 TARGET_TEAM_ALIASES =[
     "TODIS PASTENA VOLLEY",
@@ -59,7 +59,7 @@ BTN_CALENDAR_EVENTS = REPO_URL + "prossimi_appuntamenti.png"
 URL_COUNTER = "https://hits.sh/robertobrigantino-blip.github.io/todis-volley.svg?style=flat&label=VISITE&extraCount=0&color=d32f2f"
 
 # ================= CONFIGURAZIONE ONESIGNAL PUSH =================
-# INSERISCI QUI L'APP ID (Pu貌 essere reso pubblico senza problemi)
+# INSERISCI QUI L'APP ID (Può essere reso pubblico senza problemi)
 ONESIGNAL_APP_ID = "46ed1099-8b58-4760-abca-646c60822779" 
 
 ONESIGNAL_SCRIPT = f"""
@@ -104,20 +104,20 @@ GALLERIA_MEDIA = {
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_0093.jpg", "caption": "Vittoria vs Volley Volla"},
     ],
     "U12 S.Femminile": [
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_1058.jpg", "caption": "1掳 Classificate U12 2025"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_1058.jpg", "caption": "1° Classificate U12 2025"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_1161.jpg", "caption": "Premiazione U12 2025"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/U12_S2026.png", "caption": "1掳 Classificate U12 2026"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/U12_S2026.png", "caption": "1° Classificate U12 2026"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_3487.jpg", "caption": "Premiazione U12 2026"},
     ],
     "U13 S.Femminile": [
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_3492.jpg", "caption": "Premiazione U13 2026"},
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_8741.jpg", "caption": "1掳 Classificate U13 2026"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_8741.jpg", "caption": "1° Classificate U13 2026"},
     ]
 }
 
 # ================= CONFIGURAZIONE SPONSOR LANDING PAGE =================
 SPONSORS_ENABLED = True
-SPONSORS_TITLE = "I Nostri Sponsor 路 Stagione 26/27"
+SPONSORS_TITLE = "I Nostri Sponsor Stagione 26/27"
 SPONSOR_LAYOUT_MODE = "cards"       # Opzioni: "cards" (Main + Griglia), "carousel" (Scorrimento orizzontale), "strip" (Impilati)
 SPONSOR_POSITION = "above_social"   # Opzioni: "above_social" (Sotto scelta sezione), "above_choice" (Sopra scelta sezione)
 SPONSORS_SHOW_CTA = True
@@ -125,11 +125,11 @@ SPONSORS_CTA_EMAIL = "info@pastenavolley.it"
 
 # Inserisci qui i tuoi sponsor.
 # Se lasci "img_url": "" vuoto, viene generato automaticamente un banner elegante con nome, descrizione e colore.
-# Se inserisci un URL immagine (es. REPO_URL + "Sponsor/todis.png"), verr脿 mostrato il banner grafico cliccabile.
+# Se inserisci un URL immagine (es. REPO_URL + "Sponsor/todis.png"), verrà  mostrato il banner grafico cliccabile.
 SPONSORS_LIST = [
     {
         "nome": "Todis Pastena Supermercati",
-        "descrizione": "Main Sponsor Ufficiale - Via Posidonia, Salerno",
+        "descrizione": "Main Sponsor Ufficiale Via Posidonia, Salerno",
         "tier": "main",
         "img_url": "",
         "link_url": "https://www.todis.it/",
@@ -165,7 +165,7 @@ SPONSORS_LIST = [
     },
         {
         "nome": "Sti Polli",
-        "descrizione": "Sti Polli è il girarrosto che aspettavi!",
+        "descrizione": "Sti Polli il girarrosto che aspettavi!",
         "tier": "partner",
         "img_url": "",
         "link_url": "https://www.facebook.com/stipolli/?locale=it_IT",
@@ -198,7 +198,7 @@ CSS_BASE = """
     .nav-buttons { display: flex; gap: 8px; align-items: center; }
     .nav-icon-img { height: 42px; width: auto; transition: transform 0.1s; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); cursor: pointer; }
     
-    /* MODIFICA V7.2: Ora il contenitore del calendario 猫 sempre visibile */
+    /* MODIFICA V7.2: Ora il contenitore del calendario è sempre visibile */
     .calendar-container { position: relative; display: inline-block; }
     .calendar-container.has-events { animation: pulse-icon 2s infinite; }
     .calendar-container.has-events::after { 
@@ -393,12 +393,12 @@ CSS_BASE = """
             cards.sort((a, b) => (a.getAttribute('data-date-iso') || '9999').localeCompare(b.getAttribute('data-date-iso') || '9999'));
             container.innerHTML = "";
             cards.forEach(card => container.appendChild(card));
-            btn.innerHTML = "馃敘 Per Turno";
+            btn.innerHTML = "🔢 Per Turno";
             btn.setAttribute('data-sorted', 'true');
             btn.classList.add('active');
         } else {
             container.innerHTML = originalOrder[tabId];
-            btn.innerHTML = "馃搮 Per Data";
+            btn.innerHTML = "📅 Per Data";
             btn.setAttribute('data-sorted', 'false');
             btn.classList.remove('active');
         }
@@ -459,7 +459,7 @@ CSS_BASE = """
             let popupHTML = "";
             for (const [camp, data] of Object.entries(nextMatches)) {
                 const campPulito = camp.replace(' S.Femminile', '').replace(' S.Maschile', '');
-                popupHTML += `<h3 style="color:#d32f2f; font-size:14px; margin-top:10px; border-bottom:1px solid #eee">馃弳 ${campPulito}</h3>` + data.html;			   
+                popupHTML += `<h3 style="color:#d32f2f; font-size:14px; margin-top:10px; border-bottom:1px solid #eee">🏆 ${campPulito}</h3>` + data.html;			   
             }
             if (popupHTML !== "") {
                 const modalBody = document.getElementById('modal-body');										 
@@ -475,7 +475,7 @@ CSS_BASE = """
                 // STATO VUOTO: se non ci sono match futuri
                 const modalBody = document.getElementById('modal-body');										 
                 if(modalBody) {
-                    modalBody.innerHTML = '<div style="text-align:center; padding:30px 10px; color:#888; font-style:italic;">Nessun prossimo appuntamento in programma. 馃槾</div>';
+                    modalBody.innerHTML = '<div style="text-align:center; padding:30px 10px; color:#888; font-style:italic;">Nessun prossimo appuntamento in programma. 😴</div>';
                 }
             }
         }
@@ -488,17 +488,17 @@ INSTALL_POPUPS_HTML = """
 <!-- POPUP ANDROID -->
 <div id="android-popup" class="install-popup">
     <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa l'App Todis Volley</div>
-    <div style="font-size:13px; color:#555;">Accedi ai risultati pi霉 velocemente e usa l'app a tutto schermo!</div>
+    <div style="font-size:13px; color:#555;">Accedi ai risultati più velocemente e usa l'app a tutto schermo!</div>
     <button class="btn-install-app" onclick="triggerAndroidInstall()">INSTALLA ORA</button>
-    <button class="btn-close-popup" onclick="closePopup('android-popup')">Magari pi霉 tardi</button>
+    <button class="btn-close-popup" onclick="closePopup('android-popup')">Magari più tardi</button>
 </div>
 
 <!-- POPUP IOS -->
 <div id="ios-popup" class="install-popup">
     <div style="font-weight:bold; font-size:16px; margin-bottom:5px;">Installa su iPhone</div>
     <div style="font-size:13px; color:#555; margin-bottom:10px;">
-        1. Premi il tasto <b>Condividi</b> <span style="font-size:18px">馃摛</span> (in basso al centro)<br>
-        2. Scorri e seleziona <b>"Aggiungi alla schermata Home"</b> <span style="font-size:18px">鉃?/span>
+        1. Premi il tasto <b>Condividi</b> <span style="font-size:18px">📤</span> (in basso al centro)<br>
+        2. Scorri e seleziona <b>"Aggiungi alla schermata Home"</b> <span style="font-size:18px">➕</span>
     </div>
     <button class="btn-install-app" onclick="closePopup('ios-popup')">HO CAPITO</button>
 </div>
@@ -534,10 +534,10 @@ SCOREBOARD_CODE = """
     .fine-tune { display: flex; gap: 20px; margin-top: 10px; }
     .btn-tune { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); background: transparent; color: white; font-size: 20px; cursor: pointer; }
 </style>
-<div class="rotate-overlay"><div style="font-size: 50px;">馃攧</div><h2>Ruota il dispositivo</h2><p>Il segnapunti funziona in orizzontale</p></div>
+<div class="rotate-overlay"><div style="font-size: 50px;">🔄</div><h2>Ruota il dispositivo</h2><p>Il segnapunti funziona in orizzontale</p></div>
 <div class="sb-container">
     <div class="team-panel team-home" id="colHome" onclick="addPoint('Home')">
-        <div class="service-ball">馃彁</div>
+        <div class="service-ball">🏐</div>
         <input type="text" class="team-name-input" value="CASA">
         <div class="score-display" id="scoreHome">0</div>
         <div class="fine-tune">
@@ -550,13 +550,13 @@ SCOREBOARD_CODE = """
         <div class="timer-box"><div class="timer-val" id="timer">00:00</div><button class="btn-timer" onclick="toggleTimer()" id="btnTimer">START</button></div>
         <div class="controls-bottom">
             <button class="btn-ctrl" style="background:#2e7d32;" onclick="setServiceManual()">Battuta</button>
-            <button class="btn-ctrl btn-fs" onclick="toggleFullScreen()">鉀?Full</button>
+            <button class="btn-ctrl btn-fs" onclick="toggleFullScreen()">⛶ Full</button>
             <button class="btn-ctrl btn-reset" onclick="resetMatch()">Reset</button>
             <a href="index.html" class="btn-ctrl btn-exit">Esci</a>
         </div>
     </div>
     <div class="team-panel team-guest" id="colGuest" onclick="addPoint('Guest')">
-        <div class="service-ball">馃彁</div>
+        <div class="service-ball">🏐</div>
         <input type="text" class="team-name-input" value="OSPITI">
         <div class="score-display" id="scoreGuest">0</div>
         <div class="fine-tune">
@@ -604,9 +604,9 @@ SCOREBOARD_CODE = """
 # ================= HELPER FUNCTIONS =================
 def create_google_calendar_link(row):
     if not row['DataISO']: return ""
-    title = quote(f"馃彁 {row['Squadra Casa']} vs {row['Squadra Ospite']}")
+    title = quote(f"🏐 {row['Squadra Casa']} vs {row['Squadra Ospite']}")
     location = quote(row['Impianto']) if row['Impianto'] else ""
-    time_match = re.search(r'鈴癨s*(\d{1,2}[:\.]\d{2})', row['Data'])
+    time_match = re.search(r'⏰\s*(\d{1,2}[:\.]\d{2})', row['Data'])
     if time_match:
         ora_str = time_match.group(1).replace('.', ':')
         try:
@@ -621,9 +621,9 @@ def create_google_calendar_link(row):
 
 def create_whatsapp_link(row):
     if row['Punteggio']:
-        text = f"馃彁 *Risultato {row['Campionato']}*\n{row['Squadra Casa']} {row['Set Casa']} - {row['Set Ospite']} {row['Squadra Ospite']}"
+        text = f"🏐 *Risultato {row['Campionato']}*\n{row['Squadra Casa']} {row['Set Casa']} - {row['Set Ospite']} {row['Squadra Ospite']}"
     else:
-        text = f"馃搮 *Gara {row['Campionato']}*\n{row['Data']}\n馃搷 {row['Impianto']}\n{row['Squadra Casa']} vs {row['Squadra Ospite']}"
+        text = f"📅 *Gara {row['Campionato']}*\n{row['Data']}\n📍 {row['Impianto']}\n{row['Squadra Casa']} vs {row['Squadra Ospite']}"
     return f"https://wa.me/?text={quote(text)}"
 
 # ================= NOTIFICHE PUSH ONESIGNAL =================
@@ -648,9 +648,9 @@ def send_push_notification(title, message):
     try:
         jsondata = json.dumps(payload).encode('utf-8')
         response = urllib.request.urlopen(req, jsondata)
-        print(f"鉁?Notifica Push Inviata: {title}")
+        print(f"✅ Notifica Push Inviata: {title}")
     except Exception as e:
-        print("鈿狅笍 Errore nell'invio della notifica push:", e)
+        print("⚠️ Errore nell'invio della notifica push:", e)
 
 # ================= GENERATORE HTML CARD =================
 def crea_card_html(r, camp, is_focus_mode=False):
@@ -693,23 +693,23 @@ def crea_card_html(r, camp, is_focus_mode=False):
     lnk_map = r['Maps']
     
     btns_html = ""
-    if lnk_map: btns_html += f'<a href="{lnk_map}" target="_blank" class="btn btn-map">馃搷 Mappa</a>'
+    if lnk_map: btns_html += f'<a href="{lnk_map}" target="_blank" class="btn btn-map">📍 Mappa</a>'
     if is_my_match or not is_focus_mode:
         if lnk_cal and camp not in CAMPIONATI_FINITI: 
-            btns_html += f'<a href="{lnk_cal}" target="_blank" class="btn btn-cal">馃搮</a>'
-        if lnk_wa: btns_html += f'<a href="{lnk_wa}" target="_blank" class="btn btn-wa">馃挰</a>'
+            btns_html += f'<a href="{lnk_cal}" target="_blank" class="btn btn-cal">📅</a>'
+        if lnk_wa: btns_html += f'<a href="{lnk_wa}" target="_blank" class="btn btn-wa">💬</a>'
 
     return f"""
     <div class="match-card {status_class}" data-date-iso="{r['DataISO']}" data-camp="{camp}" data-my-team="{str(is_my_match).lower()}">
         <div class="match-header">
-            <span class="date-badge">馃搮 {r['Data']}</span> <span>|</span> <span>{r['Giornata']}</span>
+            <span class="date-badge">📅 {r['Data']}</span> <span>|</span> <span>{r['Giornata']}</span>
         </div>
         <div class="teams">
             <div class="team-row"><span {cs}>{r['Squadra Casa']}</span><span class="team-score-wrapper">{sc_val}</span></div>
             <div class="team-row"><span {os}>{r['Squadra Ospite']}</span><span class="team-score-wrapper">{so_val}</span></div>
         </div>
         <div class="match-footer" onclick="event.stopPropagation()">
-            <span class="gym-name">馃彑锔?{r['Impianto']}</span>
+            <span class="gym-name">🏟️ {r['Impianto']}</span>
             <div class="action-buttons">{btns_html}</div>
         </div>
     </div>
@@ -726,7 +726,7 @@ def get_match_details_robust(driver, match_url):
         date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:\.]\d{2})', clean_text)
         if date_pattern:
             d, o = date_pattern.group(1), date_pattern.group(2)
-            data_ora_full = f"{d} 鈴?{o}"
+            data_ora_full = f"{d} ⏰ {o}"
             try: data_iso = datetime.strptime(d, "%d/%m/%Y").strftime("%Y-%m-%d")
             except: pass
         imp = soup.find('div', class_='divImpianto')
@@ -784,11 +784,11 @@ def scrape_data():
                 
                 giornata_label = curr_giornata
                 if nome_camp in FINALI_REGIONALI and "Regionali" not in giornata_label:
-                    giornata_label = f"馃専 Finali Regionali - {curr_giornata}"
+                    giornata_label = f"🌟 Finali Regionali - {curr_giornata}"
                 elif nome_camp in FASI_FINALI and "Fase Finale" not in giornata_label and "Playoff" not in giornata_label:
-                    giornata_label = f"馃弳 Playoff - {curr_giornata}"
+                    giornata_label = f"🏆 Playoff - {curr_giornata}"
                 elif nome_camp in PLAY_OUT and "Play" not in giornata_label:
-                    giornata_label = f"馃洝锔?Play Out - {curr_giornata}"
+                    giornata_label = f"🛡️ Play Out - {curr_giornata}"
 
                 d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, urljoin(base_url, el.get('href', '')))
                 
@@ -835,15 +835,15 @@ def scrape_data():
                 df_a.columns =[f"col_{i}" for i in range(len(df_a.columns))]
                 df_a['Campionato_Ref'] = nome_camp 
                 all_avulse.append(df_a)
-                print(f"鉁?Classifica Avulsa scaricata: {nome_camp} da {dominio}")
+                print(f"✅ Classifica Avulsa scaricata: {nome_camp} da {dominio}")
         except Exception as e:
-            print(f"鈿狅笍 Errore scraping avulsa {nome_camp}: {e}")
+            print(f"⚠️ Errore scraping avulsa {nome_camp}: {e}")
 
     driver.quit()
     return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame(), pd.concat(all_avulse, ignore_index=True) if all_avulse else pd.DataFrame()
 
 # ================= GENERATORI PAGINE =================
-def _render_sponsor_card(sp, card_variant="sponsor-card-partner"):
+ def _render_sponsor_card(sp, card_variant="sponsor-card-partner"):
     nome = html_lib.escape(str(sp.get("nome", "Sponsor")))
     desc = html_lib.escape(str(sp.get("descrizione", "")))
     img_url = str(sp.get("img_url", "")).strip()
@@ -889,7 +889,7 @@ def genera_sezione_sponsor():
 
     cta_html = ""
     if SPONSORS_SHOW_CTA and SPONSORS_CTA_EMAIL:
-        cta_html = f'<a href="mailto:{html_lib.escape(SPONSORS_CTA_EMAIL)}?subject=Sponsorizzazione%20Todis%20Pastena%20Volley" class="sponsors-cta-link">Diventa Sponsor 鈫?/a>'
+        cta_html = f'<a href="mailto:{html_lib.escape(SPONSORS_CTA_EMAIL)}?subject=Sponsorizzazione%20Todis%20Pastena%20Volley" class="sponsors-cta-link">Diventa Sponsor /a>'
 
     header_html = (
         f'<div class="sponsors-header">'
@@ -912,15 +912,15 @@ def genera_sezione_sponsor():
             partners_html = "".join([_render_sponsor_card(sp, "sponsor-card-partner") for sp in partner_sponsors])
             body_html += f'<div class="sponsor-grid">{partners_html}</div>'
 
-    return f'<section class="sponsors-section" aria-label="Sponsor">{header_html}{body_html}</section>'
+    return f'<section class="sponsors-section" aria-label="Sponsor">{header_html}{body_html}</section>'                                                                 
 
 
 def genera_landing_page(is_frozen=False):
-    print(f"馃搫 Generazione Landing Page...")
+    print(f"📄 Generazione Landing Page...")
     img_scelta = URL_SUNDAY_ALL if is_frozen else URL_SPLIT_IMG
     sponsors_html = genera_sezione_sponsor()
     sponsors_above_choice = sponsors_html if SPONSOR_POSITION == "above_choice" else ""
-    sponsors_above_social = sponsors_html if SPONSOR_POSITION != "above_choice" else ""
+    sponsors_above_social = sponsors_html if SPONSOR_POSITION != "above_choice" else ""                                                                   
     
     html = f"""<!DOCTYPE html>
     <html lang="it">
@@ -955,7 +955,7 @@ def genera_landing_page(is_frozen=False):
         </div>
         
         <div class="landing-container">
-            {sponsors_above_choice}
+            {sponsors_above_choice}                  
             <div class="instruction-text">Seleziona la sezione:</div>
             
             <div class="choice-card">
@@ -966,7 +966,7 @@ def genera_landing_page(is_frozen=False):
                 </div>
             </div>
 
-            {sponsors_above_social}
+            {sponsors_above_social}    
 
             <div class="social-section">
                 <div class="social-icons">
@@ -980,7 +980,7 @@ def genera_landing_page(is_frozen=False):
             </div>
             
             <div class="disclaimer-box">
-                <b>Disclaimer:</b> Questa Web App non 猫 ufficiale e non intende sostituirsi ai portali FIPAV. 脠 uno strumento gratuito creato per facilitare la consultazione dei dati delle squadre della ASD CS Pastena. Tutti i dati mostrati sono di pubblico dominio; nessun dato personale, sensibile o riservato viene prelevato.
+                <b>Disclaimer:</b> Questa Web App non è ufficiale e non intende sostituirsi ai portali FIPAV. È uno strumento gratuito creato per facilitare la consultazione dei dati delle squadre della ASD CS Pastena. Tutti i dati mostrati sono di pubblico dominio; nessun dato personale, sensibile o riservato viene prelevato.
             </div>
         </div>
         
@@ -996,7 +996,7 @@ def genera_landing_page(is_frozen=False):
         f.write(html)
 
 def genera_pagina_media():
-    print(f"馃摳 Generazione Pagina Media Dinamica...")
+    print(f"📸 Generazione Pagina Media Dinamica...")
     
     tutti_i_campionati_media = list(ALL_CAMPIONATI.keys())
     for k in GALLERIA_MEDIA.keys():
@@ -1005,7 +1005,7 @@ def genera_pagina_media():
             
     media_html = ""
     if not tutti_i_campionati_media:
-        media_html = '<div class="empty-media">Nessun contenuto multimediale ancora inserito. In attesa di nuovi caricamenti... 馃摳</div>'
+        media_html = '<div class="empty-media">Nessun contenuto multimediale ancora inserito. In attesa di nuovi caricamenti... 📸</div>'
     else:
         for camp in tutti_i_campionati_media:
             media_list = GALLERIA_MEDIA.get(camp, [])
@@ -1015,25 +1015,25 @@ def genera_pagina_media():
                 
             camp_label = camp.split(" S.")[0]
             if camp in CAMPIONATI_FINITI:
-                icon = "馃弫"
+                icon = "🏁"
                 bg_color = "linear-gradient(135deg, #607d8b 0%, #37474f 100%)"
             elif camp in FINALI_REGIONALI:
-                icon = "馃専"
+                icon = "🌟"
                 bg_color = "linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%)"
             elif camp in FASI_FINALI:
-                icon = "馃弳"
+                icon = "🏆"
                 bg_color = "linear-gradient(135deg, #d32f2f 0%, #ff5252 100%)"
             elif camp in PLAY_OUT:
-                icon = "馃洝锔?
+                icon = "🛡️"
                 bg_color = "linear-gradient(135deg, #e65100 0%, #ff9800 100%)"
             else:
-                icon = "馃彁"
+                icon = "🏐"
                 bg_color = "linear-gradient(135deg, #1976D2 0%, #42A5F5 100%)"
                 
             media_html += f'<div class="media-section-title" style="background: {bg_color};">{icon} {camp_label} {icon}</div>'
             
             if not media_list:
-                media_html += '<div class="empty-media">Nessun contenuto multimediale ancora inserito per questa squadra. 馃摳</div>'
+                media_html += '<div class="empty-media">Nessun contenuto multimediale ancora inserito per questa squadra. 📸</div>'
             else:
                 media_html += '<div class="media-grid">'
                 for m in media_list:
@@ -1078,7 +1078,7 @@ def genera_pagina_media():
         
         <div style="flex: 1 1 auto; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; width: 100%; background-color: #f0f2f5;">
             <div style="padding: 15px; text-align: center;">
-                <p style="font-size: 13px; color: #555; margin: 0;">Benvenuti nella sezione Media! Scorri verso il basso per vedere i momenti pi霉 belli della stagione.</p>
+                <p style="font-size: 13px; color: #555; margin: 0;">Benvenuti nella sezione Media! Scorri verso il basso per vedere i momenti più belli della stagione.</p>
             </div>
 
             {media_html}
@@ -1104,7 +1104,7 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
     nav_links = f'<a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR_EVENTS}" class="nav-icon-img"></span></a><a href="{"generale_m.html" if origin=="maschile" else "generale_f.html"}?from={origin}"><img src="{BTN_ALL_RESULTS}" class="nav-icon-img"></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
 
     html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>{page_title}</title>{CSS_BASE}{ONESIGNAL_SCRIPT}</head><body>'
-    html += f'<div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">馃搮 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">脳</button></div><div id="modal-body"></div></div></div>'
+    html += f'<div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div><div id="modal-body"></div></div></div>'
     html += f'<div class="app-header"><div class="header-left" onclick="window.location.href=\'index.html\'"><img src="{URL_LOGO}" class="logo-main"><div><h1>{page_title}</h1><div class="last-update">{time.strftime("%d/%m %H:%M")}</div></div></div><div class="nav-buttons">{nav_links}</div></div>'
 
     valid_camps = []
@@ -1116,10 +1116,10 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
         html += '<div class="tab-bar">'
         for i, camp in enumerate(campionati_disp): 
             tab_label = camp.split(" S.")[0]
-            if camp in CAMPIONATI_FINITI: tab_label += " 馃弫"
-            elif camp in FINALI_REGIONALI: tab_label += " 馃専"
-            elif camp in FASI_FINALI: tab_label += " 馃弳"
-            elif camp in PLAY_OUT: tab_label += " 馃洝锔?
+            if camp in CAMPIONATI_FINITI: tab_label += " 🏁"
+            elif camp in FINALI_REGIONALI: tab_label += " 🌟"
+            elif camp in FASI_FINALI: tab_label += " 🏆"
+            elif camp in PLAY_OUT: tab_label += " 🛡️"
             html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{tab_label}</button>'
         html += '</div>'
 
@@ -1128,20 +1128,20 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
         
         if camp in CAMPIONATI_FINITI:
             html += f'<div class="season-ended-container"><img src="{URL_SUNDAY_FEMALE}" class="season-ended-img" alt="Stagione Conclusa"></div>'
-            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #607d8b 0%, #37474f 100%);">馃弫 STAGIONE CONCLUSA 馃弫</div>'
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #607d8b 0%, #37474f 100%);">🏁 STAGIONE CONCLUSA 🏁</div>'
         elif camp in FINALI_REGIONALI:
-            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%);">馃専 Fasi Finali Regionali 馃専</div>'
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%);">🌟 Fasi Finali Regionali 🌟</div>'
         elif camp in FASI_FINALI:
-            html += f'<div class="fasi-finali-banner">馃弳 Fasi Finali Provinciali 馃弳</div>'
+            html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
         elif camp in PLAY_OUT:
-            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">馃洝锔?PLAY OUT 馃洝锔?/div>'
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT 🛡️</div>'
 
         if camp not in FASI_FINALI and camp not in FINALI_REGIONALI and not df_class.empty and 'Campionato' in df_class.columns:
             df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
             if not df_c.empty:
-                if camp in CAMPIONATI_FINITI: html += f"<h2>馃弳 Classifica Definitiva</h2>"
-                elif camp in PLAY_OUT: html += f"<h2>馃洝锔?Classifica Play Out</h2>"
-                else: html += f"<h2>馃弳 Classifica Girone</h2>"
+                if camp in CAMPIONATI_FINITI: html += f"<h2>🏆 Classifica Definitiva</h2>"
+                elif camp in PLAY_OUT: html += f"<h2>🛡️ Classifica Play Out</h2>"
+                else: html += f"<h2>🏆 Classifica Girone</h2>"
                 
                 html += '<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
                 for _, r in df_c.iterrows():
@@ -1150,7 +1150,7 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
                 html += '</tbody></table></div></div>'
 
         if camp not in FASI_FINALI and camp not in PLAY_OUT and camp not in CAMPIONATI_FINITI and not df_avulse.empty and camp in df_avulse['Campionato_Ref'].unique():
-            html += f"<h2 style='color: #1565c0; border-left-color: #1565c0;'>馃弲 Classifica Generale</h2>"
+            html += f"<h2 style='color: #1565c0; border-left-color: #1565c0;'>🏅 Classifica Generale</h2>"
             df_a = df_avulse[df_avulse['Campionato_Ref'] == camp]
             html += '<div class="table-card" style="border: 1px solid #bbdefb;"><div class="table-scroll"><table><thead><tr style="background-color: #e3f2fd; color: #1565c0;"><th>Pos</th><th>Squadra</th><th>Pz.</th><th>P/G</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
             for _, r in df_a.iterrows():
@@ -1163,13 +1163,13 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
                 html += f"<tr {cls}><td>{r['col_0']}</td><td>{squadra_nome}</td><td>{r['col_2']}</td><td>{format_dec(r['col_3'])}</td><td><b>{r['col_4']}</b></td><td>{r['col_5']}</td><td>{r['col_6']}</td><td>{r['col_7']}</td><td>{r['col_8']}</td><td>{r['col_9']}</td></tr>"
             html += '</tbody></table></div></div>'
         
-        if camp in CAMPIONATI_FINITI: html += f"<h2>馃摎 Archivio Calendario</h2>"
-        elif camp in FINALI_REGIONALI: html += f"<h2>馃専 Calendario Regionali</h2>"
-        elif camp in FASI_FINALI: html += f"<h2>馃弳 Calendario Finali</h2>"
-        elif camp in PLAY_OUT: html += f"<h2>馃洝锔?Calendario Play Out</h2>"
-        else: html += f"<h2>馃搮 Calendario Gare</h2>"
+        if camp in CAMPIONATI_FINITI: html += f"<h2>📚 Archivio Calendario</h2>"
+        elif camp in FINALI_REGIONALI: html += f"<h2>🌟 Calendario Regionali</h2>"
+        elif camp in FASI_FINALI: html += f"<h2>🏆 Calendario Finali</h2>"
+        elif camp in PLAY_OUT: html += f"<h2>🛡️ Calendario Play Out</h2>"
+        else: html += f"<h2>📅 Calendario Gare</h2>"
         
-        html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">馃搮 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">馃枿锔?Stampa</button></div>'
+        html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
         html += f'<div id="calendar-container-{i}">'
         if not df_ris.empty and 'Campionato' in df_ris.columns:
             df_todis = df_ris[(df_ris['Campionato'] == camp) & (df_ris['Squadra Casa'].apply(is_target_team) | df_ris['Squadra Ospite'].apply(is_target_team))]
@@ -1184,7 +1184,7 @@ def genera_pagina_app(df_ris, df_class, df_avulse, filename, campionati_target, 
 def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_link):
     nav_links = f'<a href="#" onclick="openModal(); return false;"><span id="btn-calendar" class="calendar-container"><img src="{BTN_CALENDAR_EVENTS}" class="nav-icon-img"></span></a><a href="#" onclick="tornaAlSettore(); return false;"><img src="{BTN_TODIS_RESULTS}" class="nav-icon-img"></a><a href="{FILE_SCORE}"><img src="{BTN_SCOREBOARD}" class="nav-icon-img"></a>'
     html = f'<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Risultati Completi</title>{CSS_BASE}{ONESIGNAL_SCRIPT}</head><body>'
-    html += f'<div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">馃搮 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">脳</button></div><div id="modal-body"></div></div></div>'
+    html += f'<div id="modal-overlay" class="modal-overlay" onclick="closeModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">📅 Prossimi Appuntamenti</div><button class="close-btn" onclick="closeModal()">×</button></div><div id="modal-body"></div></div></div>'
     html += f'<div class="app-header" style="background:#1976D2"><div class="header-left" onclick="window.location.href=\'index.html\'"><img src="{URL_LOGO}" class="logo-main"><h1>Risultati Completi</h1></div><div class="nav-buttons">{nav_links}</div></div>'
     
     valid_camps =[]
@@ -1195,10 +1195,10 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
     html += '<div class="tab-bar">'
     for i, camp in enumerate(campionati_disp): 
         tab_label = camp.split(" S.")[0]
-        if camp in CAMPIONATI_FINITI: tab_label += " 馃弫"
-        elif camp in FINALI_REGIONALI: tab_label += " 馃専"
-        elif camp in FASI_FINALI: tab_label += " 馃弳"
-        elif camp in PLAY_OUT: tab_label += " 馃洝锔?
+        if camp in CAMPIONATI_FINITI: tab_label += " 🏁"
+        elif camp in FINALI_REGIONALI: tab_label += " 🌟"
+        elif camp in FASI_FINALI: tab_label += " 🏆"
+        elif camp in PLAY_OUT: tab_label += " 🛡️"
         html += f'<button id="btn-{i}" class="tab-btn {"active" if i==0 else ""}" onclick="openTab({i})">{tab_label}</button>'
     html += '</div>'
 
@@ -1208,21 +1208,21 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
         if camp in CAMPIONATI_FINITI:
             img_url = URL_SUNDAY_MALE if "Maschile" in camp else URL_SUNDAY_FEMALE
             html += f'<div class="season-ended-container"><img src="{img_url}" class="season-ended-img" alt="Stagione Conclusa"></div>'
-            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #607d8b 0%, #37474f 100%);">馃弫 STAGIONE CONCLUSA 馃弫</div>'
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #607d8b 0%, #37474f 100%);">🏁 STAGIONE CONCLUSA 🏁</div>'
         elif camp in FINALI_REGIONALI:
-            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%);">馃専 Fasi Finali Regionali 馃専</div>'
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%);">🌟 Fasi Finali Regionali 🌟</div>'
         elif camp in FASI_FINALI:
-            html += f'<div class="fasi-finali-banner">馃弳 Fasi Finali Provinciali 馃弳</div>'
+            html += f'<div class="fasi-finali-banner">🏆 Fasi Finali Provinciali 🏆</div>'
         elif camp in PLAY_OUT:
-            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">馃洝锔?PLAY OUT 馃洝锔?/div>'
+            html += f'<div class="fasi-finali-banner" style="background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);">🛡️ PLAY OUT 🛡️</div>'
 
         # Classifica non inserita se Fasi Finali
         if camp not in FASI_FINALI and camp not in FINALI_REGIONALI and not df_class.empty and 'Campionato' in df_class.columns:
             df_c = df_class[df_class['Campionato'] == camp].sort_values(by='P.')
             if not df_c.empty:
-                if camp in CAMPIONATI_FINITI: html += f'<h2>馃弳 Classifica Definitiva</h2>'
-                elif camp in PLAY_OUT: html += f'<h2>馃洝锔?Classifica Play Out</h2>'
-                else: html += f'<h2>馃弳 Classifica</h2>'
+                if camp in CAMPIONATI_FINITI: html += f'<h2>🏆 Classifica Definitiva</h2>'
+                elif camp in PLAY_OUT: html += f'<h2>🛡️ Classifica Play Out</h2>'
+                else: html += f'<h2>🏆 Classifica</h2>'
                 
                 html += '<div class="table-card"><div class="table-scroll"><table><thead><tr><th>Pos</th><th>Squadra</th><th>Pt</th><th>G</th><th>V</th><th>P</th><th>SF</th><th>SS</th></tr></thead><tbody>'
                 for _, r in df_c.iterrows():
@@ -1230,13 +1230,13 @@ def genera_pagina_generale(df_ris, df_class, filename, campionati_target, back_l
                     html += f"<tr {cls}><td>{r.get('P.','-')}</td><td>{r.get('Squadra','?')}</td><td><b>{r.get('Pu.',0)}</b></td><td>{r.get('G.G.',0)}</td><td>{r.get('G.V.',0)}</td><td>{r.get('G.P.',0)}</td><td>{r.get('S.F.',0)}</td><td>{r.get('S.S.',0)}</td></tr>"
                 html += '</tbody></table></div></div>'
         
-        if camp in CAMPIONATI_FINITI: html += f'<h2>馃摎 Archivio Calendario</h2>'
-        elif camp in FINALI_REGIONALI: html += f'<h2>馃専 Calendario Finali Regionali</h2>'
-        elif camp in FASI_FINALI: html += f'<h2>馃弳 Calendario Fasi Finali</h2>'
-        elif camp in PLAY_OUT: html += f'<h2>馃洝锔?Calendario Play Out</h2>'
-        else: html += f'<h2>馃搮 Calendario</h2>'
+        if camp in CAMPIONATI_FINITI: html += f'<h2>📚 Archivio Calendario</h2>'
+        elif camp in FINALI_REGIONALI: html += f'<h2>🌟 Calendario Finali Regionali</h2>'
+        elif camp in FASI_FINALI: html += f'<h2>🏆 Calendario Fasi Finali</h2>'
+        elif camp in PLAY_OUT: html += f'<h2>🛡️ Calendario Play Out</h2>'
+        else: html += f'<h2>📅 Calendario</h2>'
 
-        html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">馃搮 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">馃枿锔?Stampa</button></div>'
+        html += f'<div class="calendar-controls"><button class="btn-tool" id="btn-sort-{i}" data-sorted="false" onclick="toggleSort({i})">📅 Ordina per Data</button><button class="btn-tool" onclick="printCalendar()">🖨️ Stampa</button></div>'
         html += f'<div id="calendar-container-{i}">'
         if not df_ris.empty and 'Campionato' in df_ris.columns:
             df_r = df_ris[df_ris['Campionato'] == camp]
@@ -1261,7 +1261,7 @@ if __name__ == "__main__":
     
     df_ris = pd.DataFrame()
     if is_frozen and ALL_CAMPIONATI:
-        print("鉂勶笍 TUTTI I CAMPIONATI SONO TERMINATI: APPLICAZIONE IN FREEZE MODE 鉂勶笍")
+        print("❄️ TUTTI I CAMPIONATI SONO TERMINATI: APPLICAZIONE IN FREEZE MODE ❄️")
         genera_landing_page(is_frozen=True)
         genera_pagina_media()
         genera_segnapunti()
@@ -1300,7 +1300,7 @@ if __name__ == "__main__":
                     camp_corto = m['Campionato'].split(" S.")[0]
                     message_lines.append(f"{camp_corto}: {m['Squadra Casa']} vs {m['Squadra Ospite']}")
                 
-                push_title = "馃彁 脠 il giorno della partita!"
+                push_title = "🏐 È il giorno della partita!"
                 push_msg = " | ".join(message_lines)
                 
                 send_push_notification(push_title, push_msg)
@@ -1308,4 +1308,4 @@ if __name__ == "__main__":
                 with open(tracking_file, 'a') as f:
                     f.write(f"{today_iso}\n")
     
-    print(f"鉁?Generazione {APP_VERSION} completata!")
+    print(f"✅ Generazione {APP_VERSION} completata!")
