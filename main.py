@@ -1,5 +1,5 @@
 # ==============================================================================
-# SOFTWARE VERSION: v7.3
+# SOFTWARE VERSION: v7.2
 # RELEASE NOTE: Ripristino Bottone Calendario (Sempre visibile + Empty State)
 # ==============================================================================
 
@@ -843,7 +843,7 @@ def scrape_data():
     return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame(), pd.concat(all_avulse, ignore_index=True) if all_avulse else pd.DataFrame()
 
 # ================= GENERATORI PAGINE =================
- def _render_sponsor_card(sp, card_variant="sponsor-card-partner"):
+def _render_sponsor_card(sp, card_variant="sponsor-card-partner"):
     nome = html_lib.escape(str(sp.get("nome", "Sponsor")))
     desc = html_lib.escape(str(sp.get("descrizione", "")))
     img_url = str(sp.get("img_url", "")).strip()
