@@ -887,7 +887,7 @@ def genera_sezione_sponsor():
 
     cta_html = ""
     if SPONSORS_SHOW_CTA and SPONSORS_CTA_EMAIL:
-    cta_html = f'<a href="mailto:{html_lib.escape(SPONSORS_CTA_EMAIL)}?subject=Sponsorizzazione%20Todis%20Pastena%20Volley" class="sponsors-cta-link">Diventa Sponsor</a>'
+        cta_html = f'<a href="mailto:{html_lib.escape(SPONSORS_CTA_EMAIL)}?subject=Sponsorizzazione%20Todis%20Pastena%20Volley" class="sponsors-cta-link">Diventa Sponsor</a>'
 
     header_html = (
         f'<div class="sponsors-header">'
