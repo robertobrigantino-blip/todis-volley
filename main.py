@@ -140,7 +140,7 @@ SPONSORS_LIST = [
         "nome": "Essenia ",
         "descrizione": "University and Enterprise Training Partnership EUTP",
         "tier": "partner",
-        "img_url": "https://www.esseniauetp.it/essenia/wp-content/uploads/2015/08/essenia-white-mini460-1.png",
+        "img_url": "https://www.erasmusdays.eu/wp-content/uploads/2026/10/phpb1i8h9h2ja73dJqqt41.jpg",
         "link_url": "https://www.esseniauetp.it/it/",
         "accent_color": "#1e3a8a",
         "active": True
