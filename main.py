@@ -103,13 +103,13 @@ GALLERIA_MEDIA = {
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_0091.jpg", "caption": "Vittoria vs Volley Volla"},
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_0093.jpg", "caption": "Vittoria vs Volley Volla"},
     ],
-    "U17 S.Femminile": [
+    "U17 S.Femminile Gir.C": [
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_0786.jpg", "caption": "Primi Sorrisi vs A.P.D. Pessy"},
     ],
-    "U15 S.Femminile": [
+    "U15 S.Femminile Gir.A": [
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_1179.jpg", "caption": "Primi Sorrisi vs Volley Project Pontecagnano "},
     ],
-    "U14 S.Femminile": [
+    "U14 S.Femminile Gir.C": [
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_0923.jpg", "caption": "Primi Sorrisi vs Giffoni Futura"},
     ],
     "U12 S.Femminile": [
@@ -1313,4 +1313,5 @@ if __name__ == "__main__":
                     f.write(f"{today_iso}\n")
     
     print(f"✅ Generazione {APP_VERSION} completata!")
+
 
