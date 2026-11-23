@@ -131,7 +131,7 @@ SPONSORS_LIST = [
         "nome": "Todis Pastena Supermercati",
         "descrizione": "Main Sponsor Ufficiale Via Posidonia, Salerno",
         "tier": "main",
-        "img_url": "",
+        "img_url": "https://www.todis.it/wp-content/uploads/2026/02/logo-todis.svg?x72032",
         "link_url": "https://www.todis.it/",
         "accent_color": "#d32f2f",
         "active": True
@@ -140,7 +140,7 @@ SPONSORS_LIST = [
         "nome": "Essenia ",
         "descrizione": "University and Enterprise Training Partnership EUTP",
         "tier": "partner",
-        "img_url": "",
+        "img_url": "https://www.esseniauetp.it/essenia/wp-content/uploads/2015/08/essenia-white-mini460-1.png",
         "link_url": "https://www.esseniauetp.it/it/",
         "accent_color": "#1e3a8a",
         "active": True
@@ -149,7 +149,7 @@ SPONSORS_LIST = [
         "nome": "Incontro Immobiliare",
         "descrizione": "Agenzia Immobiliare",
         "tier": "partner",
-        "img_url": "",
+        "img_url": "https://media.agestaweb.it/siti/01558/public/foto/logo_1.png",
         "link_url": "https://www.incontroimmobiliare.it/web/",
         "accent_color": "#0f766e",
         "active": True
@@ -158,7 +158,7 @@ SPONSORS_LIST = [
         "nome": "Antica Macelleria Accurso",
         "descrizione": "Gastronomia",
         "tier": "partner",
-        "img_url": "",
+        "img_url": "https://www.anticamacelleriaccurso.it/img/logo.jpg?1588972525",
         "link_url": "https://www.anticamacelleriaccurso.it/",
         "accent_color": "#b45309",
         "active": True
@@ -167,7 +167,7 @@ SPONSORS_LIST = [
         "nome": "Sti Polli",
         "descrizione": "Sti Polli il girarrosto che aspettavi!",
         "tier": "partner",
-        "img_url": "",
+        "img_url": "https://scontent-mxp2-1.xx.fbcdn.net/v/t39.30808-6/903283762_1472477358311265_7775860094785455365_n.avif?stp=dst-jpg_tt6&cstp=mx357x357&ctp=s357x357&_nc_cat=107&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=fTr2GinDn-YQ7kNvwFNce7k&_nc_oc=AdrrN6icDab3wsAWz7AB6b0kLAQDSs3BIPHL2snKqzp0S7WONy_aqPE3h7XnFdEtjXs&_nc_zt=23&_nc_ht=scontent-mxp2-1.xx&_nc_gid=4S9M_L5wwY_pm7jvGbbSgQ&_nc_ss=782a8&oh=00_AQTZ6tRKgmyOhysHVlhnNEPDlb32Fy_gwyeB-HBlaV30rg&oe=6B0A0096",
         "link_url": "https://www.facebook.com/stipolli/?locale=it_IT",
         "accent_color": "#b45309",
         "active": True
