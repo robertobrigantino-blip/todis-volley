@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v7.2
-# RELEASE NOTE: Ripristino Bottone Calendario (Sempre visibile + Empty State)
+# SOFTWARE VERSION: v7.3
+# RELEASE NOTE: Inserimento Sponsor
 # ==============================================================================
 
 import pandas as pd
@@ -173,8 +173,6 @@ SPONSORS_LIST = [
         "active": True
     },
 ]
-
-
 def is_target_team(team_name):
     if pd.isna(team_name) or not str(team_name).strip(): return False
     name_clean = str(team_name).upper().strip()
@@ -889,7 +887,7 @@ def genera_sezione_sponsor():
 
     cta_html = ""
     if SPONSORS_SHOW_CTA and SPONSORS_CTA_EMAIL:
-        cta_html = f'<a href="mailto:{html_lib.escape(SPONSORS_CTA_EMAIL)}?subject=Sponsorizzazione%20Todis%20Pastena%20Volley" class="sponsors-cta-link">Diventa Sponsor /a>'
+    cta_html = f'<a href="mailto:{html_lib.escape(SPONSORS_CTA_EMAIL)}?subject=Sponsorizzazione%20Todis%20Pastena%20Volley" class="sponsors-cta-link">Diventa Sponsor</a>'
 
     header_html = (
         f'<div class="sponsors-header">'
@@ -913,8 +911,6 @@ def genera_sezione_sponsor():
             body_html += f'<div class="sponsor-grid">{partners_html}</div>'
 
     return f'<section class="sponsors-section" aria-label="Sponsor">{header_html}{body_html}</section>'                                                                 
-
-
 def genera_landing_page(is_frozen=False):
     print(f"📄 Generazione Landing Page...")
     img_scelta = URL_SUNDAY_ALL if is_frozen else URL_SPLIT_IMG
@@ -967,7 +963,6 @@ def genera_landing_page(is_frozen=False):
             </div>
 
             {sponsors_above_social}    
-
             <div class="social-section">
                 <div class="social-icons">
                     <a href="https://www.facebook.com/111542261731361?ref=_xav_ig_profile_page_web" target="_blank">
