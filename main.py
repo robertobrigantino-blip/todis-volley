@@ -118,7 +118,7 @@ GALLERIA_MEDIA = {
 # ================= CONFIGURAZIONE SPONSOR LANDING PAGE =================
 SPONSORS_ENABLED = True
 SPONSORS_TITLE = "I Nostri Sponsor Stagione 26/27"
-SPONSOR_LAYOUT_MODE = "cards"       # Opzioni: "cards" (Main + Griglia), "carousel" (Scorrimento orizzontale), "strip" (Impilati)
+SPONSOR_LAYOUT_MODE = "carousel"       # Opzioni: "cards" (Main + Griglia), "carousel" (Scorrimento orizzontale), "strip" (Impilati)
 SPONSOR_POSITION = "above_social"   # Opzioni: "above_social" (Sotto scelta sezione), "above_choice" (Sopra scelta sezione)
 SPONSORS_SHOW_CTA = True
 SPONSORS_CTA_EMAIL = "info@pastenavolley.it"
