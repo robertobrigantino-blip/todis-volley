@@ -52,37 +52,37 @@
     .season-ended-img { width: 100%; max-width: 450px; height: auto; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
 
     /* 3. LANDING PAGE, SPONSOR E DISCLAIMER */
-    .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; gap: 12px; padding: 12px 0 18px 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .landing-container { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; gap: 8px; padding: 10px 0 14px 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     .instruction-text { font-weight: 700; color: #555; font-size: 11px; text-transform: uppercase; margin: 0; }
     .choice-card { position: relative; width: 92%; max-width: 450px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
-    .choice-img { width: 100%; height: auto; max-height: 46vh; object-fit: contain; display: block; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .choice-img { width: 100%; height: auto; max-height: 54vh; object-fit: contain; display: block; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     .click-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; border-radius: 15px; overflow: hidden; }
     .click-area { width: 50%; height: 100%; cursor: pointer; }
 
-    /* SPONSOR BANNERS */
-    .sponsors-section { width: 92%; max-width: 450px; margin: 2px auto; flex-shrink: 0; }
-    .sponsors-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding: 0 2px; }
-    .sponsors-title { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: #666; margin: 0; }
-    .sponsors-cta-link { font-size: 10px; font-weight: 700; color: #d32f2f; text-decoration: none; }
+    /* SPONSOR BANNERS (COMPACT) */
+    .sponsors-section { width: 92%; max-width: 450px; margin: 0 auto; flex-shrink: 0; }
+    .sponsors-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; padding: 0 2px; }
+    .sponsors-title { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.7px; color: #777; margin: 0; }
+    .sponsors-cta-link { font-size: 9px; font-weight: 700; color: #d32f2f; text-decoration: none; }
     .sponsors-cta-link:hover { text-decoration: underline; }
-    .sponsor-card { display: block; text-decoration: none; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: transform 0.15s ease, box-shadow 0.15s ease; color: inherit; }
+    .sponsor-card { display: block; text-decoration: none; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 9px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: transform 0.15s ease, box-shadow 0.15s ease; color: inherit; }
     .sponsor-card:active { transform: scale(0.985); }
-    .sponsor-card-main { margin-bottom: 8px; }
-    .sponsor-card-main .sponsor-img { width: 100%; max-height: 110px; object-fit: cover; display: block; }
-    .sponsor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-    .sponsor-strip { display: flex; flex-direction: column; gap: 8px; }
-    .sponsor-card-partner .sponsor-img { width: 100%; height: 68px; object-fit: contain; background: #ffffff; padding: 6px; display: block; }
-    .sponsor-strip .sponsor-card-partner .sponsor-img { height: 76px; }
-    .sponsor-fallback { padding: 10px 12px; display: flex; flex-direction: column; justify-content: center; min-height: 62px; position: relative; background: #ffffff; }
-    .sponsor-card-main .sponsor-fallback { padding: 12px 14px; min-height: 70px; }
-    .sponsor-tier-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 2px; }
-    .sponsor-name { font-size: 13px; font-weight: 800; color: #111827; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .sponsor-card-main .sponsor-name { font-size: 15px; }
-    .sponsor-desc { font-size: 10px; color: #6b7280; margin-top: 2px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .sponsor-marquee-wrap { overflow: hidden; width: 100%; border-radius: 12px; }
-    .sponsor-marquee-track { display: flex; gap: 8px; width: max-content; animation: sponsorMarquee 22s linear infinite; }
+    .sponsor-card-main { margin-bottom: 6px; }
+    .sponsor-card-main .sponsor-img { width: 100%; max-height: 58px; object-fit: cover; display: block; }
+    .sponsor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+    .sponsor-strip { display: flex; flex-direction: column; gap: 5px; }
+    .sponsor-card-partner .sponsor-img { width: 100%; height: 40px; object-fit: contain; background: #ffffff; padding: 4px; display: block; }
+    .sponsor-strip .sponsor-card-partner .sponsor-img { height: 46px; }
+    .sponsor-fallback { padding: 5px 8px; display: flex; flex-direction: column; justify-content: center; min-height: 40px; position: relative; background: #ffffff; }
+    .sponsor-card-main .sponsor-fallback { padding: 6px 10px; min-height: 44px; }
+    .sponsor-tier-label { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1px; line-height: 1.1; }
+    .sponsor-name { font-size: 11px; font-weight: 800; color: #111827; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sponsor-card-main .sponsor-name { font-size: 12px; }
+    .sponsor-desc { font-size: 9px; color: #6b7280; margin-top: 1px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sponsor-marquee-wrap { overflow: hidden; width: 100%; border-radius: 9px; }
+    .sponsor-marquee-track { display: flex; gap: 6px; width: max-content; animation: sponsorMarquee 22s linear infinite; }
     .sponsor-marquee-track:hover { animation-play-state: paused; }
-    .sponsor-marquee-item { width: 190px; flex-shrink: 0; }
+    .sponsor-marquee-item { width: 145px; flex-shrink: 0; }
     @keyframes sponsorMarquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
     .social-section { text-align: center; margin: 4px 0; flex-shrink: 0; } 
@@ -343,7 +343,7 @@
         </div>
 
         <div class="footer-counter">
-            <span class="version-text">v7.3 | Stagione 26/27 🔔</span>
+            <span class="version-text">v7.5 | Stagione 26/27 🔔</span>
             <div class="footer-msg">🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐</div>
         </div>
         
