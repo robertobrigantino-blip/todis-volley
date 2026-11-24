@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v7.5
-# RELEASE NOTE: SPONSOR BANNERS (COMPACT)
+# SOFTWARE VERSION: v7.6
+# RELEASE NOTE: FIX Notifiche
 # ==============================================================================
 
 import pandas as pd
@@ -22,7 +22,7 @@ import html as html_lib
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v7.5 | Stagione 26/27 🔔"
+APP_VERSION = "v7.6 | Stagione 26/27 🔔"
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -638,7 +638,8 @@ def send_push_notification(title, message):
     app_id = ONESIGNAL_APP_ID
     api_key = os.environ.get('ONESIGNAL_API_KEY')
     
-    if not api_key or app_id == "46ed1099-8b58-4760-abca-646c60822779":
+    if not api_key:
+        print("⚠️ ONESIGNAL_API_KEY non impostata, notifica push saltata.")
         return
         
     payload = {
@@ -1313,5 +1314,3 @@ if __name__ == "__main__":
                     f.write(f"{today_iso}\n")
     
     print(f"✅ Generazione {APP_VERSION} completata!")
-
-
