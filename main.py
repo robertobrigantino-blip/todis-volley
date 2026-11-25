@@ -1,6 +1,6 @@
 # ==============================================================================
-# SOFTWARE VERSION: v7.6
-# RELEASE NOTE: FIX Notifiche
+# SOFTWARE VERSION: v8.0
+# RELEASE NOTE: SCRAPING PARALLELO + CACHE JSON + NOTIFICHE NUOVI RISULTATI
 # ==============================================================================
 
 import pandas as pd
@@ -10,6 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
+import requests
 import time
 from io import StringIO
 from urllib.parse import urljoin, quote
@@ -19,10 +20,24 @@ import os
 import urllib.request
 import json
 import html as html_lib
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    datefmt='%H:%M:%S'
+)
 
 # ================= CONFIGURAZIONE =================
 NOME_VISUALIZZATO = "TODIS PASTENA VOLLEY"
-APP_VERSION = "v7.6 | Stagione 26/27 🔔"
+APP_VERSION = "v8.0 | Stagione 26/27 🔔"
+
+# FILE DI CACHE DEI RISULTATI SCRAPED
+CACHE_FILE = "cache_results.json"
+# NUMERO DI THREAD PARALLELI PER IL DETTAGLIO GARE
+SCRAPING_MAX_WORKERS = 8
 
 # MESSAGGIO PERSONALIZZATO FOOTER
 FOOTER_MSG = "🐾 <span style='color: #d32f2f; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>LINCI GO!</span> 🏐"    
@@ -188,6 +203,55 @@ def is_target_team(team_name):
     for alias in TARGET_TEAM_ALIASES:
         if alias.upper() in name_clean: return True
     return False
+
+# ================= CACHE JSON =================
+def _make_cache_key(camp, giornata, casa, ospite):
+    """Chiave univoca per ogni incontro."""
+    return f"{camp}|{giornata}|{casa}|{ospite}"
+
+def load_cache():
+    """Carica la cache dei risultati già scaricati dal disco."""
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, 'r', encoding='utf-8') as f:
+                records = json.load(f)
+            cache = {r['_cache_key']: r for r in records if '_cache_key' in r}
+            logging.info("💾 Cache caricata: %d gare trovate.", len(cache))
+            return cache
+        except Exception as e:
+            logging.warning("⚠️ Cache non leggibile, si riparte da zero: %s", e)
+    return {}
+
+def save_cache(df_ris):
+    """Salva il DataFrame dei risultati su disco come cache JSON."""
+    if df_ris.empty:
+        return
+    try:
+        records = df_ris.to_dict(orient='records')
+        with open(CACHE_FILE, 'w', encoding='utf-8') as f:
+            json.dump(records, f, ensure_ascii=False, indent=2, default=str)
+        logging.info("💾 Cache aggiornata: %d gare salvate.", len(records))
+    except Exception as e:
+        logging.warning("⚠️ Errore salvataggio cache: %s", e)
+
+def find_new_results(df_ris, cache):
+    """
+    Confronta i risultati attuali con la cache precedente.
+    Restituisce le righe della Todis che hanno appena ottenuto un punteggio.
+    """
+    new_results = []
+    for _, row in df_ris.iterrows():
+        key = row.get('_cache_key', '')
+        if not row.get('Punteggio'):
+            continue
+        cached = cache.get(key)
+        was_pending = (cached is None) or (not cached.get('Punteggio'))
+        if was_pending:
+            if is_target_team(row['Squadra Casa']) or is_target_team(row['Squadra Ospite']):
+                new_results.append(row)
+    if new_results:
+        logging.info("🆕 Trovati %d nuovi risultati da notificare.", len(new_results))
+    return new_results
 
 # ================= CSS COMUNE TOTALE =================
 CSS_BASE = """
@@ -724,47 +788,97 @@ def crea_card_html(r, camp, is_focus_mode=False):
     """
 
 # ================= SCRAPING =================
-def get_match_details_robust(driver, match_url):
-    data_ora_full, data_iso, luogo, link_maps, parziali_str = "Data da definire", "", "Impianto non definito", "", ""
+_REQUESTS_HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Android 10; Mobile; rv:109.0) Gecko/109.0 Firefox/109.0',
+    'Accept-Language': 'it-IT,it;q=0.9',
+}
+_print_lock = threading.Lock()
+
+def get_match_details_requests(match_url):
+    """
+    Scarica il dettaglio di una singola gara via requests+BeautifulSoup.
+    Thread-safe, non richiede Selenium. Usata nel pool parallelo.
+    """
+    data_ora_full = "Data da definire"
+    data_iso = ""
+    luogo = "Impianto non definito"
+    link_maps = ""
+    parziali_str = ""
     try:
-        driver.get(match_url)
-        WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.CLASS_NAME, "divImpianto")))
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-        clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace(u'\xa0', u' '))
-        date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:\.]\d{2})', clean_text)
+        resp = requests.get(match_url, headers=_REQUESTS_HEADERS, timeout=10)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        clean_text = re.sub(r'\s+', ' ', soup.get_text(separator=" ", strip=True).replace('\xa0', ' '))
+        date_pattern = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{4}).*?(\d{1,2}[:.:]\d{2})', clean_text)
         if date_pattern:
             d, o = date_pattern.group(1), date_pattern.group(2)
             data_ora_full = f"{d} ⏰ {o}"
-            try: data_iso = datetime.strptime(d, "%d/%m/%Y").strftime("%Y-%m-%d")
-            except: pass
+            try:
+                data_iso = datetime.strptime(d, "%d/%m/%Y").strftime("%Y-%m-%d")
+            except Exception:
+                pass
         imp = soup.find('div', class_='divImpianto')
-        if imp: luogo = imp.get_text(strip=True)
+        if imp:
+            luogo = imp.get_text(strip=True)
         a_map = soup.find('a', href=lambda x: x and ('google.com/maps' in x or 'maps.google' in x))
-        if a_map: link_maps = a_map['href']
-        elif luogo != "Impianto non definito": link_maps = f"https://www.google.com/maps/search/?api=1&query={quote(luogo)}"
+        if a_map:
+            link_maps = a_map['href']
+        elif luogo != "Impianto non definito":
+            link_maps = "https://www.google.com/maps/search/?api=1&query=" + quote(luogo)
         div_casa = soup.find('div', id='risultatoCasa')
         div_ospite = soup.find('div', id='risultatoOspite')
         if div_casa and div_ospite:
-            nums_casa =[d.get_text(strip=True) for d in div_casa.find_all('div', class_='parziale') if re.search(r'\d+', d.get_text())]
-            nums_ospite =[d.get_text(strip=True) for d in div_ospite.find_all('div', class_='parziale') if re.search(r'\d+', d.get_text())]
+            nums_casa = [el.get_text(strip=True) for el in div_casa.find_all('div', class_='parziale') if re.search(r'\d+', el.get_text())]
+            nums_ospite = [el.get_text(strip=True) for el in div_ospite.find_all('div', class_='parziale') if re.search(r'\d+', el.get_text())]
             parziali_str = ",".join([f"{nums_casa[i]}-{nums_ospite[i]}" for i in range(min(len(nums_casa), len(nums_ospite)))])
-    except: pass
+    except Exception as e:
+        with _print_lock:
+            logging.debug("Dettaglio non disponibile (%s): %s", match_url, e)
     return data_ora_full, data_iso, luogo, link_maps, parziali_str
 
+
+def _fetch_match_detail_worker(match_info):
+    """Worker per ThreadPoolExecutor: arricchisce un dict-gara con i dettagli."""
+    url = match_info.get('_url', '')
+    if not url:
+        return match_info
+    d_ora, d_iso, luogo, maps, parziali = get_match_details_requests(url)
+    match_info.update({
+        'Data': d_ora,
+        'DataISO': d_iso,
+        'Impianto': luogo,
+        'Maps': maps,
+        'Parziali': parziali
+    })
+    return match_info
 def scrape_data():
+    """
+    Scraping FIPAV con:
+    - Cache JSON: salta il dettaglio delle gare già risolte
+    - Selenium per le pagine di lista (richiedono JS)
+    - ThreadPoolExecutor + requests per i dettagli delle gare (parallelo)
+    """
+    cache = load_cache()
+
     chrome_options = Options()
-    chrome_options.add_argument("--headless") 
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome(options=chrome_options)
-    all_results, all_standings, all_avulse = [], [],[]
-    
+    all_standings, all_avulse = [], []
+
+    # --- Passo 1: raccogli la lista delle gare con Selenium (veloce, solo liste) ---
+    pending_detail  = []   # gare senza dati in cache -> da scrapare
+    resolved_cached = []   # gare già in cache con dettagli completi
+
     campionati_to_scrape = {}
     for nome, cid in ALL_CAMPIONATI.items():
         if nome in FINALI_REGIONALI:
-            campionati_to_scrape[nome] = FINALI_REGIONALI[nome] 
+            campionati_to_scrape[nome] = FINALI_REGIONALI[nome]
         elif nome in FASI_FINALI:
-            campionati_to_scrape[nome] = FASI_FINALI[nome]      
+            campionati_to_scrape[nome] = FASI_FINALI[nome]
         elif nome in PLAY_OUT:
-            campionati_to_scrape[nome] = PLAY_OUT[nome]         
+            campionati_to_scrape[nome] = PLAY_OUT[nome]
         else:
             campionati_to_scrape[nome] = cid
 
@@ -773,15 +887,14 @@ def scrape_data():
             base_url = "https://www.fipavcampania.it/mobile/"
         else:
             base_url = "https://www.fipavsalerno.it/mobile/"
-        
+
+        logging.info("Scraping lista: %s (id=%s)", nome_camp, id_camp)
         driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}")
         soup = BeautifulSoup(driver.page_source, 'html.parser')
-        
+
         curr_giornata = "N/D"
-        elementi = soup.find_all(['div', 'a'])
-        
-        for el in elementi:
-            classi = el.get('class',[])
+        for el in soup.find_all(['div', 'a']):
+            classi = el.get('class', [])
             if el.name == 'div' and 'divGiornata' in classi:
                 curr_giornata = el.get_text(strip=True)
             elif el.name == 'a' and 'gara' in classi:
@@ -789,32 +902,47 @@ def scrape_data():
                 pt_o = el.find('div', class_='setOspite').get_text(strip=True) if el.find('div', class_='setOspite') else ''
                 c = el.find('div', class_='squadraCasa').get_text(strip=True).replace(pt_c, '').strip()
                 o = el.find('div', class_='squadraOspite').get_text(strip=True).replace(pt_o, '').strip()
-                
+
                 giornata_label = curr_giornata
                 if nome_camp in FINALI_REGIONALI and "Regionali" not in giornata_label:
-                    giornata_label = f"🌟 Finali Regionali - {curr_giornata}"
+                    giornata_label = f"\U0001f31f Finali Regionali - {curr_giornata}"
                 elif nome_camp in FASI_FINALI and "Fase Finale" not in giornata_label and "Playoff" not in giornata_label:
-                    giornata_label = f"🏆 Playoff - {curr_giornata}"
+                    giornata_label = f"\U0001f3c6 Playoff - {curr_giornata}"
                 elif nome_camp in PLAY_OUT and "Play" not in giornata_label:
-                    giornata_label = f"🛡️ Play Out - {curr_giornata}"
+                    giornata_label = f"\U0001f6e1 Play Out - {curr_giornata}"
 
-                d_ora, d_iso, luogo, maps, parziali = get_match_details_robust(driver, urljoin(base_url, el.get('href', '')))
-                
-                all_results.append({
-                    'Campionato': nome_camp, 
-                    'Giornata': giornata_label, 
-                    'Squadra Casa': c, 
-                    'Squadra Ospite': o, 
-                    'Punteggio': f"{pt_c}-{pt_o}" if pt_c else "", 
-                    'Data': d_ora, 
-                    'DataISO': d_iso, 
-                    'Impianto': luogo, 
-                    'Maps': maps, 
-                    'Set Casa': pt_c, 
-                    'Set Ospite': pt_o, 
-                    'Parziali': parziali
-                })
-        
+                match_url = urljoin(base_url, el.get('href', ''))
+                cache_key  = _make_cache_key(nome_camp, giornata_label, c, o)
+                punteggio  = f"{pt_c}-{pt_o}" if pt_c else ""
+
+                base_record = {
+                    '_cache_key': cache_key,
+                    '_url': match_url,
+                    'Campionato': nome_camp,
+                    'Giornata': giornata_label,
+                    'Squadra Casa': c,
+                    'Squadra Ospite': o,
+                    'Punteggio': punteggio,
+                    'Set Casa': pt_c,
+                    'Set Ospite': pt_o,
+                }
+
+                # Usa la cache se: gara gia risolta E dettagli presenti
+                cached = cache.get(cache_key)
+                if cached and cached.get('Punteggio') and cached.get('DataISO'):
+                    full_record = {**base_record, **{
+                        'Data':     cached.get('Data', 'Data da definire'),
+                        'DataISO':  cached.get('DataISO', ''),
+                        'Impianto': cached.get('Impianto', 'Impianto non definito'),
+                        'Maps':     cached.get('Maps', ''),
+                        'Parziali': cached.get('Parziali', ''),
+                    }}
+                    resolved_cached.append(full_record)
+                else:
+                    # Needs live detail fetch
+                    pending_detail.append(base_record)
+
+        # Classifica di girone (via Selenium)
         if nome_camp not in FASI_FINALI and nome_camp not in FINALI_REGIONALI:
             try:
                 driver.get(f"{base_url}risultati.asp?CampionatoId={id_camp}&vis=classifica")
@@ -823,33 +951,54 @@ def scrape_data():
                     df_s = tabs[0]
                     df_s['Campionato'] = nome_camp
                     all_standings.append(df_s)
-            except: pass
+            except Exception:
+                pass
 
+    # Classifiche avulse (via Selenium)
     for nome_camp, id_camp in CAMPIONATI_AVULSI.items():
         if nome_camp in FINALI_REGIONALI or nome_camp in FASI_FINALI or nome_camp in CAMPIONATI_FINITI or nome_camp in PLAY_OUT:
             continue
-            
         try:
             dominio = "fipavcampania.it" if ("Serie" in nome_camp or nome_camp in FINALI_REGIONALI) else "fipavsalerno.it"
             url_avulsa = f"https://www.{dominio}/classifica.aspx?tipo=avulsa&CId={id_camp}"
-            
             driver.get(url_avulsa)
-            time.sleep(1) 
-            
+            time.sleep(1)
             tabs = pd.read_html(StringIO(driver.page_source), decimal=',', thousands='.')
             if tabs:
-                df_a = max(tabs, key=len) 
+                df_a = max(tabs, key=len)
                 df_a = df_a.astype(str)
-                df_a.columns =[f"col_{i}" for i in range(len(df_a.columns))]
-                df_a['Campionato_Ref'] = nome_camp 
+                df_a.columns = [f"col_{i}" for i in range(len(df_a.columns))]
+                df_a['Campionato_Ref'] = nome_camp
                 all_avulse.append(df_a)
-                print(f"✅ Classifica Avulsa scaricata: {nome_camp} da {dominio}")
+                logging.info("\u2705 Classifica Avulsa scaricata: %s da %s", nome_camp, dominio)
         except Exception as e:
-            print(f"⚠️ Errore scraping avulsa {nome_camp}: {e}")
+            logging.warning("\u26a0 Errore scraping avulsa %s: %s", nome_camp, e)
 
     driver.quit()
-    return pd.DataFrame(all_results), pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame(), pd.concat(all_avulse, ignore_index=True) if all_avulse else pd.DataFrame()
 
+    # --- Passo 2: fetch parallelo dei dettagli mancanti ---
+    logging.info("Dettagli da scaricare: %d | Da cache: %d", len(pending_detail), len(resolved_cached))
+    fetched = []
+    if pending_detail:
+        with ThreadPoolExecutor(max_workers=SCRAPING_MAX_WORKERS) as pool:
+            futures = {pool.submit(_fetch_match_detail_worker, m): m for m in pending_detail}
+            done_count = 0
+            for future in as_completed(futures):
+                done_count += 1
+                try:
+                    fetched.append(future.result())
+                except Exception as exc:
+                    fetched.append(futures[future])
+                    logging.warning("Worker errore: %s", exc)
+                if done_count % 10 == 0:
+                    logging.info("  Dettagli: %d/%d completati...", done_count, len(pending_detail))
+
+    all_results = resolved_cached + fetched
+    df_ris = pd.DataFrame(all_results)
+
+    df_class  = pd.concat(all_standings, ignore_index=True) if all_standings else pd.DataFrame()
+    df_avulse = pd.concat(all_avulse,   ignore_index=True) if all_avulse   else pd.DataFrame()
+    return df_ris, df_class, df_avulse
 # ================= GENERATORI PAGINE =================
 def _render_sponsor_card(sp, card_variant="sponsor-card-partner"):
     nome = html_lib.escape(str(sp.get("nome", "Sponsor")))
@@ -1260,57 +1409,77 @@ def genera_segnapunti():
     with open(FILE_SCORE, "w", encoding="utf-8") as f: f.write(html)
 
 if __name__ == "__main__":
-    is_frozen = False 
+    is_frozen = False
     if ALL_CAMPIONATI:
         is_frozen = all(camp in CAMPIONATI_FINITI for camp in ALL_CAMPIONATI)
-    
+
     df_ris = pd.DataFrame()
+
     if is_frozen and ALL_CAMPIONATI:
-        print("❄️ TUTTI I CAMPIONATI SONO TERMINATI: APPLICAZIONE IN FREEZE MODE ❄️")
+        logging.info("FREEZE MODE: tutti i campionati sono terminati.")
         genera_landing_page(is_frozen=True)
         genera_pagina_media()
         genera_segnapunti()
     else:
+        # Carica la cache PRIMA dello scraping per il confronto risultati nuovi
+        cache_precedente = load_cache()
+
         df_ris, df_class, df_avulse = scrape_data()
+
+        # Salva la cache aggiornata su disco
+        save_cache(df_ris)
+
         genera_landing_page(is_frozen=False)
         genera_pagina_media()
-        
+
         if CAMPIONATI_MASCHILI:
             genera_pagina_app(df_ris, df_class, df_avulse, FILE_MALE, CAMPIONATI_MASCHILI)
             genera_pagina_generale(df_ris, df_class, FILE_GEN_MALE, CAMPIONATI_MASCHILI, FILE_MALE)
-            
+
         if CAMPIONATI_FEMMINILI:
             genera_pagina_app(df_ris, df_class, df_avulse, FILE_FEMALE, CAMPIONATI_FEMMINILI)
             genera_pagina_generale(df_ris, df_class, FILE_GEN_FEMALE, CAMPIONATI_FEMMINILI, FILE_FEMALE)
-            
+
         genera_segnapunti()
-    
-    # ---- LOGICA NOTIFICHE PUSH ONESIGNAL ----
+
+        # ---- NOTIFICA 1: Nuovi risultati appena pubblicati ----
+        nuovi_risultati = find_new_results(df_ris, cache_precedente)
+        for row in nuovi_risultati:
+            camp_corto = row['Campionato'].split(" S.")[0]
+            sc, so = row.get('Set Casa', '?'), row.get('Set Ospite', '?')
+            casa, ospite = row['Squadra Casa'], row['Squadra Ospite']
+            push_title = "\U0001f3d0 Risultato Disponibile!"
+            push_msg = f"{camp_corto}: {casa} {sc} - {so} {ospite}"
+            send_push_notification(push_title, push_msg)
+            logging.info("Push 'nuovo risultato' inviata: %s", push_msg)
+
+    # ---- NOTIFICA 2: Giorno della partita ----
     if not df_ris.empty:
         today_iso = datetime.today().strftime('%Y-%m-%d')
         tracking_file = "notified_dates.txt"
-        
+
         notified_dates = []
         if os.path.exists(tracking_file):
             with open(tracking_file, 'r') as f:
                 notified_dates = f.read().splitlines()
-        
+
         if today_iso not in notified_dates:
-            match_oggi = df_ris[df_ris['DataISO'] == today_iso]
-            my_match_oggi = match_oggi[match_oggi['Squadra Casa'].apply(is_target_team) | match_oggi['Squadra Ospite'].apply(is_target_team)]
-            
+            mask_casa   = df_ris['Squadra Casa'].apply(is_target_team)
+            mask_ospite = df_ris['Squadra Ospite'].apply(is_target_team)
+            my_match_oggi = df_ris[(df_ris['DataISO'] == today_iso) & (mask_casa | mask_ospite)]
+
             if not my_match_oggi.empty:
                 message_lines = []
                 for _, m in my_match_oggi.iterrows():
                     camp_corto = m['Campionato'].split(" S.")[0]
                     message_lines.append(f"{camp_corto}: {m['Squadra Casa']} vs {m['Squadra Ospite']}")
-                
-                push_title = "🏐 È il giorno della partita!"
-                push_msg = " | ".join(message_lines)
-                
+
+                push_title = "\U0001f3d0 E' il giorno della partita!"
+                push_msg   = " | ".join(message_lines)
                 send_push_notification(push_title, push_msg)
-                
+
                 with open(tracking_file, 'a') as f:
                     f.write(f"{today_iso}\n")
-    
-    print(f"✅ Generazione {APP_VERSION} completata!")
+                logging.info("Push 'giorno partita' inviata: %s", push_msg)
+
+    logging.info("\u2705 Generazione %s completata!", APP_VERSION)
