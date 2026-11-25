@@ -122,7 +122,9 @@ GALLERIA_MEDIA = {
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_0786.jpg", "caption": "Primi Sorrisi vs A.P.D. Pessy"},
     ],
     "U15 S.Femminile Gir.A": [
-        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_1179.jpg", "caption": "Primi Sorrisi vs Volley Project Pontecagnano "},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_2015.jpg", "caption": "Formazione U15 2026/27"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_1179.jpg", "caption": "Primi Sorrisi vs Volley Project Pontecagnano"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_2013.jpg", "caption": "2° Giornata, vittoria vs Embarcadero Fammila Incrocio Pontecagnano"},
     ],
     "U14 S.Femminile Gir.C": [
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_0923.jpg", "caption": "Primi Sorrisi vs Giffoni Futura"},
