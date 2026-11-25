@@ -128,6 +128,7 @@ GALLERIA_MEDIA = {
     ],
     "U14 S.Femminile Gir.C": [
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_0923.jpg", "caption": "Primi Sorrisi vs Giffoni Futura"},
+        {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/Screenshot_20261125_214354_Instagram.jpg", "caption": "2° Giornata, vittoria vs Fratres Donatori Vallo di Diano"},
     ],
     "U12 S.Femminile": [
         {"type": "image", "url": "https://raw.githubusercontent.com/robertobrigantino-blip/todis-volley/main/Foto/IMG_1058.jpg", "caption": "1° Classificate U12 2025"},
